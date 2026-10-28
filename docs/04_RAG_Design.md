@@ -1,0 +1,29 @@
+# RAG - Detailed Design
+
+Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Draft.
+
+## 1. Purpose
+Answer product and store questions from trusted documents, with citations. Live data (price, stock, status) never comes from RAG.
+
+## 2. Technology
+| Concern | Choice |
+|---|---|
+| Parsing | Docling |
+| Embeddings | `nomic-embed-text` (dev) -> `bge-m3` (prod) |
+| Store | Postgres + pgvector + full-text (proposed) |
+| Fusion | Reciprocal Rank Fusion |
+| Reranker | `bge-reranker-v2-m3` |
+| Evaluation | Ragas |
+
+## 3. Ingestion pipeline
+parse -> clean -> chunk -> enrich metadata -> embed -> index; idempotent with content hashes; triggered by `catalog-events` - TBD in detail.
+
+## 4. Retrieval pipeline
+query understanding -> metadata filters -> hybrid search (dense + keyword) -> RRF -> rerank -> top-k with citations - TBD in detail.
+
+## 5. Techniques (planned)
+Chunking strategies, parent-child chunks, metadata filters, hybrid search, reranking, query rewriting, agentic retrieval, citations, semantic cache, freshness via events, evaluation in CI.
+
+## 6. Open decisions
+1. Vector store: pgvector vs Qdrant.
+2. Chunk size / strategy per document type.
