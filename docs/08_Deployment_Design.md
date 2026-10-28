@@ -5,10 +5,12 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywi
 ## 1. Principle
 Production-grade design and configuration, run locally at small scale. Scale changes only through configuration (Helm values), never code.
 
+**Scale-down rule (docs/00 section 7.1):** `values-local.yaml` holds the scale factor `S = 40` and the measured LLM hardware factor `k`. Local limits (replica concurrency caps, Envoy rate limits, agent admission queue, LLM timeouts, global USD budget) are derived from production values using `S` and `k`; `k` is measured by a benchmark script (production model tokens/s vs local model tokens/s) during setup.
+
 ## 2. Environments
 | Environment | Runtime | Use |
 |---|---|---|
-| local-dev | Docker Compose, 1 instance each | Fast inner loop |
+| local-dev | Docker Compose, 1 instance each (includes LiteLLM) | Fast inner loop |
 | local-k8s | kind cluster (1 control plane + 2 workers) | Production-shaped runs, load tests, failure demos |
 | production (design only) | Managed Kubernetes | Documented sizing, not deployed |
 
@@ -31,7 +33,8 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Redis | 1 | HA |
 | Keycloak | 1 | HA |
 | Observability | OTel Collector, Prometheus, Grafana, Tempo, Langfuse | Same, sized up |
-| LLM | Ollama on the Mac host (Apple GPU) | Model gateway -> vLLM or hosted API |
+| Model gateway | LiteLLM proxy, 1 replica; shadow price table; points at Ollama | LiteLLM, 2+ replicas; points at vLLM or hosted API |
+| LLM | Ollama on the Mac host (Apple GPU), reached only via LiteLLM | vLLM or hosted API |
 | Service-to-service security | JWT | Service mesh (mTLS) - future option |
 
 ## 5. Packaging

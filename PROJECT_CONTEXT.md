@@ -31,8 +31,9 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 ## Current status
 - Design phase. Docs updated 2026-10-28 for: modular monolith, 6 deployables, buywise-mcp, no internal gateway, rename.
 - Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Remaining UI TBDs: key flows (docs/01 section 5), browser support.
-- Open items raised for later modules: identity propagation (docs/03, docs/05); agent -> BFF stream format (docs/03).
-- Next: confirm NFR targets (docs/00 section 7), then remaining open decisions (docs/00 section 9).
+- Done 2026-10-28: NFR targets set as ideal production targets, local scaled by S=40 and LLM hardware factor k, with failure behavior (docs/00 section 7); LLM metering/budgets (ADR-026) and LLM observability UI (ADR-027).
+- Open items raised for later modules: identity propagation (docs/03, docs/05); agent -> BFF stream format (docs/03); AI Operations chart library (docs/01).
+- Next: remaining open decisions (docs/00 section 9).
 
 ## Pending housekeeping
 - Restructure folders to match docs/00 section 6 (ui/, services/, mcp/, agent/, events/, data/, deploy/); move pyproject.toml etc. into agent/; retire mcp_servers/ and root tests/.

@@ -11,7 +11,7 @@ Understand customer messages, route to the right handler, call tools and knowled
 | Orchestration | LangGraph 1.2 + Postgres checkpointer |
 | Agent API | FastAPI (async) |
 | MCP client | MCP Python SDK v2, calling `buywise-mcp` (spec 2026-07-28) |
-| LLM | Ollama `qwen2.5:7b` (dev); model gateway -> vLLM or hosted API (prod) |
+| LLM | Always via LiteLLM model gateway (OpenAI-compatible API): Ollama `qwen2.5:7b` locally; vLLM or hosted API (prod). Shadow pricing locally (ADR-026) |
 | Tracing | OpenTelemetry -> Langfuse |
 | Evaluation | DeepEval scenario suites in CI |
 
@@ -41,6 +41,38 @@ Understand customer messages, route to the right handler, call tools and knowled
 
 ## 7. Guardrails and safety
 - Prices, stock, status only from tools; no card data; explicit confirmation before checkout; prompt-injection defense; PII masking.
+
+## 7a. LLM client, metering and budgets (ADR-026)
+One LLM client module in the agent; no node calls the model directly.
+
+| Responsibility | Where |
+|---|---|
+| Price table (USD per 1M input/output tokens per model, shadow prices for local models) | LiteLLM config |
+| Spend tracking, global daily USD budget, per-model rate limits, token/latency Prometheus metrics | LiteLLM |
+| Per-turn output cap, per-conversation cap, per-customer daily cap (Redis counters) | Agent LLM client |
+| Record every call: stage, model, TTFT, duration, tokens in/out, tokens/sec, cost, budget events -> `llm_calls` table + OTel GenAI spans (Langfuse) | Agent LLM client |
+| Emit `status.updated` before each stage and `message.metrics` (dev overlay) per ADR-024 | Agent |
+
+Example config (values are examples, set per environment):
+```yaml
+llm:
+  gateway_url: http://litellm:4000
+  primary_model: buywise-primary      # LiteLLM alias -> ollama/qwen2.5:7b locally
+  fallback_model: buywise-economy     # cheaper model used under budget pressure
+  budgets:
+    per_turn_output_tokens: 1024
+    per_conversation_tokens: 20000
+    per_customer_daily_tokens: 100000
+    global_daily_usd: 50              # enforced in LiteLLM; alert 80%, fallback 90%, stop 100%
+```
+
+Admission control and deadlines (docs/00 section 7.3): per-pod cap on concurrent generations with a bounded queue (`status.updated` shows queue position); per-stage deadlines scaled by `k` locally; circuit breaker on the LiteLLM client.
+
+Degradation ladder (never a bare error):
+1. Global spend >= 80% -> alert (Grafana).
+2. Global spend >= 90% -> new turns use `fallback_model`.
+3. Global spend 100%, or per-conversation / per-customer cap hit -> no generation: FAQ answers from RAG retrieval (no LLM) + offer staff handoff.
+4. Per-turn cap -> answer is cut at a sentence boundary with "Want me to continue?".
 
 ## 8. Testing
 - Scenario suite (DeepEval), intent accuracy set - TBD.

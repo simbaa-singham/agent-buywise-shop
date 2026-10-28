@@ -27,6 +27,8 @@
 | ADR-023 | UI rendering: hybrid per route - prerender product/category pages, client rendering elsewhere; no per-request SSR | Accepted | 2026-10-28 |
 | ADR-024 | Chat message contract: own versioned JSON Schema envelope, AG-UI-shaped reply events, structured blocks, Redis Stream replay, idempotent sends | Accepted | 2026-10-28 |
 | ADR-025 | Accessibility: WCAG 2.2 AA enforced by angular-eslint + axe-core in CI plus a manual per-release checklist; chat-specific rules | Accepted | 2026-10-28 |
+| ADR-026 | LLM metering and budgets: LiteLLM model gateway (pricing, spend, global budget, rate limits) + agent LLM client (per-turn/conversation/customer caps, degradation); shadow pricing locally | Accepted | 2026-10-28 |
+| ADR-027 | LLM observability in the UI: Grafana for trends/alerts + staff-console AI Operations (ops-admin) + customer-web dev overlay; `status.updated` and `message.metrics` events | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -114,3 +116,21 @@
   - C. AAA - impractical site-wide.
 - **Decision:** A. angular-eslint template a11y rules; axe-core in Playwright CI; manual keyboard / VoiceOver / NVDA / 200% zoom checklist per release. Chat rules: announce completed replies via polite live region (`aria-busy` while streaming), never move focus on new messages, focus not obscured by the widget, 24x24 px targets, timeout warnings, OTP paste/autofill, no redundant entry, reduced motion, semantic HTML for rich blocks.
 - **Consequences:** Manual testing effort each release. Custom chat components need explicit a11y tests. Timeout warning UI required in both apps.
+
+## ADR-026 - LLM metering and token budgets
+- **Context:** The LLM must be treated as a paid production service, including locally on Ollama. Need cost visibility, enforced budgets and safe behavior when budgets are hit. docs/00 already planned a model gateway.
+- **Options considered:**
+  - A1. Agent code only - nothing new to run, conversation-aware; we build pricing, spend tracking and rate limits.
+  - A2. LiteLLM gateway only - built-in pricing, spend, budgets, rate limits, metrics, provider switching by config; not conversation-aware.
+  - A3. Both, split by responsibility.
+- **Decision:** A3. LiteLLM: price table (shadow prices for local models), spend tracking, global daily USD budget, per-model rate limits, metrics. Agent LLM client: per-turn, per-conversation, per-customer caps (Redis), per-call recording, degradation ladder (alert 80% -> fallback model 90% -> no generation + FAQ + handoff at 100%). All model calls go through LiteLLM.
+- **Consequences:** One more platform component (not a deployable; ADR-016 unchanged). Switching Ollama -> hosted model is config only. Verify which LiteLLM features (budgets, Prometheus metrics) are in the open-source edition before implementation.
+
+## ADR-027 - LLM observability in the UI
+- **Context:** Architect wants LLM latency, speed, tokens and cost visible inside the project, per conversation and system-wide.
+- **Options considered:**
+  - B1. Grafana only - standard, alerting, no UI code; aggregates only, outside the app.
+  - B2. staff-console AI Operations only - in-app, per-conversation drill-down; must build charts, no alerting.
+  - B3. Both, plus a developer overlay in customer-web.
+- **Decision:** B3. Grafana for trends, NFR percentiles, spend and alerts. staff-console AI Operations (role `ops-admin`): live summary, conversation explorer with per-stage breakdown, read-only budget/pricing view. customer-web dev overlay from `message.metrics`, off by default. Contract additions (backward compatible, `v` stays 1): `status.updated`, `message.metrics`.
+- **Consequences:** New BFF `ops` module and staff-console area; new Keycloak role; agent usage tables (`turns`, `llm_calls`). Open: chart library for AI Operations (docs/01).

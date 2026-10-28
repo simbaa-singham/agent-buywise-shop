@@ -49,9 +49,9 @@ ui/
 ├── web/                    # Angular 22 workspace
 │   ├── projects/
 │   │   ├── customer-web/   # served at /       - chat widget, products, cart, orders
-│   │   ├── staff-console/  # served at /staff  - ticket queue, conversation takeover
+│   │   ├── staff-console/  # served at /staff  - ticket queue, conversation takeover, AI Operations (ops-admin)
 │   │   └── shared/         # library: chat components, message models, API clients, UI primitives
-└── bff/                    # NestJS 11 (auth, chat, customer, staff, health, common)
+└── bff/                    # NestJS 11 (auth, chat, customer, staff, ops, health, common)
 ```
 - Each app has its own Keycloak client: staff can get stricter login rules (MFA, shorter sessions) than customers.
 - Customers never download staff code; Envoy can restrict `/staff/**` (and `/api/staff/**`) separately.
@@ -99,6 +99,8 @@ data: {"v":1,"seq":4182,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","me
 |---|---|
 | Agent reply (streamed) | `message.started`, `message.delta`, `message.completed`, `message.failed` |
 | Whole messages | `message.created` (customer or staff message delivered to the other side) |
+| Progress | `status.updated` (payload: `stage`, `label`, e.g. `tool_call` / "Checking stock...") - NFR 2 first visible feedback |
+| Metrics (dev overlay only) | `message.metrics` (payload: `model`, `ttftMs`, `durationMs`, `inputTokens`, `outputTokens`, `tokensPerSec`, `costUsd`) |
 | Rich content | `block.product_card`, `block.comparison`, `block.order_status`, `block.payment_link`, `block.store_pickup` |
 | Handoff | `handoff.requested`, `handoff.accepted`, `handoff.ended` |
 | Staff console | `ticket.created`, `ticket.updated` |
@@ -116,6 +118,14 @@ Rules:
 
 ## 5. Key flows
 - TBD (login, chat streaming, staff takeover).
+
+**LLM observability in the UI (ADR-027):**
+- **staff-console > AI Operations** (Keycloak role `ops-admin`; routes `/staff/ai-ops/**`, API `/api/staff/ops/**`):
+  1. Live summary: TTFT p50/p95, tokens/sec, full-answer latency, error rate, spend today vs global budget, current model (refreshes every 15 s via `httpResource`).
+  2. Conversation explorer: search/filter conversations; per-turn breakdown by stage (route, RAG retrieval, tool calls, generation) with latency, tokens, cost, model, budget events.
+  3. Budget and pricing: read-only view of caps, shadow prices and degradation thresholds (config is changed in Git, not in the UI).
+- **customer-web developer overlay:** TTFT, tokens and cost under each agent message, from `message.metrics`. Enabled by config (`devOverlay: true`), off by default; never on in production.
+- Data source: BFF `ops` module reads the agent's usage tables (docs/07) via the agent API; Grafana remains the place for alerts and long-range trends.
 
 ## 6. Non-functional
 - 2 replicas locally: Redis pub/sub so any pod can deliver chat events to the pod holding the SSE stream; no sticky sessions.
@@ -149,3 +159,4 @@ Rules:
    - ~~Chat message contract~~ - decided: own typed contract, AG-UI-shaped reply events (ADR-024)
    - ~~Accessibility~~ - decided: WCAG 2.2 AA, automated + manual (ADR-025)
 2. Future option: serve Angular files from a CDN, BFF only as a service.
+3. Chart library for AI Operations (e.g. ngx-echarts vs Chart.js vs ngx-charts). Raised by ADR-027.
