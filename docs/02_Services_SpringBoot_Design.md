@@ -1,62 +1,60 @@
-# Domain Services (Spring Boot) - Detailed Design
+# Business Services (`buywise-services`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Draft.
+Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
-Own all business data and rules. Expose REST APIs (for BFF) and MCP tools (for the agent). Publish domain events.
+One Spring Boot application (modular monolith) that owns all business data and rules and exposes REST APIs to the BFF, `buywise-mcp` and event consumers.
 
-| Service | Owns |
+| Module | Owns |
 |---|---|
-| catalog-service | Products, variants, prices, compatibility |
-| inventory-service | Stock per variant/location, reservations |
-| order-service | Carts, orders, status, shipments, pickups |
-| customer-service | Profiles, OTP verification |
-| payment-service (mock) | Payment links, payment status |
-| helpdesk-service | Tickets, staff handoff |
-| gateway | Spring Cloud Gateway (internal) |
+| catalog | Products, variants, prices, compatibility |
+| inventory | Stock per variant/location, reservations |
+| order | Carts, orders, status, shipments, pickups |
+| customer | Profiles, OTP verification |
+| payment (mock) | Payment links, payment status |
+| helpdesk | Tickets, staff handoff |
+| shared | Common types, errors, security config |
 
 ## 2. Technology and versions
 | Concern | Choice |
 |---|---|
 | Runtime | Java 25, Spring Boot 4.1 / Spring Framework 7 |
-| API | Spring Web (REST) + OpenAPI (springdoc) |
-| Data | Spring Data JPA + Flyway on Postgres |
-| Events | Spring Kafka, transactional outbox |
-| Security | Spring Security OAuth2 resource server (JWT) |
-| Resilience | Resilience4j |
+| Modularity | Spring Modulith 2.x: boundary verification, module events, Event Publication Registry, per-module Flyway |
+| API | Spring Web (REST), controllers per use case, OpenAPI (springdoc) |
+| Data | Spring Data JPA + Flyway on Postgres (schema per module) |
+| Security | Spring Security OAuth2 resource server (JWT); roles: customer, staff, mcp-service, events-service |
+| Resilience | Resilience4j; Bucket4j for per-caller rate limits |
+| Jobs | Scheduled jobs guarded by ShedLock (run once across replicas) |
 | Observability | Micrometer + OpenTelemetry |
-| MCP | Spring AI 2.0 (`@McpTool`), MCP Java SDK 2.0 |
-| Testing | JUnit 5, Testcontainers, contract tests |
-| Build | Maven multi-module |
+| Testing | JUnit 5, Spring Modulith module tests, Testcontainers, contract tests |
 
 ## 3. Module structure
 ```
 services/
-├── pom.xml
-├── common/
-├── gateway/
-├── catalog-service/
-├── inventory-service/
-├── order-service/
-├── customer-service/
-├── payment-service/
-└── helpdesk-service/
+└── src/main/java/.../buywise/
+    ├── catalog/     # api (controllers), application (services), domain, infrastructure (repositories)
+    ├── inventory/
+    ├── order/
+    ├── customer/
+    ├── payment/
+    ├── helpdesk/
+    └── shared/
 ```
 
-## 4. Interfaces
-- REST APIs per service (OpenAPI) - TBD.
-- MCP tools - see [05_MCP_Design.md](05_MCP_Design.md).
+## 4. Rules
+- Modules call each other only through public module APIs or module events; never internals.
+- No cross-module joins; each module owns its schema.
+- Stateless instances: any of the replicas can serve any request.
+- Business events recorded in the same transaction as the state change.
+
+## 5. Interfaces
+- REST APIs per module (OpenAPI) - TBD.
+- Consumed as tools via `buywise-mcp` - see [05_MCP_Design.md](05_MCP_Design.md).
 - Events - see [06_Eventing_Kafka_Design.md](06_Eventing_Kafka_Design.md).
 
-## 5. Key flows
-- Checkout: cart -> stock reservation -> order -> payment link -> paid. TBD in detail.
+## 6. Key flows
+- Checkout: cart -> price from catalog -> stock reservation -> order -> payment link -> paid -> reservation confirmed. TBD in detail.
 
-## 6. Non-functional
-- TBD (idempotency keys, optimistic locking on stock, rate limits, timeouts).
-
-## 7. Testing
-- Unit, integration (Testcontainers), contract (OpenAPI + MCP schemas) - TBD.
-
-## 8. Open decisions
-1. Service-to-service calls: synchronous REST only, or events for some flows.
-2. Stock reservation strategy and timeout.
+## 7. Open decisions
+1. Stock reservation strategy and timeout.
+2. Future path: extract a module into its own service if it needs independent scaling.

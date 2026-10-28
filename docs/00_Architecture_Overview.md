@@ -8,110 +8,140 @@ Decisions are recorded in [adr/ADR_Log.md](adr/ADR_Log.md).
 | Field | Value |
 |---|---|
 | Owner / Architect | Sachin Wakade |
+| Purpose | Learning and portfolio project: production-grade design and code, run locally at small scale |
 | Status | Draft - under review |
 | Last updated | 2026-10-28 |
 
 ## 1. Purpose and scope
 
-AI assistant for an online store selling Apple products (US). It helps customers:
-1. Place an order (discover, compare, configure, check stock, checkout).
-2. Check order status (delivery tracking or pickup readiness).
-3. Get answers to product and store questions.
-4. Reach store staff when needed (human handoff).
+AI shopping assistant for an online electronics store (Apple products as the sample catalog, US). It helps customers:
+1. Choose a device (discover, compare, configure).
+2. Place an order (stock check, cart, checkout; delivery or in-store pickup).
+3. Track an order (delivery tracking or pickup readiness).
+4. Get answers to product and store questions, and reach store staff when needed.
 
-**Out of scope (v1):** returns, exchanges, refunds, trade-ins, voice channel, payments processing (mock payment links only).
+**Out of scope (v1):** returns, exchanges, refunds, trade-ins, voice channel, real payment processing (mock payment links only).
+
+**Runtime:** not hosted. Runs on a Mac with production-shaped infrastructure at small scale; production sizing is configuration only.
 
 ## 2. Key decisions (summary)
 
 | Area | Decision | ADR |
 |---|---|---|
-| Repository | One monorepo with modules (ui, services, data, agent, deploy) | ADR-001 |
-| Language split | Java for business services; Python for AI; TypeScript for UI/BFF | ADR-002 |
+| Repository | One monorepo with modules | ADR-001 |
+| Language split | Java for business services; Python for AI and MCP; TypeScript for UI/BFF | ADR-002 |
 | UI | Angular 22 | ADR-003 |
-| BFF | Node.js 24 LTS, NestJS 11 + Fastify adapter | ADR-004 |
-| Internal gateway | Spring Cloud Gateway in front of all Java services | ADR-005 |
-| Business services | Java 25, Spring Boot 4.1 microservices | ADR-006 |
-| Tools for the agent | MCP servers inside Java services (Spring AI 2.0); Python MCP client (SDK v2) | ADR-007 |
+| BFF | Node.js 24 LTS, NestJS 11 + Fastify; serves the Angular build | ADR-004 |
+| Business services | One Spring Boot 4.1 modular monolith (Spring Modulith) | ADR-014 |
+| MCP | Separate `buywise-mcp` deployable, MCP Python SDK v2, spec 2026-07-28 | ADR-015 |
+| Deployables | 6 deployables (see section 5) | ADR-016 |
+| Edge | Envoy Gateway (Kubernetes Gateway API); no internal gateway; service mesh as future option | ADR-017 |
 | Agent orchestration | LangGraph 1.2 with Postgres checkpointer | ADR-008 |
-| Events | Apache Kafka with transactional outbox | ADR-009 |
-| Primary database | PostgreSQL (schema per service) | ADR-010 (proposed) |
+| Events | Apache Kafka; separate publisher and consumer deployables | ADR-009 |
+| Primary database | PostgreSQL, schema per module | ADR-010 (proposed) |
 | Vector store | Postgres + pgvector + full-text (hybrid) | ADR-011 (proposed) |
+| Runtime | Local-first, small scale; production sizing via config only | ADR-013 |
 
 ## 3. System context
 
 | Actor / system | Interaction |
 |---|---|
-| Customer | Website chat: browse, order, status, questions |
+| Customer | Website chat: browse, order, track, questions |
 | Store staff | Staff console: tickets, take over conversations |
-| Identity provider (Keycloak) | Customer and staff login, service tokens |
+| Identity provider (Keycloak) | Customer and staff login, service tokens, MCP authorization |
 | Payment provider (mock) | Payment links and payment status callbacks |
 | Shipping carrier (mock) | Tracking numbers and delivery events |
-| LLM provider | Ollama (dev); model gateway -> vLLM or hosted API (prod) |
+| LLM provider | Ollama on the Mac (dev/local); model gateway -> vLLM or hosted API (production design) |
 
 ## 4. High-level architecture
 
 **Layers**
-1. **Experience layer** - Angular 22 web app (chat widget + staff console).
-2. **BFF layer** - NestJS 11 BFF: session/auth, WebSocket streaming, screen aggregation.
-3. **AI layer** - Python agent (LangGraph), RAG pipeline, MCP client, evaluation.
-4. **Edge (internal)** - Spring Cloud Gateway: routing, JWT validation, rate limits.
-5. **Domain services** - Spring Boot microservices with REST APIs + MCP tools.
-6. **Data and events** - Postgres, Redis, Kafka.
-7. **Platform** - Kubernetes, CI/CD, observability.
+1. **Edge** - Envoy Gateway: TLS, routing, rate limits for browser traffic.
+2. **Experience** - `buywise-web`: Angular 22 app + NestJS BFF (session, SSE streaming, screen aggregation).
+3. **AI** - `buywise-agent`: LangGraph agent + RAG pipeline.
+4. **Tools** - `buywise-mcp`: MCP servers wrapping the business REST APIs.
+5. **Business** - `buywise-services`: Spring Boot modular monolith (catalog, inventory, order, customer, payment mock, helpdesk).
+6. **Events** - `buywise-event-publisher` and `buywise-event-consumers` with Kafka.
+7. **Data and platform** - Postgres, Redis, Kafka, Keycloak, observability, Kubernetes.
 
 **Request path (chat message)**
-1. Angular -> BFF (WebSocket).
-2. BFF -> Agent API.
+1. Browser -> Envoy Gateway -> `buywise-web` (HTTP POST to send; SSE stream to receive).
+2. BFF -> `buywise-agent` (streaming HTTP).
 3. Agent: load state -> sentiment -> intent router -> intent handler.
-4. Handler -> MCP tools -> internal gateway -> domain service.
+4. Handler -> `buywise-mcp` (MCP, stateless) -> `buywise-services` REST.
 5. Handler -> RAG retrieval for knowledge questions.
-6. Agent -> guardrails -> streamed response -> BFF -> Angular.
+6. Agent -> guardrails -> streamed response -> BFF -> browser.
+
+**Screen path (e.g. order history)**
+1. Browser -> `buywise-web` BFF -> `buywise-services` REST (JWT from the session).
 
 **Event path**
-1. Domain service writes state + outbox row in one DB transaction.
-2. Outbox relay publishes to Kafka.
-3. Consumers react: notifications, RAG re-indexing, staff console updates.
+1. `buywise-services` commits state + event record in one DB transaction.
+2. `buywise-event-publisher` publishes committed events to Kafka (mechanism deferred, see section 8).
+3. `buywise-event-consumers` react: notifications, staff console updates, projections.
+4. RAG re-indexing on catalog changes (location deferred, see section 8).
 
-## 5. Modules
+## 5. Deployables and modules
 
-| Module | Responsibility | Detailed design |
+| # | Deployable | Contains | Stack | Detailed design |
+|---|---|---|---|---|
+| 1 | `buywise-web` | Angular app + NestJS BFF (BFF serves the Angular build) | Angular 22, Node.js 24, NestJS 11 + Fastify | [01](01_UI_Angular_BFF_Design.md) |
+| 2 | `buywise-services` | Modular monolith: catalog, inventory, order, customer, payment (mock), helpdesk | Java 25, Spring Boot 4.1, Spring Modulith | [02](02_Services_SpringBoot_Design.md) |
+| 3 | `buywise-agent` | LangGraph agent, RAG pipeline, evals | Python 3.12, LangGraph 1.2 | [03](03_Agent_Python_Design.md), [04](04_RAG_Design.md) |
+| 4 | `buywise-mcp` | MCP servers wrapping `buywise-services` REST APIs | Python 3.12, MCP Python SDK v2 (spec 2026-07-28) | [05](05_MCP_Design.md) |
+| 5 | `buywise-event-publisher` | Kafka producers for committed business events | Java (Spring Kafka) - design deferred | [06](06_Eventing_Kafka_Design.md) |
+| 6 | `buywise-event-consumers` | Kafka consumers for async reactions | Java (Spring Kafka) - design deferred | [06](06_Eventing_Kafka_Design.md) |
+
+Data stores are covered in [07](07_Data_Database_Design.md); environments and deployment in [08](08_Deployment_Design.md).
+
+## 6. Repository layout
+
+```
+agent-buywise-shop/
+├── ui/                  # buywise-web: Angular 22 app + NestJS BFF
+│   ├── web/             # Angular workspace (customer-web, staff-console, shared)
+│   └── bff/             # NestJS 11 + Fastify
+├── services/            # buywise-services: one Spring Boot app (modules as packages)
+├── mcp/                 # buywise-mcp: Python MCP servers
+├── agent/               # buywise-agent: LangGraph agent, RAG, evals
+├── events/
+│   ├── publisher/       # buywise-event-publisher
+│   └── consumers/       # buywise-event-consumers
+├── data/                # local infra (Postgres, Redis, Kafka, Keycloak), seed data, knowledge docs
+├── deploy/              # Docker Compose, Helm charts, GitHub Actions
+└── docs/
+```
+
+## 7. Non-functional requirements
+
+| Category | Production design target | Local verified target |
 |---|---|---|
-| UI + BFF | Customer chat, staff console, session, streaming | [01_UI_Angular_BFF_Design.md](01_UI_Angular_BFF_Design.md) |
-| Domain services | Catalog, inventory, order, customer, payment (mock), helpdesk, gateway | [02_Services_SpringBoot_Design.md](02_Services_SpringBoot_Design.md) |
-| Agent | LangGraph graph, intents, guardrails, handoff | [03_Agent_Python_Design.md](03_Agent_Python_Design.md) |
-| RAG | Knowledge ingestion, hybrid retrieval, reranking, evaluation | [04_RAG_Design.md](04_RAG_Design.md) |
-| MCP | Tool servers, client, contracts, versioning, auth | [05_MCP_Design.md](05_MCP_Design.md) |
-| Eventing | Kafka topics, event schemas, outbox, consumers | [06_Eventing_Kafka_Design.md](06_Eventing_Kafka_Design.md) |
-| Data | Postgres schemas, pgvector, Redis, data ownership | [07_Data_Database_Design.md](07_Data_Database_Design.md) |
-| Deployment | Environments, Compose, Kubernetes + Helm, CI/CD, runbooks | [08_Deployment_Design.md](08_Deployment_Design.md) |
+| Scale | 200k customers; 50k chats/day; 2,000 concurrent chats; 10x launch spikes | 50 concurrent chats (k6 load test) |
+| Chat latency | First token p95 < 1.5 s; full answer p95 < 6 s | Measured and reported on Grafana |
+| Tool latency | MCP tool call p95 < 300 ms | Measured |
+| Availability | Chat 99.9%; checkout 99.95% | Zero failed requests when one pod of a 2-replica deployable is killed |
+| Correctness | Prices, stock, status only from services; cited answers | Scenario eval suite passes |
+| Security | OAuth2/JWT; least-privilege tools; no card data; PII masked | Same |
+| Data | RPO 5 min, RTO 1 h (order data) | Documented, not tested |
 
-## 6. Non-functional requirements (assumptions - to confirm)
+NFR targets are assumptions pending confirmation.
 
-| Category | Target |
-|---|---|
-| Scale | 200k registered customers; 50k chats/day; 2,000 concurrent chats peak; 10x spike on product launch days |
-| Chat latency | First streamed token p95 < 1.5 s; full answer p95 < 6 s |
-| Tool latency | MCP tool call p95 < 300 ms |
-| Availability | Chat 99.9%; order/checkout APIs 99.95% |
-| Correctness | Prices, stock, order status always from services (never LLM); answers cite sources |
-| Security | OAuth2/JWT everywhere; least-privilege tools; no card data in chat; PII masked in logs |
-| Data | RPO 5 min, RTO 1 h for order data |
-| Cost | LLM cost per conversation tracked; semantic cache for repeated questions |
+## 8. Cross-cutting concerns
 
-## 7. Cross-cutting concerns
+- **Security:** Keycloak for customers, staff and service accounts; BFF session pattern; Spring Security JWT checks in `buywise-services`; OAuth for `buywise-mcp`; OTP for order status. Service mesh (mTLS) is the future path for service-to-service security.
+- **Observability:** OpenTelemetry end to end (browser -> BFF -> agent -> MCP -> services); Langfuse for LLM traces; Prometheus/Grafana; structured logs.
+- **Resilience:** timeouts, retries, circuit breakers (Resilience4j, LangGraph node policies); fallback to human handoff.
+- **Evaluation:** RAG and agent scenario suites in CI (Ragas, DeepEval); contract tests for MCP tools and REST APIs.
+- **Governance:** versioned tool schemas and APIs; ADRs for every major decision.
 
-- **Security:** Keycloak (customers, staff, service accounts); gateway JWT validation; MCP OAuth; OTP for order status.
-- **Observability:** OpenTelemetry traces end to end (UI -> BFF -> agent -> MCP -> service); Langfuse for LLM traces; Prometheus/Grafana metrics; structured logs.
-- **Resilience:** timeouts, retries, circuit breakers (Resilience4j, LangGraph node policies); graceful fallback to human handoff.
-- **Evaluation:** RAG and agent scenario suites in CI (Ragas, DeepEval); contract tests for tools.
-- **Governance:** versioned tool schemas, ADRs for every major decision, deprecation policy for APIs/events.
+## 9. Open and deferred decisions
 
-## 8. Open decisions
-
-1. Confirm NFR targets (section 6).
-2. Vector store: pgvector (proposed) vs Qdrant.
-3. Production LLM: self-hosted (vLLM) vs hosted API behind a gateway.
-4. Database topology: schema per service (proposed) vs database per service.
-5. Event schema format: JSON Schema vs Avro (+ schema registry).
-6. Deployment target: local Kubernetes vs cloud managed Kubernetes.
-7. Angular component library.
+| # | Decision | Status |
+|---|---|---|
+| 1 | Confirm NFR targets (section 7) | Open |
+| 2 | Event publishing mechanism: polling outbox relay vs Debezium CDC | Deferred to implementation |
+| 3 | Where RAG re-indexing runs: agent vs event consumers | Deferred to implementation |
+| 4 | Vector store: pgvector (proposed) vs Qdrant | Open |
+| 5 | Production LLM: self-hosted (vLLM) vs hosted API behind a gateway | Open |
+| 6 | Event schema format: JSON Schema vs Avro (+ schema registry) | Open |
+| 7 | Angular component library | Open |
