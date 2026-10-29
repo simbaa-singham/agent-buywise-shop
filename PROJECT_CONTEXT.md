@@ -44,7 +44,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Done 2026-10-29: implementation roadmap approved (docs/09) as drafted.
 - Done 2026-10-29: phase 0 foundations (docs/09). Local k = 2.96 (deploy/local/scale.yaml).
-- In progress: step-by-step walkthrough of phase 0 for the architect. Done: steps 1-4 (supporting programs in Docker with health checks; separate databases; tables via Flyway; architect loaded seed data by hand in pgAdmin with data/docs/walkthroughs/load-seed-data.sql - counts verified). Resume at step 5 (chat message contract), then step 6 (k benchmark), step 7 (Makefile, CI, README).
+- In progress: step-by-step walkthrough of phase 0 for the architect. Done: steps 1-4 (supporting programs in Docker with health checks; separate databases; tables via Flyway; architect loaded seed data by hand in pgAdmin with data/docs/walkthroughs/load-seed-data.sql - counts verified). Resume at step 5.1 (chat message contract: walk through the schema definition with the architect - started, not finished), then 5.2 generated code, 5.3 contract tests, then step 6 (k benchmark), step 7 (Makefile, CI, README).
 - Then: phase 1 thin slice (docs/09).
 
 ## Pending housekeeping
