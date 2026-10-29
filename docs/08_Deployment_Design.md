@@ -33,7 +33,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Redis | 1 | HA |
 | Keycloak | 1 | HA |
 | Observability | OTel Collector, Prometheus, Grafana, Tempo, Loki (logs) | Same + Langfuse, sized up |
-| Backup storage | MinIO (S3-compatible) for CloudNativePG backups + WAL archive | Cloud object storage |
+| Backup storage | Not run locally (design only, ADR-035) | Object storage for CloudNativePG backups + WAL archive; immutable off-site copy |
 | Model gateway | LiteLLM proxy, 1 replica; shadow price table; points at Ollama | LiteLLM, 2+ replicas; points at vLLM or hosted API |
 | LLM | Ollama on the local machine (host GPU), reached only via LiteLLM | vLLM or hosted API |
 | Service-to-service security | JWT | Service mesh (mTLS) - future option |
@@ -46,6 +46,8 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Service mesh (mTLS) | Memory; already a future option | JWT between services |
 | External secrets manager (Vault + External Secrets) | Memory | Kubernetes secrets locally (docs/08 open decision 1 still decides production) |
 | Schema registry | Memory; event schema format still open | Revisit if the event format decision requires a registry |
+| Database backups, WAL archive, PITR, restore drills (MinIO) | Production-scale operation (design only, ADR-035) | No local backups; local data is reproducible via `make seed` / `make ingest` |
+| Disaster recovery environment, multi-zone | Production-scale operation (design only) | Single local cluster |
 | GitHub Actions deploy to local-k8s (self-hosted runner) | Runner on the local machine costs memory and adds risk | CI builds/tests in GitHub; deploy to kind is a local script |
 
 ## 4b. Local usage model

@@ -36,6 +36,8 @@
 | ADR-032 | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j | Accepted | 2026-10-28 |
 | ADR-033 | Data sources: curated real product lineup (names, specs, list prices; maker never named, `brand_id` only), generated and written knowledge docs, Faker customers/orders, fixed seeds, no images | Accepted | 2026-10-28 |
 | ADR-034 | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas | Accepted | 2026-10-28 |
+| ADR-035 | Backup policy (design only): Postgres WAL archiving + daily base backups, PITR 30/14 days, immutable off-site weekly copy, monthly restore drill; Redis/Kafka not backed up; config in Git; no local backups | Accepted | 2026-10-28 |
+| ADR-036 | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; masked logs/traces; audited staff reveal; retention and privacy-rights jobs | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -222,3 +224,16 @@
 - **Options considered:** A. Fixed-size chunks - simple; splits tables and Q&A, mixes topics. B. Structure-aware per doc type - meaningful units, real citations, deterministic; per-type rules to maintain. C. Semantic chunking - adaptive; costly, non-deterministic, mixed gains.
 - **Decision:** B, plus parent-child retrieval, deterministic context headers, and metadata filters (incl. `brand_id`). Contextual retrieval (LLM-generated headers) only as a phase-2 experiment if Ragas shows gains. Prices/stock/availability stripped in cleaning.
 - **Consequences:** High-precision retrieval with full context for the LLM. Rules per doc type; sizes are starting values tuned with Ragas.
+
+## ADR-035 - Backup policy (design only)
+- **Context:** NFR 10 (orders RPO 0 / RTO 15 min; others RPO 5 min / RTO 1 h). Production-scale operations are design only (docs/00 section 7.4).
+- **Decision:** CloudNativePG continuous WAL archiving + daily base backups to object storage; PITR 30 days (business cluster), 14 days (AI cluster); weekly immutable copy in a separate account/region; monthly timed restore drill; backups encrypted. Redis and Kafka not backed up (ephemeral / replayable from outbox); configuration as code in Git; RAG index rebuildable.
+- **Consequences:** Documented and explained, not run locally; local data reproducible from Git. Supersedes the earlier local restore-test target and local MinIO.
+
+## ADR-036 - PII policy
+- **Context:** Chats and profiles contain PII; production may send prompts to a hosted LLM; dumps, backups and SQL access can expose stored PII. Implemented locally (code-level techniques).
+- **Options considered:**
+  - A1. Send chat text to the LLM as is vs A2. Presidio reversible placeholders before every LLM call.
+  - B1. Disk encryption only vs B2. Field-level envelope encryption with blind index.
+- **Decision:** A2 and B2 (defence in depth: in transit to the LLM provider and at rest). Plus: 4-tier classification; masking in code and in the OTel Collector; staff masked view with audited reveal; least privilege; retention per NFR 11; audited export/deletion jobs.
+- **Consequences:** LLM never sees raw PII; dumps/backups don't expose contact fields. ~10-30 ms per turn for detection; detection is imperfect, so log/trace masking stays as a second layer. Encrypted fields can't be searched or sorted in SQL except via the blind index. Key rotation procedure required.

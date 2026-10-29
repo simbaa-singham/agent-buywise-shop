@@ -51,6 +51,7 @@ Understand customer messages, route to the right handler, call tools and knowled
 
 ## 7. Guardrails and safety
 - Identity (ADR-028): agent accepts only tokens with `aud: buywise-agent`; exchanges them for `aud: buywise-mcp` with scopes for the current intent; exchanged tokens held in memory only, never written to LangGraph checkpoints, logs or traces.
+- PII in prompts (ADR-036): Presidio replaces PII with reversible placeholders before every LLM call; real values restored in tool calls and replies; mapping kept in memory for the turn only. Adds ~10-30 ms per turn.
 - Prices, stock, status only from tools; no card data; explicit confirmation before checkout; prompt-injection defense; PII masking.
 
 ## 7a. LLM client, metering and budgets (ADR-026)

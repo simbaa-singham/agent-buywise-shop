@@ -143,7 +143,7 @@ Production targets are ideal production-grade targets (SLOs with error budgets).
 | 7 | Error rate | Server errors < 0.1% of requests; chat turns with neither an answer nor a fallback < 0.1% | Same, during the k6 run |
 | 8 | Correctness | Intent routing accuracy >= 95%; prices/stock/status not from a tool result = 0; knowledge answers with a citation >= 95% | Same (scenario eval suite in CI) |
 | 9 | Security | OAuth2/JWT; least-privilege tools; PII masked; no card data in any system (PCI DSS out of scope, mock payment links); ADR-021 session rules; prompt-injection test set in evals | Same |
-| 10 | Data recovery | Orders: RPO 0 (synchronous replica), RTO 15 min. Other data: RPO 5 min, RTO 1 h | One tested point-in-time restore from MinIO (backup + WAL replay), measured against RTO; RPO 0 is design only (no local replica, docs/08 4a) |
+| 10 | Data recovery | Orders: RPO 0 (synchronous replica), RTO 15 min. Other data: RPO 5 min, RTO 1 h | Design only (section 7.4); no local backups |
 | 11 | Data retention | Chat transcripts (incl. `turns`, `llm_calls`) 90 days, then deleted or anonymized; logs PII-masked, 30 days | Same, as scheduled jobs |
 | 12 | Accessibility | WCAG 2.2 AA (ADR-025) | Same |
 | 13 | LLM cost | Enforced budgets (ADR-026): per-turn output cap, per-conversation cap (20k tokens), per-customer daily cap, global daily USD budget (alert 80%, cheaper model 90%, stop 100%) | Same caps; global daily USD budget / S; shadow pricing on Ollama |
@@ -162,6 +162,20 @@ Same mechanisms locally and in production; only the limits differ (derived from 
 | SSE stream drops / BFF pod dies mid-reply | Agent keeps writing to the Redis Stream (ADR-029); browser reconnects to any pod and replays from `Last-Event-ID`; REST reload if gap too old | Reply continues where it stopped |
 | Redis down | Sessions unavailable -> login prompt; replay/budget counters fail closed for budgets, open for replay (REST reload) | Re-login; chat history reloads |
 | Duplicate sends (retries) | `clientMessageId` idempotency (ADR-024) | Message appears once |
+
+### 7.4 Implementation scope: local vs design only
+Production-grade design throughout. Production-scale operations are **design only**: documented and explained, not built or run locally. Code-level techniques are **implemented locally**.
+
+| Design only (production) | Implemented locally |
+|---|---|
+| Database backups, WAL archiving, point-in-time recovery, restore drills, immutable off-site copies (ADR-035) | All application code and contracts |
+| Disaster recovery environment, multi-zone / multi-region | Auth: BFF sessions, token exchange, scopes (ADR-021, ADR-028) |
+| Postgres synchronous replica and read replicas; separate business/AI clusters (ADR-010) | Rate limits, admission control, degradation ladders (ADR-026, ADR-032, section 7.3) |
+| Kafka 3-broker replication | PII masking, field encryption, audit logging (ADR-036) |
+| Service mesh (mTLS) | Observability: OTel, Prometheus, Grafana, Tempo, Loki, AI Operations |
+| External secrets manager | Eval suites, contract tests, Playwright/axe, k6 at local scale |
+| Langfuse, schema registry, CI deploy runner (docs/08 4a) | Failure scenarios on 2-replica deployables (section 7.2 #6) |
+| Production sizing (3+ replicas, GPU/hosted LLM capacity) | HPA 2 -> 3, probes, PDBs, rolling deploys on kind |
 
 ## 8. Cross-cutting concerns
 

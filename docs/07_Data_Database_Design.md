@@ -48,6 +48,38 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 
 Loading: `make seed` (Postgres via `buywise-services` seed migrations/job), `make ingest` (RAG pipeline). Same data on every machine and CI run.
 
+## 4b. Backup policy (ADR-035) - design only, not run locally
+| Data | Production design | Rationale |
+|---|---|---|
+| Postgres business cluster (`services`, `keycloak`) | Continuous WAL archiving + daily base backup to object storage (CloudNativePG Barman Cloud plugin); PITR window 30 days; weekly immutable copy to a separate account/region (object lock) | NFR 10: orders RPO 0 via sync replica, others RPO <= 5 min; immutable copy protects against ransomware and accidental deletion |
+| Postgres AI cluster (`agent`, `litellm`, `langfuse`) | Same mechanism, PITR window 14 days | Lower criticality than orders |
+| RAG index | In `agent` backups; also rebuildable via `make ingest` | Derived data |
+| Redis | Not backed up | Ephemeral: sessions, streams, counters; loss = re-login + REST reload (docs/00 7.3); LiteLLM keeps spend in Postgres |
+| Kafka | Not backed up; 3-broker replication; topic config as Strimzi CRDs in Git | Events originate in the Postgres outbox and can be replayed |
+| Config (Keycloak realm, Helm values, dashboards) | As code in Git | Git is the backup |
+| Restore drill | Monthly, timed against RTO 15 min | An untested backup is not a backup |
+| Encryption | All backups encrypted at rest and in transit | Backups contain Confidential PII |
+
+Local: no backups; all local data is reproducible from Git (`make seed`, `make ingest`).
+
+## 4c. PII policy (ADR-036) - implemented locally
+**Classification**
+| Tier | Data | Rules |
+|---|---|---|
+| Restricted | OTP codes, session tokens, exchanged JWTs | Never in Postgres, logs or traces; OTPs hashed in Redis, 10 min TTL |
+| Confidential PII | Name, email, phone, address; chat transcripts | Encrypted in transit and at rest; field-level encryption for email/phone/address; masked in logs/traces; access audited |
+| Internal | Orders, tickets without direct identifiers | Normal access control |
+| Public | Catalog, knowledge docs | None |
+
+**Controls**
+1. LLM prompts (A2): Microsoft Presidio detects PII in chat text before every LLM call and replaces it with reversible placeholders (`<EMAIL_1>`, `<PHONE_1>`, `<ADDRESS_1>`); the agent keeps the mapping in memory for the turn and restores real values in tool calls and the reply. Tools use handles (`address_id`, `order_id`) so the model never needs raw values. Never persisted: mapping is not written to checkpoints, logs or traces.
+2. Field-level encryption (B2): email, phone and address encrypted in `buywise-services` with envelope encryption - per-record data keys encrypted by a master key (KMS in production; Kubernetes secret locally). Blind index (keyed HMAC of normalized email/phone) stored alongside for lookups (OTP verification, login match). Key rotation: re-wrap data keys under a new master key.
+3. Logs, traces, metrics: masked before storage - masking in application code plus OTel Collector redaction processor as a safety net. `llm_calls` and AI Operations store/show masked text only.
+4. Staff access: contact fields masked by default (`j***@e***.com`); "Reveal" shows full value and writes an audit record (who, when, reason). `ops-admin` sees masked transcripts only.
+5. Least privilege: one database user per deployable (ADR-010); per-tool scopes (ADR-028).
+6. Retention (NFR 11): transcripts 90 days then deleted/anonymized; logs 30 days; traces 14 days; orders 7 years with identity removable; profiles until account deletion; backups age out in 30 days (design only).
+7. Privacy rights (US, e.g. CCPA/CPRA): export and deletion requests run as audited jobs started from the staff console. Deletion removes profile, conversations and tickets and anonymizes orders; backups age out within 30 days.
+
 ## 5. Open decisions
 1. ~~Agent/knowledge data same database vs separate~~ - decided: separate `agent` database, AI cluster in production (ADR-010).
-2. Backup and PII policy. Retention set by NFR 8: chat transcripts 90 days then deleted/anonymized (includes `turns`, `llm_calls`), logs 30 days.
+2. ~~Backup and PII policy~~ - decided: backups design only (ADR-035, section 4b); PII policy (ADR-036, section 4c). Retention set by NFR 11: chat transcripts 90 days then deleted/anonymized (includes `turns`, `llm_calls`), logs 30 days.
