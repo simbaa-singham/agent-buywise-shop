@@ -4,30 +4,28 @@ An AI shopping assistant that helps customers choose, order and track electronic
 
 Start here: [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), then [docs/00_Architecture_Overview.md](docs/00_Architecture_Overview.md)
 
-| Module | Deployable | Stack | Design doc |
-|---|---|---|---|
-| `ui/` | buywise-web | Angular 22 + NestJS 11 (Fastify), Node.js 24 | [01](docs/01_UI_Angular_BFF_Design.md) |
-| `services/` | buywise-services | Java 25, Spring Boot 4.1, Spring Modulith | [02](docs/02_Services_SpringBoot_Design.md) |
-| `agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [03](docs/03_Agent_Python_Design.md), [04](docs/04_RAG_Design.md) |
-| `mcp/` | buywise-mcp | Python, MCP Python SDK v2 (spec 2026-07-28) | [05](docs/05_MCP_Design.md) |
-| `events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [06](docs/06_Eventing_Kafka_Design.md) |
-| `data/` | - | PostgreSQL, Redis, Kafka, Keycloak setup + seed data | [07](docs/07_Data_Database_Design.md) |
-| `deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [08](docs/08_Deployment_Design.md) |
+Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `docs/design.md`, `docs/learning.md`.
 
-Decisions: [docs/adr/ADR_Log.md](docs/adr/ADR_Log.md)
+| Module | Deployable | Stack | Module README | Design |
+|---|---|---|---|---|
+| `ui/` | buywise-web | Angular 22 + NestJS 11 (Fastify), Node.js 24 | [ui](ui/README.md) | [design](ui/docs/design.md) |
+| `services/` | buywise-services | Java 25, Spring Boot 4.1, Spring Modulith | [services](services/README.md) | [design](services/docs/design.md) |
+| `agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [agent](agent/README.md) | [design](agent/docs/design.md), [RAG](agent/docs/rag.md) |
+| `mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [mcp](mcp/README.md) | [design](mcp/docs/design.md) |
+| `events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [events](events/README.md) | [design](events/docs/design.md) |
+| `data/` | - | Seed data, knowledge documents, eval sets | [data](data/README.md) | [design](data/docs/design.md) |
+| `deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [deploy](deploy/README.md) | [design](deploy/docs/design.md) |
 
-Roadmap: [docs/09_Implementation_Roadmap.md](docs/09_Implementation_Roadmap.md)
-
-Learning notes: [Phase 0](docs/learning/Phase-0.md)
+Cross-module documents (`docs/`): [architecture overview](docs/00_Architecture_Overview.md), [decisions (ADR log)](docs/adr/ADR_Log.md), [roadmap](docs/09_Implementation_Roadmap.md), learning index: [Phase 0](docs/learning/Phase-0.md).
 
 ## Local quick start (phase 0)
 Prerequisites: Docker, Node 24, Python 3.12+, Ollama running on the host with `qwen2.5:7b` and `bge-m3` pulled.
 
 ```bash
-make data-tools agent-dev   # one-time: Python tool environments
+make data-tools agent-dev   # one-time: Python tool environments (commands delegate to module Makefiles)
 make up                     # Postgres (+pgvector), Redis, Keycloak, LiteLLM
 make migrate                # create the services tables (Flyway)
-# load the seed data by hand: docs/walkthroughs/load-seed-data.md
+# load the seed data by hand: data/docs/walkthroughs/load-seed-data.md
 make k                      # measure the LLM hardware factor k -> deploy/local/scale.yaml
 make test                   # contract tests + lint
 make help                   # all targets

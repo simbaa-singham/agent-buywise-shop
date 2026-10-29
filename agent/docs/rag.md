@@ -1,6 +1,6 @@
 # RAG - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose
 Answer product and store questions from trusted documents, with citations. Live data (price, stock, status) never comes from RAG.

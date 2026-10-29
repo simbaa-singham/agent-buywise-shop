@@ -12,8 +12,6 @@ import time
 import urllib.request
 from pathlib import Path
 
-import yaml
-
 GATEWAY = os.environ.get("LLM_GATEWAY_URL", "http://localhost:4000")
 KEY = os.environ.get("LITELLM_MASTER_KEY", "sk-buywise-local")
 MODEL = os.environ.get("LLM_PRIMARY_MODEL", "buywise-primary")
@@ -51,11 +49,10 @@ def main():
     ttft = statistics.median(r["ttft_s"] for r in runs)
     k = round(max(1.0, PROD_TOKENS_PER_SEC / tps), 2)
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(yaml.safe_dump({
-        "S": S, "k": k,
-        "measured": {"model": MODEL, "median_tokens_per_sec": round(tps, 1), "median_ttft_s": round(ttft, 2),
-                     "runs": RUNS, "at": time.strftime("%Y-%m-%dT%H:%M:%S")},
-        "reference_tokens_per_sec": PROD_TOKENS_PER_SEC}, sort_keys=False))
+    OUT.write_text(
+        f"S: {S}\nk: {k}\nmeasured:\n  model: {MODEL}\n  median_tokens_per_sec: {tps:.1f}\n"
+        f"  median_ttft_s: {ttft:.2f}\n  runs: {RUNS}\n  at: '{time.strftime('%Y-%m-%dT%H:%M:%S')}'\n"
+        f"reference_tokens_per_sec: {PROD_TOKENS_PER_SEC}\n")
     print(f"local {tps:.1f} tokens/s, TTFT {ttft:.2f}s -> k = {k} (written to {OUT})")
 
 

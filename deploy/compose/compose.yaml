@@ -1,4 +1,4 @@
-# Local-dev stack (docs/08 local-dev; phase 0). Run only what a task needs (docs/08 4b).
+# Local-dev stack (deploy/docs/design.md local-dev; phase 0). Run only what a task needs (deploy/docs/design.md 4b).
 # Ollama runs on the host (not in Docker) and is reached only through LiteLLM (ADR-026).
 name: buywise
 

@@ -1,6 +1,6 @@
 # UI + BFF (`buywise-web`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 - **Angular web app:** customer chat widget, product/cart/order views; staff console (ticket queue, take over chat).
@@ -225,7 +225,7 @@ sequenceDiagram
   3. Budget and pricing: read-only view of caps, shadow prices and degradation thresholds (config is changed in Git, not in the UI).
   4. Ingestion (ADR-039): upload documents (any supported format), see parse status, parse metrics, per-element preview with provenance, and quarantined files with reasons; re-parse action.
 - **customer-web developer overlay:** TTFT, tokens and cost under each agent message, from `message.metrics`. Enabled by config (`devOverlay: true`), off by default; never on in production.
-- Data source: BFF `ops` module reads the agent's usage tables (docs/07) via the agent API; Grafana remains the place for alerts and long-range trends.
+- Data source: BFF `ops` module reads the agent's usage tables (data/docs/design.md) via the agent API; Grafana remains the place for alerts and long-range trends.
 
 ## 6. Non-functional
 - 2 replicas locally: any pod can serve any SSE connection by reading the conversation's Redis Stream (ADR-029); no sticky sessions.

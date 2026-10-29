@@ -85,14 +85,14 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 
 | # | Deployable | Contains | Stack | Detailed design |
 |---|---|---|---|---|
-| 1 | `buywise-web` | Angular app + NestJS BFF (BFF serves the Angular build) | Angular 22, Node.js 24, NestJS 11 + Fastify | [01](01_UI_Angular_BFF_Design.md) |
-| 2 | `buywise-services` | Modular monolith: catalog, inventory, order, customer, payment (mock), helpdesk | Java 25, Spring Boot 4.1, Spring Modulith | [02](02_Services_SpringBoot_Design.md) |
-| 3 | `buywise-agent` | LangGraph agent, RAG pipeline, evals | Python 3.12, LangGraph 1.2 | [03](03_Agent_Python_Design.md), [04](04_RAG_Design.md) |
-| 4 | `buywise-mcp` | MCP servers wrapping `buywise-services` REST APIs | Python 3.12, MCP Python SDK v2 (spec 2026-07-28) | [05](05_MCP_Design.md) |
-| 5 | `buywise-event-publisher` | Kafka producers for committed business events | Java (Spring Kafka) - design deferred | [06](06_Eventing_Kafka_Design.md) |
-| 6 | `buywise-event-consumers` | Kafka consumers for async reactions | Java (Spring Kafka) - design deferred | [06](06_Eventing_Kafka_Design.md) |
+| 1 | `buywise-web` | Angular app + NestJS BFF (BFF serves the Angular build) | Angular 22, Node.js 24, NestJS 11 + Fastify | [01](../ui/docs/design.md) |
+| 2 | `buywise-services` | Modular monolith: catalog, inventory, order, customer, payment (mock), helpdesk | Java 25, Spring Boot 4.1, Spring Modulith | [02](../services/docs/design.md) |
+| 3 | `buywise-agent` | LangGraph agent, RAG pipeline, evals | Python 3.12, LangGraph 1.2 | [03](../agent/docs/design.md), [04](../agent/docs/rag.md) |
+| 4 | `buywise-mcp` | MCP servers wrapping `buywise-services` REST APIs | Python 3.12, MCP Python SDK v2 (spec 2026-07-28) | [05](../mcp/docs/design.md) |
+| 5 | `buywise-event-publisher` | Kafka producers for committed business events | Java (Spring Kafka) - design deferred | [06](../events/docs/design.md) |
+| 6 | `buywise-event-consumers` | Kafka consumers for async reactions | Java (Spring Kafka) - design deferred | [06](../events/docs/design.md) |
 
-Data stores are covered in [07](07_Data_Database_Design.md); environments and deployment in [08](08_Deployment_Design.md).
+Data stores are covered in [07](../data/docs/design.md); environments and deployment in [08](../deploy/docs/design.md).
 
 ## 6. Repository layout
 
@@ -129,7 +129,7 @@ Production targets are ideal production-grade targets (SLOs with error budgets).
 | Error rates, correctness, security, accessibility, retention | Same as production | x1 |
 | Availability | Proven by failure scenarios instead of uptime over months | see 7.2 #6 |
 
-`S` and `k` live in `values-local.yaml` (docs/08); every derived local limit (concurrency caps, rate limits, LLM timeouts) is computed from them, never hand-tuned.
+`S` and `k` live in `values-local.yaml` (deploy/docs/design.md); every derived local limit (concurrency caps, rate limits, LLM timeouts) is computed from them, never hand-tuned.
 
 ### 7.2 Targets
 | # | Category | Production target | Local target (S = 40, k measured) |
@@ -158,7 +158,7 @@ Same mechanisms locally and in production; only the limits differ (derived from 
 | Slow LLM | Per-stage deadlines (whole turn 15 s x k; LLM call 10 s x k; tool call 2 s); stream keeps `status.updated` flowing | Progress messages; on deadline -> fallback model, then FAQ + handoff |
 | LLM/LiteLLM down | Circuit breaker (open at 50% failures over 20 calls, half-open after 30 s) | FAQ answers from RAG retrieval (no generation) + staff handoff |
 | Tool/service errors | Retries only for idempotent calls (2, exponential backoff + jitter); circuit breakers (Resilience4j in services, policies in LangGraph nodes) | "I couldn't check stock right now" + retry or handoff; never invented data |
-| Budget limits hit | Degradation ladder (ADR-026, docs/03 section 7a) | Cheaper model, then FAQ + handoff; per-turn cap -> "Want me to continue?" |
+| Budget limits hit | Degradation ladder (ADR-026, agent/docs/design.md section 7a) | Cheaper model, then FAQ + handoff; per-turn cap -> "Want me to continue?" |
 | SSE stream drops / BFF pod dies mid-reply | Agent keeps writing to the Redis Stream (ADR-029); browser reconnects to any pod and replays from `Last-Event-ID`; REST reload if gap too old | Reply continues where it stopped |
 | Redis down | Sessions unavailable -> login prompt; replay/budget counters fail closed for budgets, open for replay (REST reload) | Re-login; chat history reloads |
 | Duplicate sends (retries) | `clientMessageId` idempotency (ADR-024) | Message appears once |
@@ -174,7 +174,7 @@ Production-grade design throughout. Production-scale operations are **design onl
 | Kafka 3-broker replication | PII masking, field encryption, audit logging (ADR-036) |
 | Service mesh (mTLS) | Observability: OTel, Prometheus, Grafana, Tempo, Loki, AI Operations |
 | External secrets manager | Eval suites, contract tests, Playwright/axe, k6 at local scale |
-| Langfuse, schema registry, CI deploy runner (docs/08 4a) | Failure scenarios on 2-replica deployables (section 7.2 #6) |
+| Langfuse, schema registry, CI deploy runner (deploy/docs/design.md 4a) | Failure scenarios on 2-replica deployables (section 7.2 #6) |
 | Production sizing (3+ replicas, GPU/hosted LLM capacity) | HPA 2 -> 3, probes, PDBs, rolling deploys on kind |
 
 ## 8. Cross-cutting concerns

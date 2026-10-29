@@ -1,6 +1,6 @@
 # Eventing (Kafka) - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose
 Decouple side effects from business transactions (notifications, staff console updates, projections, RAG freshness).

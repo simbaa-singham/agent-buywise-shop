@@ -1,6 +1,6 @@
 # Deployment - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Principle
 Production-grade design and configuration, run locally at small scale. Scale changes only through configuration (Helm values), never code.
@@ -47,7 +47,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Postgres 2nd instance (synchronous replica) | Memory | No Postgres failover test; RPO 0 is design only. Restore test from MinIO backups still runs |
 | Langfuse v3 (+ ClickHouse, Redis, object storage, web, worker) | ~3-5 GB memory | LLM traces via OTel -> Tempo; per-call data in `llm_calls` and AI Operations (ADR-027) |
 | Service mesh (mTLS) | Memory; already a future option | JWT between services |
-| External secrets manager (Vault + External Secrets) | Memory | Kubernetes secrets locally (docs/08 open decision 1 still decides production) |
+| External secrets manager (Vault + External Secrets) | Memory | Kubernetes secrets locally (deploy/docs/design.md open decision 1 still decides production) |
 | Schema registry | Memory; event schema format still open | Revisit if the event format decision requires a registry |
 | Database backups, WAL archive, PITR, restore drills (MinIO) | Production-scale operation (design only, ADR-035) | No local backups; local data is reproducible via `make seed` / `make ingest` |
 | Disaster recovery environment, multi-zone | Production-scale operation (design only) | Single local cluster |

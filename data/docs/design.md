@@ -1,6 +1,6 @@
 # Data and Databases - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose
 Data ownership, storage choices and data model.
@@ -19,7 +19,7 @@ Data ownership, storage choices and data model.
 | `keycloak` | Keycloak | Keycloak's own tables | Business |
 | `agent` | `buywise-agent` | `agent` (conversations, messages, checkpoints, turns, llm_calls); `knowledge` (documents, chunks + pgvector) | AI (read replica serves RAG reads, ADR-011) |
 | `litellm` | LiteLLM | spend and budget tables | AI |
-| `langfuse` | Langfuse | Langfuse's Postgres tables (v3 also needs ClickHouse, Redis, object storage - see docs/08 open decision 2) | AI |
+| `langfuse` | Langfuse | Langfuse's Postgres tables (v3 also needs ClickHouse, Redis, object storage - see deploy/docs/design.md open decision 2) | AI |
 
 - Each database has its own Postgres user with access only to that database.
 - Local: one CloudNativePG cluster hosts all databases with the same names and users; the production split is connection strings only.
@@ -46,7 +46,7 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 | Customers, orders, tickets | Faker, fixed random seed | Synthetic only; designed edge cases (delayed order, pickup ready, multi-order customer) |
 | Eval sets | Built from the docs, reviewed | RAG (expected source chunks), router (ADR-030), prompt injection |
 
-Loading: one-time manual load with psql (docs/walkthroughs/load-seed-data.md; no seed script), `make ingest` (RAG pipeline, phase 3). Same data on every machine and CI run.
+Loading: one-time manual load with psql (data/docs/walkthroughs/load-seed-data.md; no seed script), `make ingest` (RAG pipeline, phase 3). Same data on every machine and CI run.
 
 ## 4b. Backup policy (ADR-035) - design only, not run locally
 | Data | Production design | Rationale |

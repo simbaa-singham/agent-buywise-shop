@@ -1,6 +1,6 @@
 # Policy outline (approved 2026-10-28)
 
-Source of truth for all written knowledge documents (ADR-033, ADR-039). Documents are produced in the formats listed in docs/04 section 3a. Items marked [RAG test] are deliberate retrieval challenges.
+Source of truth for all written knowledge documents (ADR-033, ADR-039). Documents are produced in the formats listed in agent/docs/rag.md section 3a. Items marked [RAG test] are deliberate retrieval challenges.
 
 ## 1. Shipping and delivery
 | Rule | Value |

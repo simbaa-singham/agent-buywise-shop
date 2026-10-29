@@ -1,6 +1,6 @@
 # Agent (`buywise-agent`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 Understand customer messages, route to the right handler, call tools and knowledge, and respond safely.

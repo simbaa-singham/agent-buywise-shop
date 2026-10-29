@@ -5,7 +5,8 @@
 - Each topic: options -> trade-offs -> architect's decision -> update module doc + ADR log.
 - Design before implementation. Explain each technology/technique when it is introduced.
 - Whenever a decision changes the design, list what in the project no longer matches and ask before changing it.
-- After every phase (and as its steps finish), write/update docs/learning/Phase-<N>.md: concepts, what was built and why, questions asked with answers, command cheat sheet, files, problems and fixes. It is part of the phase's definition of done.
+- Documents and scripts live in the module they belong to (<module>/docs, <module>/Makefile, module scripts); only cross-module documents stay in docs/.
+- After every phase (and as its steps finish), update <module>/docs/learning.md for each module touched (concepts, what was built and why, questions asked with answers, commands, problems and fixes) and the phase index docs/learning/Phase-<N>.md. It is part of the phase's definition of done.
 - After every change, explain each changed file in plain words: what it is, what it does, why it is needed, and how to see it working. ADR numbers are references only, never the explanation.
 - During implementation, before writing code in an area, remind Sachin of the decisions (ADR numbers + what they mean in code) that apply to it; flag any new decision that comes up instead of making it silently.
 
@@ -26,23 +27,23 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 
 ## Where things are
 - Main design: docs/00_Architecture_Overview.md
-- Module designs: docs/01..08_*.md
+- Module layout: each module has README.md, Makefile, docs/design.md, docs/learning.md (agent also docs/rag.md). Root Makefile delegates to module Makefiles.
 - Implementation roadmap: docs/09_Implementation_Roadmap.md
-- Learning notes per phase: docs/learning/Phase-<N>.md
+- Learning: per module in <module>/docs/learning.md (one section per phase); phase index in docs/learning/Phase-<N>.md
 - Decisions: docs/adr/ADR_Log.md
 - Old material: docs/archive/
 
 ## Current status
 - Design phase. Docs updated 2026-10-28 for: modular monolith, 6 deployables, buywise-mcp, no internal gateway, rename.
-- Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (docs/01 section 6).
+- Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (ui/docs/design.md section 6).
 - Done 2026-10-28: NFR targets set as ideal production targets, local scaled by S=40 and LLM hardware factor k, with failure behavior (docs/00 section 7); LLM metering/budgets (ADR-026) and LLM observability UI (ADR-027).
-- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (docs/01 section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: docs/00 section 7.4.
-- Open items raised for later modules: AI Operations chart library (docs/01).
-- Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (docs/06), secrets management (docs/08).
+- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (ui/docs/design.md section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: docs/00 section 7.4.
+- Open items raised for later modules: AI Operations chart library (ui/docs/design.md).
+- Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (events/docs/design.md), secrets management (deploy/docs/design.md).
 - Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Done 2026-10-29: implementation roadmap approved (docs/09) as drafted.
 - Done 2026-10-29: phase 0 foundations (docs/09). Local k = 2.96 (deploy/local/scale.yaml).
-- In progress: step-by-step walkthrough of phase 0 for the architect. Done: steps 1-4 (supporting programs in Docker with health checks; separate databases; tables via Flyway; architect loaded seed data by hand in pgAdmin with docs/walkthroughs/load-seed-data.sql - counts verified). Resume at step 5 (chat message contract), then step 6 (k benchmark), step 7 (Makefile, CI, README).
+- In progress: step-by-step walkthrough of phase 0 for the architect. Done: steps 1-4 (supporting programs in Docker with health checks; separate databases; tables via Flyway; architect loaded seed data by hand in pgAdmin with data/docs/walkthroughs/load-seed-data.sql - counts verified). Resume at step 5 (chat message contract), then step 6 (k benchmark), step 7 (Makefile, CI, README).
 - Then: phase 1 thin slice (docs/09).
 
 ## Pending housekeeping

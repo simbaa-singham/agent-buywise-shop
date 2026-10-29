@@ -7,7 +7,7 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Appr
 - **Production practices from day one:** contracts, tests, CI, tracing, accessibility checks and PII-safe logging start in phase 0/1, not at the end.
 - **Scope rule (docs/00 section 7.4):** only "implemented locally" items are built; "design only" items stay documented.
 - **Before each phase:** recap the listed ADRs and what they mean in code; any new decision is raised to the architect, never made silently.
-- **Local usage (docs/08 section 4b):** each phase runs only the components it needs.
+- **Local usage (deploy/docs/design.md section 4b):** each phase runs only the components it needs.
 
 ## 2. Cross-cutting from phase 0 (applies to every phase)
 | Practice | Decision |
@@ -17,7 +17,7 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Appr
 | Identity never a tool argument; token exchange per hop | ADR-028 |
 | Accessibility: angular-eslint a11y rules + axe-core in Playwright | ADR-025 |
 | No brand/maker names, no images (placeholders) | ADR-033 |
-| Each module has its own tests; CI runs build, unit, contract tests | docs/08 section 7 |
+| Each module has its own tests; CI runs build, unit, contract tests | deploy/docs/design.md section 7 |
 
 ## 3. Phases
 
@@ -29,7 +29,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Repo tooling | Makefile (`make up`, `make seed`, `make ingest`, `make test`), linters/formatters per language, GitHub Actions skeleton | ADR-001 |
 | Contracts package | ADR-024 event JSON Schemas + codegen (TS, Pydantic) + CI drift check | ADR-024, ADR-029 |
 | ~~Seed data~~ - **done 2026-10-28** (`make data`): full catalog, stores, stock, customers, orders, tickets | ADR-033 |
-| Load seed data | One-time manual load by the architect with psql, following docs/walkthroughs/load-seed-data.md (no seed script) | ADR-010, ADR-033 |
+| Load seed data | One-time manual load by the architect with psql, following data/docs/walkthroughs/load-seed-data.md (no seed script) | ADR-010, ADR-033 |
 | Benchmark `k` | Script measuring local tokens/s; writes `k` to local config | docs/00 section 7.1 |
 
 **Done when:** `make up && make seed` gives a running stack with seeded data; CI green on an empty-but-wired repo.
@@ -51,7 +51,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Keycloak clients (customer, staff, ops-admin roles), BFF login/logout/callback, session rotation, CSRF, timeout warning | ADR-021, ADR-025 |
 | Full token exchange with per-intent scopes and `act` chain; verify Keycloak `act` support | ADR-028 |
 | Customer module: profiles, field-level envelope encryption + blind index, OTP (`verify_customer`) with lockout | ADR-036, ADR-032 |
-| Guest -> customer conversation linking | docs/01 section 5.1 |
+| Guest -> customer conversation linking | ui/docs/design.md section 5.1 |
 
 **Done when:** login mid-conversation keeps the chat; a customer can only see their own data (negative tests); OTP brute force is locked out.
 
@@ -63,7 +63,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Chunking on the Document model, parent-child, context headers, metadata, embeddings, pgvector + full-text | ADR-011, ADR-034 |
 | Embedding bake-off: bge-m3 vs Qwen3-Embedding-0.6B vs nomic-embed-text v1.5 on the RAG eval set (context precision/recall, query latency); winner adopted via blue/green re-index | ADR-040 |
 | Retrieval: filters, hybrid search, RRF, rerank, citations; retriever interface | ADR-011 |
-| Handlers: product_question, compatibility, store_question, browse/recommend | docs/03 section 5 |
+| Handlers: product_question, compatibility, store_question, browse/recommend | agent/docs/design.md section 5 |
 | Ragas + RAG eval set in CI; "no price from chunks" check | NFR 8 |
 
 **Done when:** every format parses to the expected Document model (golden tests); a corrupted file lands in quarantine with a reason; RAG eval thresholds met (NFR 8); citations point to page / slide / row; zero prices taken from chunks.
@@ -76,7 +76,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Product/category pages prerendered; cart, checkout, account client-rendered | ADR-023 |
 | Kafka + `buywise-event-publisher` + `buywise-event-consumers`; order/payment/catalog events; idempotent consumers | ADR-009, ADR-016 |
 
-**Blocked on architect decisions:** event schema format (docs/00 #6), partitions/retention/DLQ (docs/06), outbox relay vs Debezium (deferred to this phase), RAG re-indexing location (deferred to this phase).
+**Blocked on architect decisions:** event schema format (docs/00 #6), partitions/retention/DLQ (events/docs/design.md), outbox relay vs Debezium (deferred to this phase), RAG re-indexing location (deferred to this phase).
 
 **Done when:** a customer orders through chat with explicit confirmation; order status flows through events; consumers are idempotent under redelivery.
 
@@ -85,7 +85,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 |---|---|
 | `staff-console` app: ticket queue (Material table), live updates via SSE composite cursor | ADR-018, ADR-019, ADR-020 |
 | Helpdesk module: tickets, assignment, conversation ownership + audit; BFF owner cache | ADR-037 |
-| Takeover flow: accept, pause agent, customer <-> staff messages, release/resume | docs/01 section 5.3 |
+| Takeover flow: accept, pause agent, customer <-> staff messages, release/resume | ui/docs/design.md section 5.3 |
 | Masked contact details with audited reveal; staff MFA | ADR-036, ADR-021 |
 
 **Done when:** a handoff completes end to end in Playwright; customer messages never reach the agent while staff own the chat.
@@ -106,9 +106,9 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 ### Phase 7 - Production-shaped runtime (local-k8s)
 | Item | ADRs |
 |---|---|
-| Helm chart per deployable; `values-local.yaml` with `S` and `k`; kind cluster; Envoy Gateway (TLS, routing, rate limits) | ADR-013, ADR-017, docs/08 |
+| Helm chart per deployable; `values-local.yaml` with `S` and `k`; kind cluster; Envoy Gateway (TLS, routing, rate limits) | ADR-013, ADR-017, deploy/docs/design.md |
 | Observability stack: OTel Collector (redaction processor), Prometheus, Grafana (SLO + budget alerts), Tempo, Loki | ADR-027, ADR-036 |
-| Probes, limits, graceful shutdown, PDBs, rolling deploys, HPA 2 -> 3 | docs/08 section 6 |
+| Probes, limits, graceful shutdown, PDBs, rolling deploys, HPA 2 -> 3 | deploy/docs/design.md section 6 |
 | Failure scenarios (docs/00 section 7.2 #6) and k6 at local scale | NFR 1, 6, 7 |
 | Lighthouse CI (Core Web Vitals) | NFR 3 |
 
@@ -126,8 +126,8 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Decision | Needed by |
 |---|---|
 | Event schema format (docs/00 #6) | Phase 4 |
-| Partitions, retention, dead-letter topics (docs/06) | Phase 4 |
+| Partitions, retention, dead-letter topics (events/docs/design.md) | Phase 4 |
 | Outbox relay vs Debezium (deferred) | Phase 4 |
 | RAG re-indexing location (deferred) | Phase 4 |
 | Production LLM (docs/00 #5) | Phase 6 (placeholder prices until then) |
-| Secrets management (docs/08) | Production design only; local uses Kubernetes secrets |
+| Secrets management (deploy/docs/design.md) | Production design only; local uses Kubernetes secrets |
