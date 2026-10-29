@@ -28,14 +28,31 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Component | Local | Production design |
 |---|---|---|
 | Edge | Envoy Gateway (Gateway API) | Envoy Gateway, multiple replicas |
-| Postgres | CloudNativePG, 1 cluster (1 instance; 2 in resilience profile) hosting all databases (ADR-010) | Business cluster (primary + synchronous replica) and AI cluster (primary + read replica for RAG) |
+| Postgres | CloudNativePG, 1 cluster, 1 instance, hosting all databases (ADR-010) | Business cluster (primary + synchronous replica) and AI cluster (primary + read replica for RAG) |
 | Kafka | Strimzi, KRaft, 1 broker | 3 brokers |
 | Redis | 1 | HA |
 | Keycloak | 1 | HA |
-| Observability | OTel Collector, Prometheus, Grafana, Tempo, Langfuse | Same, sized up |
+| Observability | OTel Collector, Prometheus, Grafana, Tempo, Loki (logs) | Same + Langfuse, sized up |
+| Backup storage | MinIO (S3-compatible) for CloudNativePG backups + WAL archive | Cloud object storage |
 | Model gateway | LiteLLM proxy, 1 replica; shadow price table; points at Ollama | LiteLLM, 2+ replicas; points at vLLM or hosted API |
 | LLM | Ollama on the Mac host (Apple GPU), reached only via LiteLLM | vLLM or hosted API |
 | Service-to-service security | JWT | Service mesh (mTLS) - future option |
+
+## 4a. Not run locally (Mac: Apple M3, 16 GB RAM) - production design only
+| Item | Reason | Local impact |
+|---|---|---|
+| Postgres 2nd instance (synchronous replica) | Memory | No Postgres failover test; RPO 0 is design only. Restore test from MinIO backups still runs |
+| Langfuse v3 (+ ClickHouse, Redis, object storage, web, worker) | ~3-5 GB memory | LLM traces via OTel -> Tempo; per-call data in `llm_calls` and AI Operations (ADR-027) |
+| Service mesh (mTLS) | Memory; already a future option | JWT between services |
+| External secrets manager (Vault + External Secrets) | Memory | Kubernetes secrets locally (docs/08 open decision 1 still decides production) |
+| Schema registry | Memory; event schema format still open | Revisit if the event format decision requires a registry |
+| GitHub Actions deploy to local-k8s (self-hosted runner) | Runner on the Mac costs memory and adds risk | CI builds/tests in GitHub; deploy to kind is a local script |
+
+## 4b. Local usage model
+- Not everything runs at once. Run only the subset needed for the task, e.g. UI work: `buywise-web` (Angular + BFF) plus what it calls; agent work: agent + MCP + LiteLLM + Ollama + Postgres.
+- local-dev (Docker Compose, or apps run directly) and local-k8s (kind) are used at different times, never together.
+- local-k8s is used for deployment, scaling and failure-scenario work; it runs the components that scenario needs.
+- Local model stays `qwen2.5:7b` on Ollama.
 
 ## 5. Packaging
 - One container image per deployable; one Helm chart per deployable.
@@ -55,4 +72,4 @@ TBD.
 
 ## 9. Open decisions
 1. Secrets management (Kubernetes secrets vs external secrets manager).
-2. Mac resources for the full local-k8s profile. Includes: Langfuse v3 footprint (ClickHouse, Redis, object storage, web + worker; verify current requirements) - options: full stack in an opt-in observability profile, drop Langfuse (ADR-027 `llm_calls` + Grafana/Tempo), or a lighter tool (e.g. Arize Phoenix); and 2 Postgres instances for the failover test (docs/00 section 7.2 #6).
+2. ~~Mac resources~~ - decided 2026-10-28: run task-based subsets, never the whole stack at once (section 4b); items in section 4a not run locally. Notes kept for reference: Langfuse v3 footprint (ClickHouse, Redis, object storage, web + worker; verify current requirements) - options: full stack in an opt-in observability profile, drop Langfuse (ADR-027 `llm_calls` + Grafana/Tempo), or a lighter tool (e.g. Arize Phoenix); and 2 Postgres instances for the failover test (docs/00 section 7.2 #6).
