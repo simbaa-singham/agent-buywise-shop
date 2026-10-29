@@ -20,7 +20,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | `buywise-web` | 2 (SSE served from conversation Redis Streams, no sticky sessions, ADR-029) | 3+, autoscaled |
 | `buywise-services` | 2 | 3+, autoscaled |
 | `buywise-agent` | 2 (stateless with Postgres checkpointer) | 3+, autoscaled |
-| `buywise-mcp` | 2 | 2+ |
+| `buywise-mcp` | 2 (all domain servers in one Deployment) | 2+; optionally `order` as its own Deployment from the same image (ADR-031) |
 | `buywise-event-publisher` | 1 | 2 |
 | `buywise-event-consumers` | 1 | 2+ (per partitions) |
 

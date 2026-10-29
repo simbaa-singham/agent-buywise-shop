@@ -79,6 +79,8 @@ llm:
                                       # ~$2,000-3,000/day production, local = production / S
 ```
 
+Tool-call limits (ADR-032): max 8 tool calls per turn, max 3 identical consecutive calls; on a rate-limit error the agent explains `retryAfter` to the customer and does not retry in a loop.
+
 Admission control and deadlines (docs/00 section 7.3): per-pod cap on concurrent generations with a bounded queue (`status.updated` shows queue position); per-stage deadlines scaled by `k` locally; circuit breaker on the LiteLLM client.
 
 Degradation ladder (never a bare error):

@@ -32,6 +32,8 @@
 | ADR-028 | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-lived JWTs with `act` chain; identity never a tool argument | Accepted | 2026-10-28 |
 | ADR-029 | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; BFF pods read and forward; replaces pub/sub and separate replay buffer | Accepted | 2026-10-28 |
 | ADR-030 | Intent routing: cascade of rules -> fast in-process classifier -> economy-tier LLM classifier; clarify then handoff on low confidence; flow stickiness; decisions logged | Accepted | 2026-10-28 |
+| ADR-031 | MCP layout: one server per domain (`/mcp/{domain}`) in one process and image; agent connects per intent; optional per-domain Deployment in production | Accepted | 2026-10-28 |
+| ADR-032 | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -190,3 +192,14 @@
   - D. Cascade: rules -> fast classifier -> LLM classifier.
 - **Decision:** D. Clarifying question on low confidence, then handoff (also on negative sentiment). Flow stickiness for checkout and OTP. Multi-intent handled in order. Every decision logged in `router_decisions` and shown in AI Operations. Phase 1 rules + LLM and the eval set; phase 2 trains and enables the fast classifier.
 - **Consequences:** Most turns routed in ~20 ms at near-zero cost once phase 2 lands; LLM reserved for hard cases. Two models to maintain plus thresholds to tune. Eval set doubles as training data.
+
+## ADR-031 - MCP server layout
+- **Context:** 12 tools across catalog, inventory, order, customer, helpdesk inside the `buywise-mcp` deployable. Agent scopes tools per intent (ADR-030); checkout needs high availability.
+- **Options considered:** A. One server with all tools - simplest; one failure domain, no per-domain isolation. B. One server per domain in one process - per-intent connections, per-path limits/logs, optional per-domain Deployment by config; several client connections. C. Separate deployable per domain - breaks ADR-016, five pipelines for a thin layer.
+- **Decision:** B. `/mcp/{domain}` paths, one image; single audience `buywise-mcp` with per-tool scopes.
+- **Consequences:** Clear tool structure and isolation option without new deployables. Agent manages per-server discovery caching.
+
+## ADR-032 - Tool rate limits
+- **Context:** Must stop agent loops (bugs, prompt injection), user abuse (OTP brute force) and overload; no single layer sees all three.
+- **Decision:** Four layers - agent (8 tool calls/turn, 3 identical in a row), Envoy (global per tool via `Mcp-Name`), MCP (per user/guest per tool, Redis token buckets: OTP 3/15 min per contact and IP, checkout 5/min, tickets 3/hour/conversation, reads 60/min), services (Bucket4j). Local: per-user limits unchanged, global / S. Limit hit -> structured error with `retryAfter`, explained to the customer, no retry loop.
+- **Consequences:** Defence in depth; more limits to tune and monitor (Grafana). Redis becomes part of the MCP request path.
