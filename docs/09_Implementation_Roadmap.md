@@ -1,6 +1,6 @@
 # Implementation Roadmap - agent-buywise-shop
 
-Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Draft for architect review.
+Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Approved by architect 2026-10-29. Observability stack stays in phase 7 and prerendered product pages stay in phase 4 (architect decision).
 
 ## 1. Approach
 - **Thin vertical slice first:** one real chat turn end to end (browser -> BFF -> agent -> MCP -> services -> back) before widening any layer. Every later phase adds features to a system that already works end to end.
@@ -27,12 +27,13 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Draf
 | Local-dev stack (Docker Compose) | Postgres + pgvector (databases per ADR-010), Redis, Keycloak (realm as code), LiteLLM -> Ollama on host | ADR-010, ADR-011, ADR-013, ADR-026 |
 | Repo tooling | Makefile (`make up`, `make seed`, `make ingest`, `make test`), linters/formatters per language, GitHub Actions skeleton | ADR-001 |
 | Contracts package | ADR-024 event JSON Schemas + codegen (TS, Pydantic) + CI drift check | ADR-024, ADR-029 |
-| Seed data v1 | Catalog generator: phones category only, specs/prices verified; stores; stock; Faker customers | ADR-033 |
+| ~~Seed data~~ - **done 2026-10-28** (`make data`): full catalog, stores, stock, customers, orders, tickets | ADR-033 |
+| `make seed` | Load `data/seed/` into Postgres (Flyway seed migrations / seed job in `buywise-services`) | ADR-010, ADR-033 |
 | Benchmark `k` | Script measuring local tokens/s; writes `k` to local config | docs/00 section 7.1 |
 
 **Done when:** `make up && make seed` gives a running stack with seeded data; CI green on an empty-but-wired repo.
 
-### Phase 1 - Thin slice: "Is the iPhone 17 Pro in stock at my store?" (guest)
+### Phase 1 - Thin slice: "Is the iPhone 18 Pro in stock at my store?" (guest)
 | Layer | Build | ADRs |
 |---|---|---|
 | `buywise-services` | Spring Modulith app; catalog + inventory modules; Flyway; REST + OpenAPI; JWT resource server; Modulith verification test | ADR-014, ADR-010 |
@@ -56,14 +57,13 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Draf
 ### Phase 3 - Knowledge and RAG
 | Item | ADRs |
 |---|---|
-| Knowledge docs in many formats (DOCX, digital PDF, scanned PDF/PNG, HTML, XLSX/CSV, PPTX, EML with attachment, Markdown/TXT, generated JSON) from the approved outline | ADR-033, ADR-039 |
+| ~~Knowledge docs in many formats~~ - **done 2026-10-28**: 103 files in 11 formats + eval sets (`data/knowledge/`, `data/eval/`) | ADR-033, ADR-039 |
 | Ingestion worker: detect -> parser plugins -> Document model -> normalize -> validate -> clean -> chunk -> embed; quarantine; golden tests per format; upload + drop folder | ADR-039 |
 | Chunking on the Document model, parent-child, context headers, metadata, embeddings, pgvector + full-text | ADR-011, ADR-034 |
 | Embedding bake-off: bge-m3 vs Qwen3-Embedding-0.6B vs nomic-embed-text v1.5 on the RAG eval set (context precision/recall, query latency); winner adopted via blue/green re-index | ADR-040 |
 | Retrieval: filters, hybrid search, RRF, rerank, citations; retriever interface | ADR-011 |
 | Handlers: product_question, compatibility, store_question, browse/recommend | docs/03 section 5 |
 | Ragas + RAG eval set in CI; "no price from chunks" check | NFR 8 |
-| Seed data v2: remaining categories | ADR-033 |
 
 **Done when:** every format parses to the expected Document model (golden tests); a corrupted file lands in quarantine with a reason; RAG eval thresholds met (NFR 8); citations point to page / slide / row; zero prices taken from chunks.
 
