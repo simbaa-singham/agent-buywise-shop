@@ -1,0 +1,859 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://buywise.example/contracts/chat-events.schema.json",
+  "title": "ChatContract",
+  "description": "Chat message contract v1 (ADR-024, ADR-027, ADR-029). Source of truth for TypeScript (web, BFF) and Pydantic (agent) types. Adding optional fields is allowed; renaming or removing fields requires bumping v. Clients ignore unknown event types. Every event carries v, type, ts, conversationId (and messageId for message-level events); the SSE id is the Redis Stream entry id (ADR-029).",
+  "type": "object",
+  "properties": {
+    "event": {
+      "$ref": "#/$defs/ChatEvent"
+    },
+    "sendMessageRequest": {
+      "$ref": "#/$defs/SendMessageRequest"
+    }
+  },
+  "$defs": {
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "SendMessageRequest": {
+      "title": "SendMessageRequest",
+      "description": "Body of POST /api/chat/messages. clientMessageId makes sends idempotent (ADR-024 rule 4).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientMessageId",
+        "text"
+      ],
+      "properties": {
+        "clientMessageId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 64
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      }
+    },
+    "ChatEvent": {
+      "title": "ChatEvent",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/StatusUpdated"
+        },
+        {
+          "$ref": "#/$defs/MessageStarted"
+        },
+        {
+          "$ref": "#/$defs/MessageDelta"
+        },
+        {
+          "$ref": "#/$defs/MessageCompleted"
+        },
+        {
+          "$ref": "#/$defs/MessageFailed"
+        },
+        {
+          "$ref": "#/$defs/MessageCreated"
+        },
+        {
+          "$ref": "#/$defs/MessageMetrics"
+        },
+        {
+          "$ref": "#/$defs/BlockProductCard"
+        },
+        {
+          "$ref": "#/$defs/HandoffRequested"
+        },
+        {
+          "$ref": "#/$defs/HandoffAccepted"
+        },
+        {
+          "$ref": "#/$defs/HandoffEnded"
+        },
+        {
+          "$ref": "#/$defs/TicketChanged"
+        },
+        {
+          "$ref": "#/$defs/OrderStatusChanged"
+        }
+      ]
+    },
+    "StatusUpdated": {
+      "title": "StatusUpdated",
+      "description": "Progress shown before/while the reply streams (NFR 5 first visible feedback, queue position).",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "status.updated"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "stage",
+            "label"
+          ],
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": [
+                "queued",
+                "thinking",
+                "routing",
+                "retrieval",
+                "tool_call",
+                "generating"
+              ]
+            },
+            "label": {
+              "type": "string"
+            },
+            "queuePosition": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "title": "StatusUpdatedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "MessageStarted": {
+      "title": "MessageStarted",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "message.started"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role"
+          ],
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "assistant"
+              ]
+            }
+          },
+          "title": "MessageStartedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "MessageDelta": {
+      "title": "MessageDelta",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "message.delta"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "title": "MessageDeltaPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "Citation": {
+      "title": "Citation",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "documentId",
+        "title"
+      ],
+      "properties": {
+        "documentId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string",
+          "description": "page, slide, sheet!row or section (ADR-039 provenance)"
+        }
+      }
+    },
+    "MessageCompleted": {
+      "title": "MessageCompleted",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "message.completed"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "Full Markdown text; rendered sanitized, never as raw HTML"
+            },
+            "partial": {
+              "type": "boolean",
+              "description": "true when the turn was cancelled or cut by the per-turn cap"
+            },
+            "citations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Citation"
+              }
+            }
+          },
+          "title": "MessageCompletedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "MessageFailed": {
+      "title": "MessageFailed",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "message.failed"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reason",
+            "userMessage"
+          ],
+          "properties": {
+            "reason": {
+              "type": "string",
+              "enum": [
+                "cancelled",
+                "timeout",
+                "budget",
+                "unavailable",
+                "error"
+              ]
+            },
+            "userMessage": {
+              "type": "string"
+            },
+            "offerHandoff": {
+              "type": "boolean"
+            }
+          },
+          "title": "MessageFailedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "MessageCreated": {
+      "title": "MessageCreated",
+      "description": "Whole message from the customer or staff, delivered to the other side.",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "message.created"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "text"
+          ],
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "customer",
+                "staff"
+              ]
+            },
+            "text": {
+              "type": "string"
+            },
+            "clientMessageId": {
+              "type": "string"
+            },
+            "staffDisplayName": {
+              "type": "string"
+            }
+          },
+          "title": "MessageCreatedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "MessageMetrics": {
+      "title": "MessageMetrics",
+      "description": "Per-message LLM metrics for the developer overlay only (ADR-027).",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "message.metrics"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "model",
+            "ttftMs",
+            "durationMs",
+            "inputTokens",
+            "outputTokens",
+            "costUsd"
+          ],
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "ttftMs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "durationMs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "inputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "outputTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "tokensPerSec": {
+              "type": "number",
+              "minimum": 0
+            },
+            "costUsd": {
+              "type": "number",
+              "minimum": 0
+            },
+            "routerTier": {
+              "type": "string",
+              "enum": [
+                "rules",
+                "fast",
+                "llm"
+              ]
+            }
+          },
+          "title": "MessageMetricsPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "BlockProductCard": {
+      "title": "BlockProductCard",
+      "description": "Structured product card; prices come from the catalog tool, never from RAG. No images (ADR-033).",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "block.product_card"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "productId",
+            "model"
+          ],
+          "properties": {
+            "productId": {
+              "type": "string"
+            },
+            "sku": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "variantLabel": {
+              "type": "string"
+            },
+            "listPrice": {
+              "type": "number"
+            },
+            "availability": {
+              "type": "string"
+            },
+            "stockAtStore": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "storeId": {
+                  "type": "string"
+                },
+                "storeName": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "title": "BlockProductCardPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload",
+        "messageId"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "HandoffRequested": {
+      "title": "HandoffRequested",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "handoff.requested"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ticketId"
+          ],
+          "properties": {
+            "ticketId": {
+              "type": "string"
+            },
+            "staffOnline": {
+              "type": "boolean"
+            }
+          },
+          "title": "HandoffRequestedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "HandoffAccepted": {
+      "title": "HandoffAccepted",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "handoff.accepted"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ticketId",
+            "staffDisplayName"
+          ],
+          "properties": {
+            "ticketId": {
+              "type": "string"
+            },
+            "staffDisplayName": {
+              "type": "string"
+            }
+          },
+          "title": "HandoffAcceptedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "HandoffEnded": {
+      "title": "HandoffEnded",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "handoff.ended"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ticketId",
+            "outcome"
+          ],
+          "properties": {
+            "ticketId": {
+              "type": "string"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "released",
+                "resolved"
+              ]
+            }
+          },
+          "title": "HandoffEndedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TicketChanged": {
+      "title": "TicketChanged",
+      "description": "Staff console queue updates.",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "ticket.created",
+            "ticket.updated"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ticketId",
+            "status",
+            "category"
+          ],
+          "properties": {
+            "ticketId": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "open",
+                "assigned",
+                "resolved"
+              ]
+            },
+            "category": {
+              "type": "string"
+            },
+            "assignee": {
+              "type": "string"
+            }
+          },
+          "title": "TicketChangedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "OrderStatusChanged": {
+      "title": "OrderStatusChanged",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "order.status_changed"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "orderId",
+            "status"
+          ],
+          "properties": {
+            "orderId": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "placed",
+                "processing",
+                "shipped",
+                "out_for_delivery",
+                "delivered",
+                "ready_for_pickup",
+                "picked_up",
+                "delayed",
+                "cancelled"
+              ]
+            }
+          },
+          "title": "OrderStatusChangedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    }
+  }
+}

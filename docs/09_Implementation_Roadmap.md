@@ -21,7 +21,8 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Appr
 
 ## 3. Phases
 
-### Phase 0 - Foundations
+### Phase 0 - Foundations - DONE 2026-10-29
+Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; idempotent seed (50 products, 240 variants, 10 stores, 2,400 stock rows); Keycloak `buywise` realm; LiteLLM -> Ollama chat + bge-m3 (1024 dims) with shadow cost; k = 2.96 (16.9 tokens/s local vs 50 reference); 6 contract tests + lint green.
 | Item | Detail | ADRs |
 |---|---|---|
 | Local-dev stack (Docker Compose) | Postgres + pgvector (databases per ADR-010), Redis, Keycloak (realm as code), LiteLLM -> Ollama on host | ADR-010, ADR-011, ADR-013, ADR-026 |

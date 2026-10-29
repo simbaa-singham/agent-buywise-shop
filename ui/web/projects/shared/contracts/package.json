@@ -1,0 +1,11 @@
+{
+  "name": "@buywise/contracts",
+  "private": true,
+  "description": "Chat contract (ADR-024): JSON Schema source of truth + generated TypeScript types",
+  "scripts": {
+    "generate": "json2ts -i schemas/chat-events.schema.json -o generated/chat-events.ts --bannerComment \"/* Generated from schemas/chat-events.schema.json - do not edit. Run make contracts. */\" --unreachableDefinitions"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^15.0.0"
+  }
+}

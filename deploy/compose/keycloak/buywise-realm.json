@@ -1,0 +1,81 @@
+{
+  "realm": "buywise",
+  "enabled": true,
+  "displayName": "BuyWise",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      {"name": "customer", "description": "Shopper (ADR-021)"},
+      {"name": "staff", "description": "Store staff: tickets, takeover (ADR-037)"},
+      {"name": "staff_lead", "description": "Staff lead"},
+      {"name": "ops-admin", "description": "AI Operations access (ADR-027)"}
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "buywise-customer-web",
+      "name": "Customer web (BFF, confidential)",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost:3000/api/auth/callback"],
+      "webOrigins": ["http://localhost:3000"],
+      "attributes": {"pkce.code.challenge.method": "S256", "post.logout.redirect.uris": "http://localhost:3000/"}
+    },
+    {
+      "clientId": "buywise-staff-console",
+      "name": "Staff console (BFF, confidential; MFA and shorter sessions in phase 2)",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:3000/api/staff/auth/callback"],
+      "webOrigins": ["http://localhost:3000"],
+      "attributes": {"pkce.code.challenge.method": "S256", "post.logout.redirect.uris": "http://localhost:3000/staff/"}
+    },
+    {
+      "clientId": "buywise-agent",
+      "name": "Agent (token exchange target and caller, ADR-028; exchange config in phase 2)",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "buywise-mcp",
+      "name": "MCP servers (resource and exchange caller, ADR-028)",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "buywise-services",
+      "name": "Business services (resource server audience)",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false
+    },
+    {
+      "clientId": "buywise-event-consumers",
+      "name": "Event consumers (client credentials, no user, ADR-028)",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    }
+  ]
+}

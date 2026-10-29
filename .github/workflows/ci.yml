@@ -1,0 +1,44 @@
+# CI skeleton (phase 0). Jobs per module are added as modules are implemented (docs/09).
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  contracts:
+    name: Contracts (drift check + contract tests, ADR-024)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "24"}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: make agent-dev
+      - run: make contracts-check
+      - run: make test
+
+  compose:
+    name: Compose config is valid
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp deploy/compose/.env.example deploy/compose/.env
+      - run: docker compose -f deploy/compose/compose.yaml --env-file deploy/compose/.env --profile tools config -q
+
+  migrations:
+    name: Services migrations apply cleanly
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env: {POSTGRES_PASSWORD: ci, POSTGRES_USER: services, POSTGRES_DB: services}
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U services" --health-interval 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker run --rm --network host -v "$PWD/services/src/main/resources/db/migration:/flyway/sql:ro" \
+            flyway/flyway:11 -url=jdbc:postgresql://localhost:5432/services -user=services -password=ci \
+            -locations=filesystem:/flyway/sql -createSchemas=true -defaultSchema=flyway migrate

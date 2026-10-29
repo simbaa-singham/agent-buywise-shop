@@ -17,3 +17,15 @@ Start here: [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), then [docs/00_Architecture
 Decisions: [docs/adr/ADR_Log.md](docs/adr/ADR_Log.md)
 
 Roadmap: [docs/09_Implementation_Roadmap.md](docs/09_Implementation_Roadmap.md)
+
+## Local quick start (phase 0)
+Prerequisites: Docker, Node 24, Python 3.12+, Ollama running on the host with `qwen2.5:7b` and `bge-m3` pulled.
+
+```bash
+make data-tools agent-dev   # one-time: Python tool environments
+make up                     # Postgres (+pgvector), Redis, Keycloak, LiteLLM
+make seed                   # Flyway schema + catalog/inventory seed into the services database
+make k                      # measure the LLM hardware factor k -> deploy/local/scale.yaml
+make test                   # contract tests + lint
+make help                   # all targets
+```

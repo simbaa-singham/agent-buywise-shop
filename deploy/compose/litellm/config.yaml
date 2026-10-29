@@ -1,0 +1,31 @@
+# LiteLLM model gateway (ADR-026, ADR-040). Locally every alias points at Ollama on the host.
+# Shadow prices are PLACEHOLDERS until the production LLM is decided (docs/00 #5); they let
+# cost tracking and budgets behave as if the models were paid.
+model_list:
+  - model_name: buywise-primary
+    litellm_params:
+      model: ollama_chat/qwen2.5:7b
+      api_base: os.environ/OLLAMA_API_BASE
+    model_info:
+      input_cost_per_token: 0.000003    # placeholder: $3 / 1M input tokens
+      output_cost_per_token: 0.000015   # placeholder: $15 / 1M output tokens
+
+  - model_name: buywise-economy
+    litellm_params:
+      model: ollama_chat/qwen2.5:7b     # same local model; production uses a cheaper tier
+      api_base: os.environ/OLLAMA_API_BASE
+    model_info:
+      input_cost_per_token: 0.00000025  # placeholder: $0.25 / 1M
+      output_cost_per_token: 0.00000125 # placeholder: $1.25 / 1M
+
+  - model_name: bge-m3
+    litellm_params:
+      model: ollama/bge-m3
+      api_base: os.environ/OLLAMA_API_BASE
+    model_info:
+      mode: embedding
+      input_cost_per_token: 0.00000002  # placeholder: $0.02 / 1M
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL

@@ -11,3 +11,4 @@ logs/*
 data/inbox/*
 !data/inbox/.gitkeep
 .venv/
+node_modules/

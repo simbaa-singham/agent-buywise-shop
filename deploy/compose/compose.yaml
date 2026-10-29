@@ -1,0 +1,84 @@
+# Local-dev stack (docs/08 local-dev; phase 0). Run only what a task needs (docs/08 4b).
+# Ollama runs on the host (not in Docker) and is reached only through LiteLLM (ADR-026).
+name: buywise
+
+services:
+  postgres:
+    # One cluster, one database per deployable (ADR-010); pgvector for RAG (ADR-011)
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SERVICES_DB_PASSWORD: ${SERVICES_DB_PASSWORD}
+      AGENT_DB_PASSWORD: ${AGENT_DB_PASSWORD}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      LITELLM_DB_PASSWORD: ${LITELLM_DB_PASSWORD}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    # Sessions, conversation streams, budget counters, rate limits (ADR-021/026/029/032)
+    image: redis:7.4-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+
+  keycloak:
+    # Realm as code; clients and roles stubbed in phase 0, users and token exchange in phase 2 (ADR-021/028)
+    image: quay.io/keycloak/keycloak:26.4
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HEALTH_ENABLED: "true"
+    ports: ["8080:8080"]
+    volumes:
+      - ./keycloak/buywise-realm.json:/opt/keycloak/data/import/buywise-realm.json:ro
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  litellm:
+    # Model gateway: every model call goes through here (ADR-026, ADR-040)
+    image: ghcr.io/berriai/litellm:main-stable
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      DATABASE_URL: postgresql://litellm:${LITELLM_DB_PASSWORD}@postgres:5432/litellm
+      OLLAMA_API_BASE: http://host.docker.internal:11434
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    ports: ["4000:4000"]
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  flyway:
+    # Applies buywise-services schema migrations (seed Option B: schema first, then the seed job)
+    image: flyway/flyway:11
+    profiles: ["tools"]
+    command: ["migrate"]
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/services
+      FLYWAY_USER: services
+      FLYWAY_PASSWORD: ${SERVICES_DB_PASSWORD}
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_DEFAULT_SCHEMA: flyway
+    volumes:
+      - ../../services/src/main/resources/db/migration:/flyway/sql:ro
+    depends_on:
+      postgres: {condition: service_healthy}
+
+volumes:
+  pgdata:

@@ -38,7 +38,8 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (docs/06), secrets management (docs/08).
 - Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Done 2026-10-29: implementation roadmap approved (docs/09) as drafted.
-- Next: phase 0 (foundations).
+- Done 2026-10-29: phase 0 foundations (docs/09). Local k = 2.96 (deploy/local/scale.yaml).
+- Next: phase 1 thin slice (docs/09).
 
 ## Pending housekeeping
 - Done 2026-10-28: folders restructured to docs/00 section 6; agent/pyproject.toml aligned with ADR-011 (pgvector) and ADR-026 (LiteLLM via langchain-openai); agent/.env.example aligned with ADR-010/026/029.

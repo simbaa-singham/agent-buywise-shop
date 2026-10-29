@@ -1,0 +1,9 @@
+S: 40
+k: 2.96
+measured:
+  model: buywise-primary
+  median_tokens_per_sec: 16.9
+  median_ttft_s: 0.1
+  runs: 5
+  at: '2026-10-29T00:16:13'
+reference_tokens_per_sec: 50.0
