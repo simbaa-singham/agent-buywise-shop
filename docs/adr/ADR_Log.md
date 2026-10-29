@@ -34,12 +34,13 @@
 | ADR-030 | Intent routing: cascade of rules -> fast in-process classifier -> economy-tier LLM classifier; clarify then handoff on low confidence; flow stickiness; decisions logged | Accepted | 2026-10-28 |
 | ADR-031 | MCP layout: one server per domain (`/mcp/{domain}`) in one process and image; agent connects per intent; optional per-domain Deployment in production | Accepted | 2026-10-28 |
 | ADR-032 | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j | Accepted | 2026-10-28 |
-| ADR-033 | Data sources: curated real product lineup (names, specs, list prices; maker never named, `brand_id` only), generated and written knowledge docs, Faker customers/orders, fixed seeds, no images | Accepted | 2026-10-28 |
-| ADR-034 | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas | Accepted | 2026-10-28 |
+| ADR-033 | Data sources: curated real product lineup (names, specs, list prices; maker never named, `brand_id` only), generated and written knowledge docs (multiple formats, amended by ADR-039), Faker customers/orders, fixed seeds, no images | Accepted | 2026-10-28 |
+| ADR-034 | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas; applied to the ADR-039 Document model | Accepted | 2026-10-28 |
 | ADR-035 | Backup policy (design only): Postgres WAL archiving + daily base backups, PITR 30/14 days, immutable off-site weekly copy, monthly restore drill; Redis/Kafka not backed up; config in Git; no local backups | Accepted | 2026-10-28 |
 | ADR-036 | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; masked logs/traces; audited staff reveal; retention and privacy-rights jobs | Accepted | 2026-10-28 |
 | ADR-037 | Conversation ownership owned by the helpdesk module in `buywise-services`; BFF caches in Redis; agent paused/resumed as second check | Accepted | 2026-10-28 |
 | ADR-038 | AI Operations charts: Apache ECharts (modular imports) with own thin signal-based wrapper; "view as table" accessibility toggle | Accepted | 2026-10-28 |
+| ADR-039 | Multi-format ingestion: detect by magic bytes -> parser plugin per format -> common Document model with provenance -> normalize, validate, clean, chunk; quarantine; golden tests; worker inside agent deployable | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -251,3 +252,9 @@
 - **Options considered:** A. Apache ECharts - richest, canvas, aria module, themeable; ~150 KB gz modular. B. Chart.js - small, simple; plugins for waterfall/gauge/zoom, no built-in a11y. C. ngx-charts - Angular-native SVG; historically slow upgrades, SVG slow on large data. D. Embedded Grafana panels - no chart code; cross-site embedding and auth, style mismatch, no per-conversation data.
 - **Decision:** A, with our own ~50-line signal-based wrapper (no `ngx-echarts` dependency); theme from Material 3 tokens; "view as table" toggle rendering a semantic HTML table per chart.
 - **Consequences:** Full chart capability in an admin-only lazy chunk; upgrades not blocked by a third-party wrapper; we maintain the wrapper.
+
+## ADR-039 - Multi-format document parsing
+- **Context:** Main learning goal: real parsing techniques across formats, not "chunk the PDF". Knowledge docs are created in DOCX, digital PDF, scanned PDF/PNG, HTML, XLSX/CSV, PPTX, EML with attachments, Markdown/TXT and generated JSON. Amends ADR-033 (formats).
+- **Options considered:** A. Docling for everything - least code; hides techniques, no email, weak boilerplate removal. B. Own parser per format from low-level libraries - most learning; rebuilds hard problems (PDF tables, OCR) badly. C. Own plugin system with a common Document model and best-fit library per format.
+- **Decision:** C. Pipeline detect (magic bytes) -> parse (plugin per format) -> normalize -> validate (OCR retry, confidence) -> clean (prices) -> chunk (ADR-034 on the Document model) -> embed/index. Elements carry provenance (page+bbox, sheet!row, slide, DOM path, attachment). Quarantine for failures; golden snapshot tests per sample file; content-hash idempotency with parser version. Entry via `data/inbox/` and ops-admin upload. Runs as an ingestion worker process inside `buywise-agent`.
+- **Consequences:** New format = one plugin. Precise citations. More libraries to maintain (Docling, OCR engine, python-docx, openpyxl/pandas, python-pptx, trafilatura, markdown-it-py). OCR is CPU-heavy, isolated in the worker.

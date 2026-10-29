@@ -25,6 +25,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 ## Where things are
 - Main design: docs/00_Architecture_Overview.md
 - Module designs: docs/01..08_*.md
+- Implementation roadmap: docs/09_Implementation_Roadmap.md
 - Decisions: docs/adr/ADR_Log.md
 - Old material: docs/archive/
 
@@ -32,10 +33,10 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Design phase. Docs updated 2026-10-28 for: modular monolith, 6 deployables, buywise-mcp, no internal gateway, rename.
 - Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (docs/01 section 6).
 - Done 2026-10-28: NFR targets set as ideal production targets, local scaled by S=40 and LLM hardware factor k, with failure behavior (docs/00 section 7); LLM metering/budgets (ADR-026) and LLM observability UI (ADR-027).
-- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (docs/01 section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038). Local vs design-only scope: docs/00 section 7.4.
+- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (docs/01 section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: docs/00 section 7.4.
 - Open items raised for later modules: AI Operations chart library (docs/01).
 - Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (docs/06), secrets management (docs/08).
-- Next: module-level open decisions (docs/01-08 "Open decisions" sections); pending housekeeping below.
+- Next: architect review of the implementation roadmap (docs/09), then phase 0.
 
 ## Pending housekeeping
 - Done 2026-10-28: folders restructured to docs/00 section 6; agent/pyproject.toml aligned with ADR-011 (pgvector) and ADR-026 (LiteLLM via langchain-openai); agent/.env.example aligned with ADR-010/026/029.

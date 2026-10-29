@@ -7,3 +7,6 @@ __pycache__/
 # runtime files written by the scripts (folders kept via .gitkeep)
 logs/*
 !logs/.gitkeep
+# ingestion drop folder (runtime)
+data/inbox/*
+!data/inbox/.gitkeep

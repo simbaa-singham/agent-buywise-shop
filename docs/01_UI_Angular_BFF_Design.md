@@ -223,6 +223,7 @@ sequenceDiagram
   1. Live summary: TTFT p50/p95, tokens/sec, full-answer latency, error rate, spend today vs global budget, current model (refreshes every 15 s via `httpResource`).
   2. Conversation explorer: search/filter conversations; per-turn breakdown by stage (route, RAG retrieval, tool calls, generation) with latency, tokens, cost, model, budget events; router tier that decided (rules / fast / LLM), intent(s) and confidence (ADR-030).
   3. Budget and pricing: read-only view of caps, shadow prices and degradation thresholds (config is changed in Git, not in the UI).
+  4. Ingestion (ADR-039): upload documents (any supported format), see parse status, parse metrics, per-element preview with provenance, and quarantined files with reasons; re-parse action.
 - **customer-web developer overlay:** TTFT, tokens and cost under each agent message, from `message.metrics`. Enabled by config (`devOverlay: true`), off by default; never on in production.
 - Data source: BFF `ops` module reads the agent's usage tables (docs/07) via the agent API; Grafana remains the place for alerts and long-range trends.
 

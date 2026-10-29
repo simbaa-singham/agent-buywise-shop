@@ -17,6 +17,7 @@ Understand customer messages, route to the right handler, call tools and knowled
 
 ## 3. Deployable
 - `buywise-agent`: Agent API + LangGraph graph + RAG pipeline; tools only via `buywise-mcp`.
+- Two processes in the deployable: chat API (turns) and ingestion worker (multi-format parsing, OCR, embedding - ADR-039), so heavy parsing never slows chat turns.
 - Stateless instances (state in Postgres checkpointer); 2 replicas locally.
 - Agent API (ADR-029): `POST /turns` -> 202 Accepted with `turnId`; turn runs in the background and appends ADR-024 contract events (Pydantic types generated from the JSON Schema) to the conversation's Redis Stream `conv:{id}`. `POST /turns/{id}/cancel` stops a running turn. A turn is never tied to the BFF pod that started it.
 - `POST /conversations/{id}/pause` and `/resume` (called by the BFF on staff accept/release, ADR-037); the agent refuses new turns while paused as a second safety check.

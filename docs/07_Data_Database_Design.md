@@ -34,7 +34,7 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 - order: `carts`, `cart_items`, `orders`, `order_items`, `shipments`, `pickups`
 - helpdesk: `tickets` (assignee, status), `conversation_ownership` (conversation_id, owner bot/staff, staff_id, changed_at, changed_by) - ADR-037
 - agent: `conversations`, `messages`, checkpoints, `turns` (per-turn totals: latency, tokens, cost), `llm_calls` (one row per LLM call: turn, stage, model, TTFT, duration, tokens in/out, tokens/sec, cost, budget event) - ADR-026/027, `router_decisions` (turn, tier, intents, confidence, latency, clarified/handoff) - ADR-030
-- knowledge: `documents` (doc_type, version, content hash, front matter), `chunks` (embedding, full-text vector, `parent_id` for parent-child retrieval, metadata columns per ADR-034)
+- knowledge: `documents` (doc_type, version, content hash, detected format, parser + parser version, parse status, quarantine reason, parse metrics, metadata), `document_elements` (type, order, text/table/record, provenance: page+bbox / sheet!row / slide / DOM path / attachment) - ADR-039, `chunks` (embedding, full-text vector, `parent_id` for parent-child retrieval, metadata columns per ADR-034)
 - catalog products carry `brand_id` (opaque id, never displayed) and `specs_verified` date; no images (placeholders only)
 
 ## 4a. Seed and test data (ADR-033)
