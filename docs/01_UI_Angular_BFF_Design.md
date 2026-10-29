@@ -41,6 +41,7 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywi
 - `customer-web`: custom Material 3 theme (neutral store look, not default Material style).
 - Chat UI (message list, bubbles, streaming text, product cards) is custom-built in `shared` on CDK primitives (a11y, overlay, scrolling).
 - Theme tokens live in `shared` so both apps stay consistent.
+- No product images anywhere: product cards and pages use placeholder graphics (ADR-033).
 
 ## 3. Module structure
 **App structure (ADR-018):** one Angular workspace with two applications and a shared library.
@@ -93,7 +94,7 @@ SSE envelope:
 ```
 id: 1793212800123-0
 event: message.delta
-data: {"v":1,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","messageId":"m_77a","payload":{"text":"The iPhone 17 Pro"}}
+data: {"v":1,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","messageId":"m_77a","payload":{"text":"This phone has a 6.3-inch display"}}
 ```
 
 | Group | Events |

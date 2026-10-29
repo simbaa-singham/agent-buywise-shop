@@ -47,7 +47,7 @@ FAQ only -> tool calling -> intent routing -> refund policy -> human handoff -> 
 | 9 | Evaluation | End-to-end scenario suite (tracking, refund tiers, angry customer, API change); run in CI | Suite green; results tracked per release |
 | 10 | Customer memory | Past orders/issues per customer (later: own layered memory library) | Returning customer gets context-aware help |
 | 11 | UI | Customer chat + human agent console (ticket queue, take over conversation) | Live handoff works end to end |
-| 12 | Deployment | Docker images, cloud VM, secrets, health checks | Runs outside the Mac |
+| 12 | Deployment | Docker images, cloud VM, secrets, health checks | Runs outside the local machine |
 
 ## Key design rules
 - Money decisions live in services, never in prompts.

@@ -14,7 +14,7 @@ Decisions are recorded in [adr/ADR_Log.md](adr/ADR_Log.md).
 
 ## 1. Purpose and scope
 
-AI shopping assistant for an online electronics store (Apple products as the sample catalog, US). It helps customers:
+AI shopping assistant for an online electronics store (US). Catalog of real products (real model names, specs and list prices; maker not named), starting with one maker's lineup, other makers later. It helps customers:
 1. Choose a device (discover, compare, configure).
 2. Place an order (stock check, cart, checkout; delivery or in-store pickup).
 3. Track an order (delivery tracking or pickup readiness).
@@ -22,7 +22,7 @@ AI shopping assistant for an online electronics store (Apple products as the sam
 
 **Out of scope (v1):** returns, exchanges, refunds, trade-ins, voice channel, real payment processing (mock payment links only).
 
-**Runtime:** not hosted. Runs on a Mac with production-shaped infrastructure at small scale; production sizing is configuration only.
+**Runtime:** not hosted. Runs on a single local machine with production-shaped infrastructure at small scale; production sizing is configuration only.
 
 ## 2. Key decisions (summary)
 
@@ -51,7 +51,7 @@ AI shopping assistant for an online electronics store (Apple products as the sam
 | Identity provider (Keycloak) | Customer and staff login, service tokens, MCP authorization |
 | Payment provider (mock) | Payment links and payment status callbacks |
 | Shipping carrier (mock) | Tracking numbers and delivery events |
-| LLM provider | Always via the model gateway (LiteLLM proxy, ADR-026): Ollama on the Mac locally; vLLM or hosted API in production design. Shadow pricing applied locally |
+| LLM provider | Always via the model gateway (LiteLLM proxy, ADR-026): Ollama on the local machine; vLLM or hosted API in production design. Shadow pricing applied locally |
 
 ## 4. High-level architecture
 
@@ -107,7 +107,11 @@ agent-buywise-shop/
 ├── events/
 │   ├── publisher/       # buywise-event-publisher
 │   └── consumers/       # buywise-event-consumers
-├── data/                # local infra (Postgres, Redis, Kafka, Keycloak), seed data, knowledge docs
+├── data/                # local infra (Postgres, Redis, Kafka, Keycloak), seed data, knowledge docs (ADR-033)
+│   ├── seed/            # catalog/{category}/ JSON, stores, generated customers/orders
+│   ├── knowledge/       # Markdown (+ few PDFs) knowledge docs: generated and written
+│   ├── eval/            # RAG, router and prompt-injection eval sets
+│   └── tools/           # generators: catalog checks, Faker data, doc renderer, eval builder
 ├── deploy/              # Docker Compose, Helm charts, GitHub Actions
 └── docs/
 ```

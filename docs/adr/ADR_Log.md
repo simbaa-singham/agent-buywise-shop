@@ -13,7 +13,7 @@
 | ADR-009 | Kafka for events; events recorded in the same transaction as state changes | Accepted (mechanism deferred) | 2026-10-28 |
 | ADR-010 | PostgreSQL: database per deployable (services with schema per module, agent, keycloak, litellm, langfuse); production business and AI clusters; one cluster locally | Accepted | 2026-10-28 |
 | ADR-011 | Postgres + pgvector + full-text for RAG (hybrid, RRF, rerank); retriever interface; `pg_search` BM25 upgrade path; RAG reads off the primary in production | Accepted | 2026-10-28 |
-| ADR-012 | Project name agent-buywise-shop; electronics shopping assistant, Apple products as sample catalog | Accepted | 2026-10-28 |
+| ADR-012 | Project name agent-buywise-shop; electronics shopping assistant; catalog of real products (model names, specs, list prices), maker never named, more makers later (amended 2026-10-28, see ADR-033) | Accepted | 2026-10-28 |
 | ADR-013 | Local-first, small-scale runtime; production sizing via configuration only | Accepted | 2026-10-28 |
 | ADR-014 | One Spring Boot 4.1 modular monolith (Spring Modulith 2.x), controllers per use case | Accepted | 2026-10-28 |
 | ADR-015 | `buywise-mcp` as separate deployable, MCP Python SDK v2, spec 2026-07-28, wrapping REST APIs | Accepted | 2026-10-28 |
@@ -34,6 +34,8 @@
 | ADR-030 | Intent routing: cascade of rules -> fast in-process classifier -> economy-tier LLM classifier; clarify then handoff on low confidence; flow stickiness; decisions logged | Accepted | 2026-10-28 |
 | ADR-031 | MCP layout: one server per domain (`/mcp/{domain}`) in one process and image; agent connects per intent; optional per-domain Deployment in production | Accepted | 2026-10-28 |
 | ADR-032 | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j | Accepted | 2026-10-28 |
+| ADR-033 | Data sources: curated real product lineup (names, specs, list prices; maker never named, `brand_id` only), generated and written knowledge docs, Faker customers/orders, fixed seeds, no images | Accepted | 2026-10-28 |
+| ADR-034 | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -41,7 +43,7 @@
 | Event publishing mechanism | Polling outbox relay vs Debezium CDC | Implementation of events |
 | RAG re-indexing location | Agent vs event consumers | Implementation of RAG |
 | Production LLM | A. Hosted frontier API; B. Self-hosted open-weight on vLLM; C. Hybrid tiers via LiteLLM (primary frontier, economy tier for routing/FAQ/fallback, second provider failover, vLLM later). Rough cost: ~400k turns/day x ~4k in / 300 out tokens -> ~$6,600/day at $3/$15 per 1M before caching and tiering. Model picked by eval suite through LiteLLM. Sets shadow prices, `k` and the global budget | Architect to decide later |
-| Event schema format | A. JSON Schema, no registry (CI contract tests only); B. Avro + registry (strongest runtime compatibility checks, mature Java/Python, fits Debezium); C. Protobuf + registry (strong codegen, field-number rules); D. JSON Schema + registry (readable, less mature compatibility checks). Related: compatibility mode (e.g. backward transitive), CloudEvents headers, registry choice (Apicurio vs Karapace) and its Mac footprint | Architect to decide later |
+| Event schema format | A. JSON Schema, no registry (CI contract tests only); B. Avro + registry (strongest runtime compatibility checks, mature Java/Python, fits Debezium); C. Protobuf + registry (strong codegen, field-number rules); D. JSON Schema + registry (readable, less mature compatibility checks). Related: compatibility mode (e.g. backward transitive), CloudEvents headers, registry choice (Apicurio vs Karapace) and its local footprint | Architect to decide later |
 
 ## Template (one section per ADR when detailed)
 - **Context:** what problem / forces.
@@ -147,7 +149,7 @@
 - **Options considered:**
   - A. Postgres + pgvector (HNSW) + Postgres full-text - no new stateful system, metadata and vectors in one SQL query, transactional; keyword ranking is not BM25, shares Postgres with orders.
   - B. Qdrant - strong filtered and hybrid search, quantization, horizontal scale; extra system to run, sync from Postgres, strengths unused at our size.
-  - C. OpenSearch / Elasticsearch - best BM25 and analyzers; heavy JVM footprint on the Mac, most operations work.
+  - C. OpenSearch / Elasticsearch - best BM25 and analyzers; heavy JVM footprint on the local machine, most operations work.
 - **Decision:** A. Retrieval behind one retriever interface in `buywise-agent`. If Ragas shows weak exact-term retrieval, add ParadeDB `pg_search` (BM25 in Postgres). In production, RAG reads run on a read replica (or separate database), never on the primary serving checkout - detailed with ADR-010 / docs/07.
 - **Consequences:** One database to operate; text and vectors always consistent. Moving to Qdrant later only replaces the retriever implementation and indexing job.
 
@@ -156,7 +158,7 @@
 - **Options considered:**
   - A. One database, schema per module, everything in it - simplest; AI load competes with checkout, later split needs migration.
   - B. Database per deployable, grouped into clusters by criticality - isolation, clear ownership, light locally; more databases/users, two clusters in production.
-  - C. Cluster per deployable everywhere - most isolation; too heavy for the Mac, beyond NFR needs.
+  - C. Cluster per deployable everywhere - most isolation; too heavy for the local machine, beyond NFR needs.
 - **Decision:** B.
   - Databases: `services` (schemas per module), `agent` (schemas `agent`, `knowledge`), `keycloak`, `litellm`, `langfuse`; one Postgres user per database, access only to its own.
   - Production: business cluster (`services`, `keycloak`) with synchronous replica (RPO 0); AI cluster (`agent`, `litellm`, `langfuse`) with read replica for RAG.
@@ -203,3 +205,20 @@
 - **Context:** Must stop agent loops (bugs, prompt injection), user abuse (OTP brute force) and overload; no single layer sees all three.
 - **Decision:** Four layers - agent (8 tool calls/turn, 3 identical in a row), Envoy (global per tool via `Mcp-Name`), MCP (per user/guest per tool, Redis token buckets: OTP 3/15 min per contact and IP, checkout 5/min, tickets 3/hour/conversation, reads 60/min), services (Bucket4j). Local: per-user limits unchanged, global / S. Limit hit -> structured error with `retryAfter`, explained to the customer, no retry loop.
 - **Consequences:** Defence in depth; more limits to tune and monitor (Grafana). Redis becomes part of the MCP request path.
+
+## ADR-033 - Data sources
+- **Context:** Learning project needing accurate, realistic data for the catalog, RAG, evals and tests. No external business data exists; nothing may be scraped or copied verbatim.
+- **Decision:**
+  - Catalog: curated real product lineup (one maker first, others later) as our own JSON by category; real model names, specs, list prices and compatibility, verified by web search at generation; `specs_verified` date; maker never named (`brand_id` only); no source URLs.
+  - Descriptions: facts in our own wording, never copied text.
+  - Images: none; placeholders only.
+  - Knowledge docs: spec sheets, product overviews and store info generated from seed data (single source of truth); policies, FAQs, how-to guides written and reviewed; a few PDFs for the Docling path.
+  - Customers, orders, tickets: Faker with fixed seeds and designed edge cases. Eval sets built from the docs and reviewed.
+  - Reproducible loading via `make seed` and `make ingest`.
+- **Consequences:** Same data everywhere; no personal data; data changes reviewed like code. Spec accuracy depends on verification at generation time; re-verify when the lineup changes.
+
+## ADR-034 - RAG chunking
+- **Context:** Doc types differ (tables, sections, Q&A pairs, steps, records). Chunk boundaries drive retrieval precision and citation quality.
+- **Options considered:** A. Fixed-size chunks - simple; splits tables and Q&A, mixes topics. B. Structure-aware per doc type - meaningful units, real citations, deterministic; per-type rules to maintain. C. Semantic chunking - adaptive; costly, non-deterministic, mixed gains.
+- **Decision:** B, plus parent-child retrieval, deterministic context headers, and metadata filters (incl. `brand_id`). Contextual retrieval (LLM-generated headers) only as a phase-2 experiment if Ragas shows gains. Prices/stock/availability stripped in cleaning.
+- **Consequences:** High-precision retrieval with full context for the LLM. Rules per doc type; sizes are starting values tuned with Ragas.

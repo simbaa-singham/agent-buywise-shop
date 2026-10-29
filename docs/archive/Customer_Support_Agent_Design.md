@@ -1,13 +1,13 @@
 # Customer Support Agent - Design
 
-AI assistant for a store selling Apple products (US). It helps customers
+AI assistant for an electronics store (US). It helps customers
 place orders, check order status, and get answers to product and store questions.
 
 ## Decisions
 
 | Topic | Decision |
 |---|---|
-| Business | Store selling Apple products (iPhone, Mac, iPad, Watch, AirPods, accessories) |
+| Business | Electronics store (phones, laptops, tablets, watches, headphones, accessories) |
 | Region / currency | US / USD |
 | Channel | Website chat first (voice later) |
 | Fulfilment | Home delivery and in-store pickup |
@@ -131,13 +131,13 @@ agent-customer-support/
 | Intent | Example | Tools |
 |---|---|---|
 | browse / recommend | "Laptop for video editing" | `search_products`, `get_product`, `search_knowledge` |
-| product_question | "iPhone 17 vs 17 Pro?" | `search_knowledge`, `get_product` |
-| compatibility | "Does this charger work with my iPad?" | `check_compatibility`, `search_knowledge` |
+| product_question | "Phone X vs Phone X Pro?" | `search_knowledge`, `get_product` |
+| compatibility | "Does this charger work with my tablet?" | `check_compatibility`, `search_knowledge` |
 | stock_check | "Is the blue one in stock for pickup?" | `check_stock` |
 | place_order | "I'll take it" | `create_cart`, `add_to_cart`, `get_cart`, `checkout` |
 | order_status | "Where is my order?" | `verify_customer`, `list_orders`, `get_order_status` |
 | store_question | "What are your hours?" | `search_knowledge` |
-| out_of_scope | "I want to return my iPad" | `create_ticket` (handoff) |
+| out_of_scope | "I want to return my tablet" | `create_ticket` (handoff) |
 | handoff | "Talk to a person" | `create_ticket` |
 
 ## MCP tool contracts (v1)

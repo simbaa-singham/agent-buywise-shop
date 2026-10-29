@@ -9,7 +9,7 @@
 
 ## What we are building
 agent-buywise-shop: an AI shopping assistant that helps customers choose, order and track electronic devices.
-Online electronics store (Apple products as the sample catalog, US). Delivery + in-store pickup.
+Online electronics store with a catalog of real products (real model names, specs and list prices; maker not named), starting with one maker's lineup, other makers later (US). Delivery + in-store pickup.
 Website chat first. Returns/exchanges out of scope.
 Learning and portfolio project: production-grade design and code, run locally at small scale (not hosted).
 
@@ -32,7 +32,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Design phase. Docs updated 2026-10-28 for: modular monolith, 6 deployables, buywise-mcp, no internal gateway, rename.
 - Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Remaining UI TBDs: key flows (docs/01 section 5), browser support.
 - Done 2026-10-28: NFR targets set as ideal production targets, local scaled by S=40 and LLM hardware factor k, with failure behavior (docs/00 section 7); LLM metering/budgets (ADR-026) and LLM observability UI (ADR-027).
-- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032).
+- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034).
 - Open items raised for later modules: AI Operations chart library (docs/01).
 - Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6).
 - Next: module-level open decisions (docs/01-08 "Open decisions" sections); pending housekeeping below.

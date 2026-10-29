@@ -34,7 +34,19 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 - order: `carts`, `cart_items`, `orders`, `order_items`, `shipments`, `pickups`
 - helpdesk: `tickets`
 - agent: `conversations`, `messages`, checkpoints, `turns` (per-turn totals: latency, tokens, cost), `llm_calls` (one row per LLM call: turn, stage, model, TTFT, duration, tokens in/out, tokens/sec, cost, budget event) - ADR-026/027, `router_decisions` (turn, tier, intents, confidence, latency, clarified/handoff) - ADR-030
-- knowledge: `documents`, `chunks` (with embeddings)
+- knowledge: `documents` (doc_type, version, content hash, front matter), `chunks` (embedding, full-text vector, `parent_id` for parent-child retrieval, metadata columns per ADR-034)
+- catalog products carry `brand_id` (opaque id, never displayed) and `specs_verified` date; no images (placeholders only)
+
+## 4a. Seed and test data (ADR-033)
+| Data | Source | Notes |
+|---|---|---|
+| Products, variants, specs, list prices, compatibility | Curated real product lineup as our own JSON in `data/seed/catalog/{category}/`; specs and prices verified by web search at generation; `specs_verified` date per product | Facts only; descriptions in our own wording; no source URLs; maker never named (`brand_id` only); no automated scraping |
+| Images | None - placeholders only | No product images anywhere |
+| Stores (~10), stock | Generated, fixed random seed | Includes out-of-stock and low-stock cases |
+| Customers, orders, tickets | Faker, fixed random seed | Synthetic only; designed edge cases (delayed order, pickup ready, multi-order customer) |
+| Eval sets | Built from the docs, reviewed | RAG (expected source chunks), router (ADR-030), prompt injection |
+
+Loading: `make seed` (Postgres via `buywise-services` seed migrations/job), `make ingest` (RAG pipeline). Same data on every machine and CI run.
 
 ## 5. Open decisions
 1. ~~Agent/knowledge data same database vs separate~~ - decided: separate `agent` database, AI cluster in production (ADR-010).
