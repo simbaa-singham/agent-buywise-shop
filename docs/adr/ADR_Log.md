@@ -31,6 +31,7 @@
 | ADR-027 | LLM observability in the UI: Grafana for trends/alerts + staff-console AI Operations (ops-admin) + customer-web dev overlay; `status.updated` and `message.metrics` events | Accepted | 2026-10-28 |
 | ADR-028 | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-lived JWTs with `act` chain; identity never a tool argument | Accepted | 2026-10-28 |
 | ADR-029 | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; BFF pods read and forward; replaces pub/sub and separate replay buffer | Accepted | 2026-10-28 |
+| ADR-030 | Intent routing: cascade of rules -> fast in-process classifier -> economy-tier LLM classifier; clarify then handoff on low confidence; flow stickiness; decisions logged | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -179,3 +180,13 @@
   - C. Agent appends ADR-024 events to the conversation's Redis Stream; BFF only reads - reply independent of BFF pods.
 - **Decision:** C. `POST /turns` returns 202 and the turn runs in the background; events go to `conv:{id}` (capped by count and time); BFF also appends its own events (staff messages, handoff, tickets) there; one shared stream reader per BFF pod; SSE `id` = stream entry id; cancel via `POST /turns/{id}/cancel`.
 - **Consequences:** NFR #6 met by design; one mechanism for delivery and replay (replaces pub/sub + replay buffer). Agent depends on Redis (already used for budgets). Amends ADR-020 (cross-pod mechanism) and ADR-024 rule 3 (`seq` removed from the envelope; SSE id is the stream entry id). Staff console composite cursor detailed at implementation. Same pattern as LangGraph Server's background runs with a joinable stream.
+
+## ADR-030 - Intent routing
+- **Context:** Router runs first on every turn; it drives handler choice, per-intent tool scoping and per-intent token scopes (ADR-028). Targets: system overhead <= 300 ms and first token < 1 s (NFR 5), accuracy >= 95% (NFR 8), ~400k turns/day. Must handle follow-ups and multi-intent messages.
+- **Options considered:**
+  - A. LLM classifier - context-aware, multi-intent, no training data; +200-500 ms and cost on every turn.
+  - B. Small trained classifier - ~10-30 ms, near free, deterministic; needs labelled data, retraining, weak on context.
+  - C. No router, one agent with all tools - simplest; loses tool and scope narrowing, more tokens, harder to evaluate.
+  - D. Cascade: rules -> fast classifier -> LLM classifier.
+- **Decision:** D. Clarifying question on low confidence, then handoff (also on negative sentiment). Flow stickiness for checkout and OTP. Multi-intent handled in order. Every decision logged in `router_decisions` and shown in AI Operations. Phase 1 rules + LLM and the eval set; phase 2 trains and enables the fast classifier.
+- **Consequences:** Most turns routed in ~20 ms at near-zero cost once phase 2 lands; LLM reserved for hard cases. Two models to maintain plus thresholds to tune. Eval set doubles as training data.

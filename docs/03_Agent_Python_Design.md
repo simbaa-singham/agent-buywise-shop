@@ -23,6 +23,15 @@ Understand customer messages, route to the right handler, call tools and knowled
 ## 4. Graph design
 - **State:** conversation_id, customer_id (from the token `sub`, read-only, never from the LLM), messages, intent, confidence, sentiment, tool_results, owner (bot/staff).
 - **Nodes:** load_context -> sentiment_check -> route_intent -> handler -> guardrails -> respond.
+- **Routing (ADR-030) - cascade in `route_intent`:**
+  1. Rules: deterministic patterns (order number `BW-\d+` -> `order_status`; "talk to a person" -> `handoff`).
+  2. Fast classifier: small in-process model (SetFit or fine-tuned ModernBERT, CPU/ONNX, ~10-30 ms); used when confidence >= threshold.
+  3. LLM classifier: economy tier (`buywise-economy`), structured JSON output (`intents[]`, `confidence`, `entities`), recent history included; handles follow-ups and multi-intent messages.
+  4. Still low confidence -> clarifying question; low confidence after clarifying, or negative sentiment -> offer staff handoff.
+  - Flow stickiness: active multi-step flows (checkout, OTP verification) keep control until done unless the customer clearly changes topic; the router is not re-run on every message.
+  - Multi-intent: handlers run in order of the `intents[]` list within one turn.
+  - Every decision recorded (tier, intent(s), confidence, latency) in `router_decisions`; shown in AI Operations (ADR-027).
+  - Phase 1: rules + LLM classifier; build the labelled eval set (synthetic, human-reviewed). Phase 2: train the fast classifier on the eval set + logged LLM decisions, enable tier 2; thresholds tuned on the eval set.
 - **Handlers:** browse/recommend, product_question, compatibility, stock_check, place_order, order_status, store_question, out_of_scope, handoff.
 
 ## 5. Intents and tool scoping
@@ -80,9 +89,10 @@ Degradation ladder (never a bare error):
 
 ## 8. Testing
 - Scenario suite (DeepEval), intent accuracy set - TBD.
+- Router eval set (ADR-030): labelled messages incl. follow-ups and multi-intent; accuracy >= 95% overall (NFR 8), reported per tier; also used to train the fast classifier and tune thresholds.
 
 ## 9. Open decisions
-1. Router: LLM classifier vs small fine-tuned classifier.
+1. ~~Router~~ - decided: rules -> fast classifier -> LLM classifier cascade (ADR-030).
 2. Production LLM choice.
 3. ~~User identity propagation~~ - decided: token exchange per hop (ADR-028).
 4. ~~Agent -> BFF stream format~~ - decided: agent writes ADR-024 events to the conversation Redis Stream (ADR-029).

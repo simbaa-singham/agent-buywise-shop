@@ -33,7 +33,7 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 - inventory: `inventory`, `reservations`
 - order: `carts`, `cart_items`, `orders`, `order_items`, `shipments`, `pickups`
 - helpdesk: `tickets`
-- agent: `conversations`, `messages`, checkpoints, `turns` (per-turn totals: latency, tokens, cost), `llm_calls` (one row per LLM call: turn, stage, model, TTFT, duration, tokens in/out, tokens/sec, cost, budget event) - ADR-026/027
+- agent: `conversations`, `messages`, checkpoints, `turns` (per-turn totals: latency, tokens, cost), `llm_calls` (one row per LLM call: turn, stage, model, TTFT, duration, tokens in/out, tokens/sec, cost, budget event) - ADR-026/027, `router_decisions` (turn, tier, intents, confidence, latency, clarified/handoff) - ADR-030
 - knowledge: `documents`, `chunks` (with embeddings)
 
 ## 5. Open decisions
