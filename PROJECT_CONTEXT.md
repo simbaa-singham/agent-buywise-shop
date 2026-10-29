@@ -5,6 +5,7 @@
 - Each topic: options -> trade-offs -> architect's decision -> update module doc + ADR log.
 - Design before implementation. Explain each technology/technique when it is introduced.
 - Whenever a decision changes the design, list what in the project no longer matches and ask before changing it.
+- After every phase (and as its steps finish), write/update docs/learning/Phase-<N>.md: concepts, what was built and why, questions asked with answers, command cheat sheet, files, problems and fixes. It is part of the phase's definition of done.
 - After every change, explain each changed file in plain words: what it is, what it does, why it is needed, and how to see it working. ADR numbers are references only, never the explanation.
 - During implementation, before writing code in an area, remind Sachin of the decisions (ADR numbers + what they mean in code) that apply to it; flag any new decision that comes up instead of making it silently.
 
@@ -27,6 +28,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Main design: docs/00_Architecture_Overview.md
 - Module designs: docs/01..08_*.md
 - Implementation roadmap: docs/09_Implementation_Roadmap.md
+- Learning notes per phase: docs/learning/Phase-<N>.md
 - Decisions: docs/adr/ADR_Log.md
 - Old material: docs/archive/
 

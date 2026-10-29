@@ -18,6 +18,8 @@ Decisions: [docs/adr/ADR_Log.md](docs/adr/ADR_Log.md)
 
 Roadmap: [docs/09_Implementation_Roadmap.md](docs/09_Implementation_Roadmap.md)
 
+Learning notes: [Phase 0](docs/learning/Phase-0.md)
+
 ## Local quick start (phase 0)
 Prerequisites: Docker, Node 24, Python 3.12+, Ollama running on the host with `qwen2.5:7b` and `bge-m3` pulled.
 
