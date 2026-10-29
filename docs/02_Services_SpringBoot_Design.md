@@ -12,7 +12,7 @@ One Spring Boot application (modular monolith) that owns all business data and r
 | order | Carts, orders, status, shipments, pickups |
 | customer | Profiles, OTP verification |
 | payment (mock) | Payment links, payment status |
-| helpdesk | Tickets, staff handoff |
+| helpdesk | Tickets, staff handoff, ticket assignment and **conversation ownership** (bot/staff) - source of truth, audited (ADR-037) |
 | shared | Common types, errors, security config |
 
 ## 2. Technology and versions

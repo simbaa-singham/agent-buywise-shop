@@ -19,9 +19,10 @@ Understand customer messages, route to the right handler, call tools and knowled
 - `buywise-agent`: Agent API + LangGraph graph + RAG pipeline; tools only via `buywise-mcp`.
 - Stateless instances (state in Postgres checkpointer); 2 replicas locally.
 - Agent API (ADR-029): `POST /turns` -> 202 Accepted with `turnId`; turn runs in the background and appends ADR-024 contract events (Pydantic types generated from the JSON Schema) to the conversation's Redis Stream `conv:{id}`. `POST /turns/{id}/cancel` stops a running turn. A turn is never tied to the BFF pod that started it.
+- `POST /conversations/{id}/pause` and `/resume` (called by the BFF on staff accept/release, ADR-037); the agent refuses new turns while paused as a second safety check.
 
 ## 4. Graph design
-- **State:** conversation_id, customer_id (from the token `sub`, read-only, never from the LLM), messages, intent, confidence, sentiment, tool_results, owner (bot/staff).
+- **State:** conversation_id, customer_id (from the token `sub`, read-only, never from the LLM), messages, intent, confidence, sentiment, tool_results, paused (read-only mirror of conversation ownership; helpdesk module owns it, ADR-037).
 - **Nodes:** load_context -> sentiment_check -> route_intent -> handler -> guardrails -> respond.
 - **Routing (ADR-030) - cascade in `route_intent`:**
   1. Rules: deterministic patterns (order number `BW-\d+` -> `order_status`; "talk to a person" -> `handoff`).

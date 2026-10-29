@@ -119,7 +119,103 @@ Rules:
 - BFF -> `buywise-services`: order history, staff console data (JWT from the session; no internal gateway).
 
 ## 5. Key flows
-- TBD (login, chat streaming, staff takeover).
+Sequence diagrams (Mermaid, rendered by GitHub). Each step names the decision it comes from.
+
+### 5.1 Guest visit and customer login (ADR-021)
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant W as BFF
+    participant R as Redis
+    participant K as Keycloak
+    B->>W: GET / (no cookie)
+    W->>R: create guest session (id, guest=true)
+    W-->>B: Set-Cookie __Host-sid (HttpOnly, Secure, SameSite=Lax)
+    Note over B,W: Guest browses and chats (public scopes only, ADR-028)
+    B->>W: GET /api/auth/login?returnTo=/checkout
+    W-->>B: 302 to Keycloak (Authorization Code + PKCE, state, nonce)
+    B->>K: login (customer client)
+    K-->>B: 302 /api/auth/callback?code=...
+    B->>W: GET /api/auth/callback?code=...
+    W->>K: exchange code + PKCE verifier (confidential client)
+    K-->>W: access, refresh, ID tokens
+    W->>R: new session id (rotation), store tokens, copy guest conversation id, delete guest session
+    W-->>B: Set-Cookie new __Host-sid, 302 returnTo
+    Note over W: Next agent turn carries a token with sub=customer; agent links the guest conversation to the customer only if it belongs to this session
+```
+- Logout: `POST /api/auth/logout` (CSRF header) -> delete Redis session -> Keycloak RP-initiated logout. Keycloak back-channel logout also deletes the BFF session (e.g. account disabled).
+- Session timeout warning (ADR-025): BFF exposes remaining idle time; UI warns 2 min before and offers "stay signed in".
+
+### 5.2 Chat turn with streaming reply (ADR-020, ADR-024, ADR-028, ADR-029, ADR-030, ADR-036)
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant W as BFF
+    participant K as Keycloak
+    participant A as Agent
+    participant M as buywise-mcp
+    participant S as buywise-services
+    participant R as Redis Stream conv:{id}
+    B->>W: GET /api/chat/stream (SSE, cookie) - open once per tab
+    W->>R: shared reader subscribes to conv:{id}
+    B->>W: POST /api/chat/messages {clientMessageId, text} (CSRF header)
+    W->>W: dedupe clientMessageId; check conversation owner = bot
+    W->>R: XADD message.created (customer)
+    W->>K: token exchange -> aud buywise-agent
+    W->>A: POST /turns (token, conversationId, messageId)
+    A-->>W: 202 Accepted {turnId}
+    A->>R: XADD status.updated "Thinking..."
+    A->>A: route (rules -> fast -> LLM), Presidio placeholders
+    A->>K: token exchange -> aud buywise-mcp, intent scopes
+    A->>R: XADD status.updated "Checking stock..."
+    A->>M: tools/call check_stock
+    M->>K: token exchange -> aud buywise-services
+    M->>S: GET /inventory/...
+    S-->>M: stock
+    M-->>A: result
+    A->>R: XADD message.started, message.delta x N, block.product_card, message.completed
+    R-->>W: events
+    W-->>B: SSE events (id = stream entry id)
+```
+- Stop button: `POST /api/chat/turns/{id}/cancel` -> agent cancels -> `message.completed` (partial) or `message.failed`.
+- Reconnect: browser auto-reconnects with `Last-Event-ID`; any BFF pod reads `conv:{id}` from that id; if trimmed -> `GET /api/chat/conversations/{id}` (REST reload).
+- Overload / budget / failure behavior: docs/00 section 7.3 (queue position via `status.updated`, fallback model, FAQ + handoff).
+
+### 5.3 Staff takeover (handoff)
+```mermaid
+sequenceDiagram
+    participant C as Customer browser
+    participant W as BFF
+    participant A as Agent
+    participant H as buywise-services (helpdesk)
+    participant R as Redis Streams
+    participant St as Staff console
+    A->>H: create_ticket via MCP (intent handoff / low confidence / negative sentiment)
+    A->>R: XADD conv:{id} handoff.requested
+    H-->>R: ticket.created on staff queue stream (via event consumers)
+    R-->>St: SSE ticket.created
+    St->>W: POST /api/staff/tickets/{id}/accept (staff session, MFA)
+    W->>H: accept ticket (staff token) -> conversation owner = staff
+    W->>A: POST /conversations/{id}/pause (agent stops new turns)
+    W->>R: XADD conv:{id} handoff.accepted {staffName}
+    R-->>C: SSE handoff.accepted
+    St->>W: GET /api/staff/conversations/{id} (transcript, masked PII)
+    C->>W: POST /api/chat/messages
+    W->>W: owner = staff -> not sent to agent
+    W->>R: XADD conv:{id} message.created (customer)
+    R-->>St: SSE message.created
+    St->>W: POST /api/staff/conversations/{id}/messages
+    W->>R: XADD conv:{id} message.created (staff)
+    R-->>C: SSE message.created
+    St->>W: POST /api/staff/tickets/{id}/release (or resolve)
+    W->>H: owner = bot (or ticket resolved)
+    W->>A: POST /conversations/{id}/resume
+    W->>R: XADD conv:{id} handoff.ended
+```
+- Ownership (ADR-037): helpdesk module in `buywise-services` is the source of truth; BFF caches it in Redis (`conv:{id}:owner`), updated on accept/release and refreshed from helpdesk events; agent is paused/resumed as a second check.
+- Staff actions never go through the agent (ADR-028); staff messages use the staff member's own token.
+- Staff sees masked contact details; "Reveal" is audited (ADR-036).
+- Planned upgrade: WebSocket for typing indicators in takeover (ADR-020).
 
 **LLM observability in the UI (ADR-027):**
 - **staff-console > AI Operations** (Keycloak role `ops-admin`; routes `/staff/ai-ops/**`, API `/api/staff/ops/**`):

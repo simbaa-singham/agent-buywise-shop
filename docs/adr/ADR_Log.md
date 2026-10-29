@@ -38,6 +38,7 @@
 | ADR-034 | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas | Accepted | 2026-10-28 |
 | ADR-035 | Backup policy (design only): Postgres WAL archiving + daily base backups, PITR 30/14 days, immutable off-site weekly copy, monthly restore drill; Redis/Kafka not backed up; config in Git; no local backups | Accepted | 2026-10-28 |
 | ADR-036 | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; masked logs/traces; audited staff reveal; retention and privacy-rights jobs | Accepted | 2026-10-28 |
+| ADR-037 | Conversation ownership owned by the helpdesk module in `buywise-services`; BFF caches in Redis; agent paused/resumed as second check | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -237,3 +238,9 @@
   - B1. Disk encryption only vs B2. Field-level envelope encryption with blind index.
 - **Decision:** A2 and B2 (defence in depth: in transit to the LLM provider and at rest). Plus: 4-tier classification; masking in code and in the OTel Collector; staff masked view with audited reveal; least privilege; retention per NFR 11; audited export/deletion jobs.
 - **Consequences:** LLM never sees raw PII; dumps/backups don't expose contact fields. ~10-30 ms per turn for detection; detection is imperfect, so log/trace masking stays as a second layer. Encrypted fields can't be searched or sorted in SQL except via the blind index. Key rotation procedure required.
+
+## ADR-037 - Conversation ownership
+- **Context:** On every customer message the BFF must know whether the bot or staff owns the conversation. docs/03 had `owner` in agent state, but ADR-028 says staff actions never go through the agent.
+- **Options considered:** A. Helpdesk module owns it (business rule with business data, audited), BFF caches in Redis. B. Agent owns it - forces staff actions through the agent, agent becomes a system of record. C. BFF owns it in Redis only - not durable, not audited.
+- **Decision:** A. Accept -> owner staff; release/resolve -> owner bot; changes audited in `conversation_ownership`. BFF caches `conv:{id}:owner`, updated on accept/release and refreshed from helpdesk events. BFF pauses/resumes the agent; agent refuses turns while paused.
+- **Consequences:** Single source of truth with audit. Cache must stay consistent with services (update on write + event refresh; on cache miss read from services).

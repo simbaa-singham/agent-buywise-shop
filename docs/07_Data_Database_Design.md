@@ -9,7 +9,7 @@ Data ownership, storage choices and data model.
 | Store | Use |
 |---|---|
 | PostgreSQL | Database per deployable (ADR-010), see table below |
-| Redis | Semantic cache, rate limits, OTP codes, sessions (ADR-021), conversation event streams `conv:{id}` - delivery and replay, capped by count and time (ADR-024, ADR-029), token budget counters (ADR-026) |
+| Redis | Semantic cache, rate limits, OTP codes, sessions (ADR-021), conversation event streams `conv:{id}` - delivery and replay, capped by count and time (ADR-024, ADR-029), token budget counters (ADR-026), conversation owner cache `conv:{id}:owner` (ADR-037) |
 | Kafka | Event log (see 06) |
 
 **PostgreSQL databases (ADR-010):**
@@ -32,7 +32,7 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 - catalog: `products`, `variants`, `compatibility`
 - inventory: `inventory`, `reservations`
 - order: `carts`, `cart_items`, `orders`, `order_items`, `shipments`, `pickups`
-- helpdesk: `tickets`
+- helpdesk: `tickets` (assignee, status), `conversation_ownership` (conversation_id, owner bot/staff, staff_id, changed_at, changed_by) - ADR-037
 - agent: `conversations`, `messages`, checkpoints, `turns` (per-turn totals: latency, tokens, cost), `llm_calls` (one row per LLM call: turn, stage, model, TTFT, duration, tokens in/out, tokens/sec, cost, budget event) - ADR-026/027, `router_decisions` (turn, tier, intents, confidence, latency, clarified/handoff) - ADR-030
 - knowledge: `documents` (doc_type, version, content hash, front matter), `chunks` (embedding, full-text vector, `parent_id` for parent-child retrieval, metadata columns per ADR-034)
 - catalog products carry `brand_id` (opaque id, never displayed) and `specs_verified` date; no images (placeholders only)
