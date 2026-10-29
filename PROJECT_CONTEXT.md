@@ -38,5 +38,5 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Next: module-level open decisions (docs/01-08 "Open decisions" sections); pending housekeeping below.
 
 ## Pending housekeeping
-- Restructure folders to match docs/00 section 6 (ui/, services/, mcp/, agent/, events/, data/, deploy/); move pyproject.toml etc. into agent/; retire mcp_servers/ and root tests/.
+- Done 2026-10-28: folders restructured to docs/00 section 6; agent/pyproject.toml aligned with ADR-011 (pgvector) and ADR-026 (LiteLLM via langchain-openai); agent/.env.example aligned with ADR-010/026/029.
 - Done 2026-10-28: git init + first commit, pushed to github.com:simbaa-singham/agent-buywise-shop (main).
