@@ -63,7 +63,9 @@ llm:
     per_turn_output_tokens: 1024
     per_conversation_tokens: 20000
     per_customer_daily_tokens: 100000
-    global_daily_usd: 50              # enforced in LiteLLM; alert 80%, fallback 90%, stop 100%
+    global_daily_usd: TBD             # enforced in LiteLLM; alert 80%, fallback 90%, stop 100%.
+                                      # Set when the production LLM is decided (docs/00 #5); rough estimate
+                                      # ~$2,000-3,000/day production, local = production / S
 ```
 
 Admission control and deadlines (docs/00 section 7.3): per-pod cap on concurrent generations with a bounded queue (`status.updated` shows queue position); per-stage deadlines scaled by `k` locally; circuit breaker on the LiteLLM client.

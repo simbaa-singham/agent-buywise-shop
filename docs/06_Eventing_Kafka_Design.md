@@ -31,5 +31,5 @@ Decouple side effects from business transactions (notifications, staff console u
 2. RAG re-indexing location: agent vs event consumers.
 
 ## 6. Open decisions
-1. Event schema format: JSON Schema vs Avro + schema registry.
+1. Event schema format (kept open by architect 2026-10-28): JSON Schema without registry vs Avro / Protobuf / JSON Schema with a schema registry. Analysis in ADR log "Deferred decisions".
 2. Partitions, retention, dead-letter topics.

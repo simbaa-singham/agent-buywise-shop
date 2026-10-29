@@ -28,7 +28,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Component | Local | Production design |
 |---|---|---|
 | Edge | Envoy Gateway (Gateway API) | Envoy Gateway, multiple replicas |
-| Postgres | CloudNativePG, 1 instance | Primary + replica |
+| Postgres | CloudNativePG, 1 cluster (1 instance; 2 in resilience profile) hosting all databases (ADR-010) | Business cluster (primary + synchronous replica) and AI cluster (primary + read replica for RAG) |
 | Kafka | Strimzi, KRaft, 1 broker | 3 brokers |
 | Redis | 1 | HA |
 | Keycloak | 1 | HA |
@@ -55,4 +55,4 @@ TBD.
 
 ## 9. Open decisions
 1. Secrets management (Kubernetes secrets vs external secrets manager).
-2. Mac resources for the full local-k8s profile.
+2. Mac resources for the full local-k8s profile. Includes: Langfuse v3 footprint (ClickHouse, Redis, object storage, web + worker; verify current requirements) - options: full stack in an opt-in observability profile, drop Langfuse (ADR-027 `llm_calls` + Grafana/Tempo), or a lighter tool (e.g. Arize Phoenix); and 2 Postgres instances for the failover test (docs/00 section 7.2 #6).

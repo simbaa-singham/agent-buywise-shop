@@ -8,9 +8,21 @@ Data ownership, storage choices and data model.
 ## 2. Stores
 | Store | Use |
 |---|---|
-| PostgreSQL | One database: business data (schema per module), Spring Modulith event publication tables, conversations, agent checkpoints, vectors (pgvector) |
+| PostgreSQL | Database per deployable (ADR-010), see table below |
 | Redis | Semantic cache, rate limits, OTP codes, sessions (ADR-021), chat event replay streams (ADR-024), token budget counters (ADR-026) |
 | Kafka | Event log (see 06) |
+
+**PostgreSQL databases (ADR-010):**
+| Database | Owner | Schemas / contents | Production cluster |
+|---|---|---|---|
+| `services` | `buywise-services` | one schema per module (catalog, inventory, order, customer, payment, helpdesk) + Spring Modulith event publication tables | Business (synchronous replica, RPO 0) |
+| `keycloak` | Keycloak | Keycloak's own tables | Business |
+| `agent` | `buywise-agent` | `agent` (conversations, messages, checkpoints, turns, llm_calls); `knowledge` (documents, chunks + pgvector) | AI (read replica serves RAG reads, ADR-011) |
+| `litellm` | LiteLLM | spend and budget tables | AI |
+| `langfuse` | Langfuse | Langfuse's Postgres tables (v3 also needs ClickHouse, Redis, object storage - see docs/08 open decision 2) | AI |
+
+- Each database has its own Postgres user with access only to that database.
+- Local: one CloudNativePG cluster hosts all databases with the same names and users; the production split is connection strings only.
 
 ## 3. Data ownership
 Each module of `buywise-services` owns its schema; no cross-module joins; other deployables read via REST API or events.
@@ -25,5 +37,5 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 - knowledge: `documents`, `chunks` (with embeddings)
 
 ## 5. Open decisions
-1. Agent/knowledge data in the same database (separate schemas) vs a separate database.
+1. ~~Agent/knowledge data same database vs separate~~ - decided: separate `agent` database, AI cluster in production (ADR-010).
 2. Backup and PII policy. Retention set by NFR 8: chat transcripts 90 days then deleted/anonymized (includes `turns`, `llm_calls`), logs 30 days.

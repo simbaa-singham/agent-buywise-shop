@@ -11,8 +11,8 @@
 | ADR-007 | MCP servers inside Java services (Spring AI 2.0) | Superseded by ADR-015 | 2026-10-28 |
 | ADR-008 | LangGraph 1.2 for agent orchestration with Postgres checkpointer | Accepted | 2026-10-28 |
 | ADR-009 | Kafka for events; events recorded in the same transaction as state changes | Accepted (mechanism deferred) | 2026-10-28 |
-| ADR-010 | PostgreSQL, one database, schema per module | Proposed | 2026-10-28 |
-| ADR-011 | Postgres + pgvector + full-text for RAG | Proposed | 2026-10-28 |
+| ADR-010 | PostgreSQL: database per deployable (services with schema per module, agent, keycloak, litellm, langfuse); production business and AI clusters; one cluster locally | Accepted | 2026-10-28 |
+| ADR-011 | Postgres + pgvector + full-text for RAG (hybrid, RRF, rerank); retriever interface; `pg_search` BM25 upgrade path; RAG reads off the primary in production | Accepted | 2026-10-28 |
 | ADR-012 | Project name agent-buywise-shop; electronics shopping assistant, Apple products as sample catalog | Accepted | 2026-10-28 |
 | ADR-013 | Local-first, small-scale runtime; production sizing via configuration only | Accepted | 2026-10-28 |
 | ADR-014 | One Spring Boot 4.1 modular monolith (Spring Modulith 2.x), controllers per use case | Accepted | 2026-10-28 |
@@ -35,6 +35,8 @@
 |---|---|---|
 | Event publishing mechanism | Polling outbox relay vs Debezium CDC | Implementation of events |
 | RAG re-indexing location | Agent vs event consumers | Implementation of RAG |
+| Production LLM | A. Hosted frontier API; B. Self-hosted open-weight on vLLM; C. Hybrid tiers via LiteLLM (primary frontier, economy tier for routing/FAQ/fallback, second provider failover, vLLM later). Rough cost: ~400k turns/day x ~4k in / 300 out tokens -> ~$6,600/day at $3/$15 per 1M before caching and tiering. Model picked by eval suite through LiteLLM. Sets shadow prices, `k` and the global budget | Architect to decide later |
+| Event schema format | A. JSON Schema, no registry (CI contract tests only); B. Avro + registry (strongest runtime compatibility checks, mature Java/Python, fits Debezium); C. Protobuf + registry (strong codegen, field-number rules); D. JSON Schema + registry (readable, less mature compatibility checks). Related: compatibility mode (e.g. backward transitive), CloudEvents headers, registry choice (Apicurio vs Karapace) and its Mac footprint | Architect to decide later |
 
 ## Template (one section per ADR when detailed)
 - **Context:** what problem / forces.
@@ -134,3 +136,25 @@
   - B3. Both, plus a developer overlay in customer-web.
 - **Decision:** B3. Grafana for trends, NFR percentiles, spend and alerts. staff-console AI Operations (role `ops-admin`): live summary, conversation explorer with per-stage breakdown, read-only budget/pricing view. customer-web dev overlay from `message.metrics`, off by default. Contract additions (backward compatible, `v` stays 1): `status.updated`, `message.metrics`.
 - **Consequences:** New BFF `ops` module and staff-console area; new Keycloak role; agent usage tables (`turns`, `llm_calls`). Open: chart library for AI Operations (docs/01).
+
+## ADR-011 - Vector store
+- **Context:** Hybrid retrieval (dense + keyword, RRF, rerank) over product pages, specs, policies and FAQs: ~5k-50k chunks, small even at 10x. Checkout availability target is 99.99% (docs/00 section 7).
+- **Options considered:**
+  - A. Postgres + pgvector (HNSW) + Postgres full-text - no new stateful system, metadata and vectors in one SQL query, transactional; keyword ranking is not BM25, shares Postgres with orders.
+  - B. Qdrant - strong filtered and hybrid search, quantization, horizontal scale; extra system to run, sync from Postgres, strengths unused at our size.
+  - C. OpenSearch / Elasticsearch - best BM25 and analyzers; heavy JVM footprint on the Mac, most operations work.
+- **Decision:** A. Retrieval behind one retriever interface in `buywise-agent`. If Ragas shows weak exact-term retrieval, add ParadeDB `pg_search` (BM25 in Postgres). In production, RAG reads run on a read replica (or separate database), never on the primary serving checkout - detailed with ADR-010 / docs/07.
+- **Consequences:** One database to operate; text and vectors always consistent. Moving to Qdrant later only replaces the retriever implementation and indexing job.
+
+## ADR-010 - PostgreSQL organisation
+- **Context:** Postgres holds business data (`buywise-services`), agent data and vectors (`buywise-agent`), and platform tool data (Keycloak, LiteLLM, Langfuse). Checkout needs 99.99% and RPO 0; the agent produces bursty checkpoint writes and vector searches. ADR-011 requires RAG reads off the primary serving checkout.
+- **Options considered:**
+  - A. One database, schema per module, everything in it - simplest; AI load competes with checkout, later split needs migration.
+  - B. Database per deployable, grouped into clusters by criticality - isolation, clear ownership, light locally; more databases/users, two clusters in production.
+  - C. Cluster per deployable everywhere - most isolation; too heavy for the Mac, beyond NFR needs.
+- **Decision:** B.
+  - Databases: `services` (schemas per module), `agent` (schemas `agent`, `knowledge`), `keycloak`, `litellm`, `langfuse`; one Postgres user per database, access only to its own.
+  - Production: business cluster (`services`, `keycloak`) with synchronous replica (RPO 0); AI cluster (`agent`, `litellm`, `langfuse`) with read replica for RAG.
+  - Local: one CloudNativePG cluster hosting all databases with the same names and users; production split is connection-string config only (ADR-013).
+  - Inside `services`: one app user; no cross-schema joins or foreign keys, enforced by Spring Modulith verification and tests.
+- **Consequences:** AI load cannot affect checkout. More databases and credentials to manage (ties to secrets decision, docs/08). Other deployables read business data only via REST or events.

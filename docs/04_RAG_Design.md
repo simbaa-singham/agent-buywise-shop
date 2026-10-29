@@ -10,7 +10,7 @@ Answer product and store questions from trusted documents, with citations. Live 
 |---|---|
 | Parsing | Docling |
 | Embeddings | `nomic-embed-text` (dev) -> `bge-m3` (prod) |
-| Store | Postgres + pgvector + full-text (proposed) |
+| Store | Postgres + pgvector (HNSW) + full-text, behind a retriever interface (ADR-011); BM25 upgrade: ParadeDB `pg_search`; production reads on a replica |
 | Fusion | Reciprocal Rank Fusion |
 | Reranker | `bge-reranker-v2-m3` |
 | Evaluation | Ragas |
@@ -28,6 +28,6 @@ Chunking strategies, parent-child chunks, metadata filters, hybrid search, reran
 RAG pipeline runs inside `buywise-agent`.
 
 ## 7. Open decisions
-1. Vector store: pgvector vs Qdrant.
+1. ~~Vector store~~ - decided: pgvector + full-text (ADR-011).
 2. Chunk size / strategy per document type.
 3. Re-indexing location (deferred to implementation).

@@ -38,8 +38,8 @@ AI shopping assistant for an online electronics store (Apple products as the sam
 | Edge | Envoy Gateway (Kubernetes Gateway API); no internal gateway; service mesh as future option | ADR-017 |
 | Agent orchestration | LangGraph 1.2 with Postgres checkpointer | ADR-008 |
 | Events | Apache Kafka; separate publisher and consumer deployables | ADR-009 |
-| Primary database | PostgreSQL, schema per module | ADR-010 (proposed) |
-| Vector store | Postgres + pgvector + full-text (hybrid) | ADR-011 (proposed) |
+| Primary database | PostgreSQL, database per deployable; business and AI clusters in production, one cluster locally | ADR-010 |
+| Vector store | Postgres + pgvector + full-text (hybrid) | ADR-011 |
 | Runtime | Local-first, small scale; production sizing via config only | ADR-013 |
 
 ## 3. System context
@@ -174,7 +174,7 @@ Same mechanisms locally and in production; only the limits differ (derived from 
 | 1 | Confirm NFR targets (section 7) | Decided 2026-10-28 |
 | 2 | Event publishing mechanism: polling outbox relay vs Debezium CDC | Deferred to implementation |
 | 3 | Where RAG re-indexing runs: agent vs event consumers | Deferred to implementation |
-| 4 | Vector store: pgvector (proposed) vs Qdrant | Open |
-| 5 | Production LLM: self-hosted (vLLM) vs hosted API behind a gateway | Open |
-| 6 | Event schema format: JSON Schema vs Avro (+ schema registry) | Open |
+| 4 | Vector store: pgvector (proposed) vs Qdrant | Decided: pgvector + full-text (ADR-011) |
+| 5 | Production LLM: self-hosted (vLLM) vs hosted API vs hybrid tiers, all behind LiteLLM | Open - kept open by architect 2026-10-28; analysis in ADR log "Deferred decisions" |
+| 6 | Event schema format: JSON Schema vs Avro vs Protobuf (+ schema registry) | Open - kept open by architect 2026-10-28; analysis in ADR log "Deferred decisions" |
 | 7 | Angular component library | Decided (ADR-019) |
