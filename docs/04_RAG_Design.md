@@ -9,7 +9,7 @@ Answer product and store questions from trusted documents, with citations. Live 
 | Concern | Choice |
 |---|---|
 | Parsing | Own parser plugins + common Document model (ADR-039); Docling for PDF layout/tables/OCR; python-docx, openpyxl/pandas, python-pptx, trafilatura, `email`, markdown-it-py |
-| Embeddings | `nomic-embed-text` (dev) -> `bge-m3` (prod) |
+| Embeddings | `bge-m3` (1024 dims) in every environment, via LiteLLM; `model_version` stored per vector; queries PII-masked before embedding; phase-3 bake-off vs Qwen3-Embedding-0.6B and nomic-embed-text v1.5 on our eval set; model change = blue/green re-index (ADR-040) |
 | Store | Postgres + pgvector (HNSW) + full-text, behind a retriever interface (ADR-011); BM25 upgrade: ParadeDB `pg_search`; production reads on a replica |
 | Fusion | Reciprocal Rank Fusion |
 | Reranker | `bge-reranker-v2-m3` |
@@ -85,6 +85,23 @@ Applied to the Document model, so the same rules work for every format. Structur
 
 **Quality:** golden tests per sample file (expected Document model snapshot in CI); parse metrics (pages, elements, OCR confidence, duration) per document.
 
+
+### 3d. Parsing in production - context for ADR-039
+**Common production pattern** (independent of tool): route by format and difficulty (cheap text-layer path for clean digital docs, expensive OCR / layout / vision-model path for scans and complex layouts); convert everything to one intermediate representation; keep provenance; quality checks with automatic retry on a stronger parser and human review for leftovers; asynchronous queue-fed workers, idempotent and retryable, failing into quarantine; parser version recorded so upgrades can trigger re-parse.
+
+**Tool landscape** (as of 2025-26; fast-moving):
+| Category | Examples | Typical use |
+|---|---|---|
+| Open-source multi-format toolkits | Docling, Unstructured | RAG pipelines |
+| Text extraction everywhere | Apache Tika | Search and enterprise indexing; weak on structure |
+| PDF specialists | PyMuPDF, pdfplumber, Marker, MinerU | High-volume PDF, academic papers |
+| Managed cloud document AI | Azure AI Document Intelligence, Textract, Document AI | Scans, forms, compliance-heavy enterprises |
+| LLM-era parsing services | LlamaParse, Reducto, Mistral OCR | Fast-moving RAG products |
+| Vision-language model parsing | Page images to a VLM (e.g. Docling VLM pipeline) | Complex layouts; costly per page |
+
+Typical preference: an open-source toolkit for most documents, a managed or VLM service only for hard cases, all mapped into one internal model.
+
+**Why our own Document model instead of DoclingDocument:** DoclingDocument is rich (text items, cell-level tables, pictures, groups, header/footer "furniture", page + bounding-box provenance, exporters, chunkers), but its provenance is page-based and spreadsheet rows are not first-class records. Our model natively supports `sheet!row`, slide, DOM path and email-attachment provenance plus `record` elements, and isolates the core pipeline from Docling's schema changes (anti-corruption layer). Docling stays the engine for PDF layout, tables and OCR behind an adapter; other engines (managed document AI, VLM) can be added later as further adapters and routed by difficulty.
 
 ## 4. Retrieval pipeline
 query understanding -> metadata filters -> hybrid search (dense + keyword) -> RRF -> rerank -> top-k with citations - TBD in detail.

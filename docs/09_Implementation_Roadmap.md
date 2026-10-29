@@ -59,6 +59,7 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Draf
 | Knowledge docs in many formats (DOCX, digital PDF, scanned PDF/PNG, HTML, XLSX/CSV, PPTX, EML with attachment, Markdown/TXT, generated JSON) from the approved outline | ADR-033, ADR-039 |
 | Ingestion worker: detect -> parser plugins -> Document model -> normalize -> validate -> clean -> chunk -> embed; quarantine; golden tests per format; upload + drop folder | ADR-039 |
 | Chunking on the Document model, parent-child, context headers, metadata, embeddings, pgvector + full-text | ADR-011, ADR-034 |
+| Embedding bake-off: bge-m3 vs Qwen3-Embedding-0.6B vs nomic-embed-text v1.5 on the RAG eval set (context precision/recall, query latency); winner adopted via blue/green re-index | ADR-040 |
 | Retrieval: filters, hybrid search, RRF, rerank, citations; retriever interface | ADR-011 |
 | Handlers: product_question, compatibility, store_question, browse/recommend | docs/03 section 5 |
 | Ragas + RAG eval set in CI; "no price from chunks" check | NFR 8 |

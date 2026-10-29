@@ -41,6 +41,7 @@
 | ADR-037 | Conversation ownership owned by the helpdesk module in `buywise-services`; BFF caches in Redis; agent paused/resumed as second check | Accepted | 2026-10-28 |
 | ADR-038 | AI Operations charts: Apache ECharts (modular imports) with own thin signal-based wrapper; "view as table" accessibility toggle | Accepted | 2026-10-28 |
 | ADR-039 | Multi-format ingestion: detect by magic bytes -> parser plugin per format -> common Document model with provenance -> normalize, validate, clean, chunk; quarantine; golden tests; worker inside agent deployable | Accepted | 2026-10-28 |
+| ADR-040 | Embeddings: bge-m3 in every environment via LiteLLM; `model_version` per vector; PII-masked queries; phase-3 bake-off; model change via blue/green re-index | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -257,4 +258,11 @@
 - **Context:** Main learning goal: real parsing techniques across formats, not "chunk the PDF". Knowledge docs are created in DOCX, digital PDF, scanned PDF/PNG, HTML, XLSX/CSV, PPTX, EML with attachments, Markdown/TXT and generated JSON. Amends ADR-033 (formats).
 - **Options considered:** A. Docling for everything - least code; hides techniques, no email, weak boilerplate removal. B. Own parser per format from low-level libraries - most learning; rebuilds hard problems (PDF tables, OCR) badly. C. Own plugin system with a common Document model and best-fit library per format.
 - **Decision:** C. Pipeline detect (magic bytes) -> parse (plugin per format) -> normalize -> validate (OCR retry, confidence) -> clean (prices) -> chunk (ADR-034 on the Document model) -> embed/index. Elements carry provenance (page+bbox, sheet!row, slide, DOM path, attachment). Quarantine for failures; golden snapshot tests per sample file; content-hash idempotency with parser version. Entry via `data/inbox/` and ops-admin upload. Runs as an ingestion worker process inside `buywise-agent`.
+- **Why not DoclingDocument as the common model:** page-based provenance and no first-class records; own model acts as an anti-corruption layer and lets us add/route other engines (managed document AI, VLM) via adapters. Details in docs/04 section 3d.
 - **Consequences:** New format = one plugin. Precise citations. More libraries to maintain (Docling, OCR engine, python-docx, openpyxl/pandas, python-pptx, trafilatura, markdown-it-py). OCR is CPU-heavy, isolated in the worker.
+
+## ADR-040 - Embedding model
+- **Context:** docs/04 planned nomic-embed-text locally and bge-m3 in production - different dimensions, prefixes and quality, breaking the "same system, scaled down" rule. Query and document vectors must come from the same model and version.
+- **Options considered:** nomic-embed-text v1.5 (small, fast, prefixes, English); bge-m3 (proven, multilingual, dense+sparse+multi-vector, no prefixes); mxbai-embed-large (strong English, 512 max input); snowflake-arctic-embed2 (strong, less adopted); Qwen3-Embedding-0.6B (top 2025 benchmarks, newer); hosted-only APIs (cannot run locally).
+- **Decision:** bge-m3 (1024 dims) everywhere from phase 0, called through LiteLLM; `model_version` stored per vector; queries PII-masked before embedding (ADR-036). Phase-3 bake-off vs Qwen3-Embedding-0.6B and nomic-embed-text v1.5 on our eval set decides the final model.
+- **Consequences:** Local retrieval evals predict production. Changing model is a blue/green migration: new vector column, background re-embed, eval, switch by flag, drop old. bge-m3 sparse output available as a future hybrid-search option.
