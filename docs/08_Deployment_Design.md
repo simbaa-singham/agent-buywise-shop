@@ -73,5 +73,5 @@ GitHub Actions: build, unit tests, contract tests, evals, image build, deploy to
 TBD.
 
 ## 9. Open decisions
-1. Secrets management (Kubernetes secrets vs external secrets manager).
+1. Secrets management (Kubernetes secrets vs external secrets manager) - kept open by architect 2026-10-28; decide later. Locally: Kubernetes secrets.
 2. ~~Local machine resources~~ - decided 2026-10-28: run task-based subsets, never the whole stack at once (section 4b); items in section 4a not run locally. Notes kept for reference: Langfuse v3 footprint (ClickHouse, Redis, object storage, web + worker; verify current requirements) - options: full stack in an opt-in observability profile, drop Langfuse (ADR-027 `llm_calls` + Grafana/Tempo), or a lighter tool (e.g. Arize Phoenix); and 2 Postgres instances for the failover test (docs/00 section 7.2 #6).

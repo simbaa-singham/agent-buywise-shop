@@ -15,6 +15,7 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md) - agent-buywi
 | Component library | Angular Material (Material 3) + Angular CDK, custom theme (ADR-019) | Released with Angular, strongest built-in accessibility, data table for staff console, token-based theming |
 | Styling | SCSS with Material 3 design tokens; no Tailwind | One styling system; tokens shared by both apps |
 | Rendering | Hybrid per route: prerender + client; no per-request SSR (ADR-023) | Fast indexable product pages; BFF stays a file server |
+| Charts (AI Operations only) | Apache ECharts, modular imports, own signal-based wrapper component; "view as table" toggle (ADR-038) | Richest chart set, canvas performance, built-in aria descriptions; no third-party Angular wrapper to lag behind upgrades |
 | State management | NgRx SignalStore + signals + `httpResource` (ADR-022) | Consistent store structure where state is shared or live; plain signals elsewhere |
 
 **Rendering per route (ADR-023):**
@@ -227,7 +228,7 @@ sequenceDiagram
 
 ## 6. Non-functional
 - 2 replicas locally: any pod can serve any SSE connection by reading the conversation's Redis Stream (ADR-029); no sticky sessions.
-- Reconnect: covered by ADR-020/ADR-024 (SSE auto-reconnect + `Last-Event-ID` replay). Browser support: TBD.
+- Reconnect: covered by ADR-020/ADR-024 (SSE auto-reconnect + `Last-Event-ID` replay). Browser support: last 2 versions of Chrome, Edge, Firefox and Safari (desktop), Safari on iOS and Chrome on Android - matches Angular 22's supported browsers; enforced via `browserslist` and Playwright projects (Chromium, Firefox, WebKit).
 
 **Accessibility (ADR-025): WCAG 2.2 AA, automated + manual checks.**
 - Automated: angular-eslint template accessibility rules; axe-core inside Playwright end-to-end tests in CI (fails the build on serious/critical issues).
@@ -257,4 +258,4 @@ sequenceDiagram
    - ~~Chat message contract~~ - decided: own typed contract, AG-UI-shaped reply events (ADR-024)
    - ~~Accessibility~~ - decided: WCAG 2.2 AA, automated + manual (ADR-025)
 2. Future option: serve Angular files from a CDN, BFF only as a service.
-3. Chart library for AI Operations (e.g. ngx-echarts vs Chart.js vs ngx-charts). Raised by ADR-027.
+3. ~~Chart library for AI Operations~~ - decided: Apache ECharts with own wrapper (ADR-038).

@@ -32,4 +32,4 @@ Decouple side effects from business transactions (notifications, staff console u
 
 ## 6. Open decisions
 1. Event schema format (kept open by architect 2026-10-28): JSON Schema without registry vs Avro / Protobuf / JSON Schema with a schema registry. Analysis in ADR log "Deferred decisions".
-2. Partitions, retention, dead-letter topics.
+2. Partitions, retention, dead-letter topics (kept open by architect 2026-10-28; decide later).

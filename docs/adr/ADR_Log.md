@@ -39,6 +39,7 @@
 | ADR-035 | Backup policy (design only): Postgres WAL archiving + daily base backups, PITR 30/14 days, immutable off-site weekly copy, monthly restore drill; Redis/Kafka not backed up; config in Git; no local backups | Accepted | 2026-10-28 |
 | ADR-036 | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; masked logs/traces; audited staff reveal; retention and privacy-rights jobs | Accepted | 2026-10-28 |
 | ADR-037 | Conversation ownership owned by the helpdesk module in `buywise-services`; BFF caches in Redis; agent paused/resumed as second check | Accepted | 2026-10-28 |
+| ADR-038 | AI Operations charts: Apache ECharts (modular imports) with own thin signal-based wrapper; "view as table" accessibility toggle | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -244,3 +245,9 @@
 - **Options considered:** A. Helpdesk module owns it (business rule with business data, audited), BFF caches in Redis. B. Agent owns it - forces staff actions through the agent, agent becomes a system of record. C. BFF owns it in Redis only - not durable, not audited.
 - **Decision:** A. Accept -> owner staff; release/resolve -> owner bot; changes audited in `conversation_ownership`. BFF caches `conv:{id}:owner`, updated on accept/release and refreshed from helpdesk events. BFF pauses/resumes the agent; agent refuses turns while paused.
 - **Consequences:** Single source of truth with audit. Cache must stay consistent with services (update on write + event refresh; on cache miss read from services).
+
+## ADR-038 - AI Operations chart library
+- **Context:** staff-console AI Operations (ADR-027) needs time series with target lines, spend gauge, per-stage waterfall, histograms. Loaded only by `ops-admin`, lazily; WCAG 2.2 AA (ADR-025).
+- **Options considered:** A. Apache ECharts - richest, canvas, aria module, themeable; ~150 KB gz modular. B. Chart.js - small, simple; plugins for waterfall/gauge/zoom, no built-in a11y. C. ngx-charts - Angular-native SVG; historically slow upgrades, SVG slow on large data. D. Embedded Grafana panels - no chart code; cross-site embedding and auth, style mismatch, no per-conversation data.
+- **Decision:** A, with our own ~50-line signal-based wrapper (no `ngx-echarts` dependency); theme from Material 3 tokens; "view as table" toggle rendering a semantic HTML table per chart.
+- **Consequences:** Full chart capability in an admin-only lazy chunk; upgrades not blocked by a third-party wrapper; we maintain the wrapper.
