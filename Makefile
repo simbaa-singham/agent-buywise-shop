@@ -4,7 +4,7 @@ DATA_PY := data/tools/.venv/bin/python
 AGENT_PY := agent/.venv/bin/python
 CONTRACTS := ui/web/projects/shared/contracts
 
-.PHONY: help env up down logs ps migrate seed ingest contracts contracts-check k test data-tools data agent-dev
+.PHONY: help env up down logs ps migrate ingest contracts contracts-check k test data-tools data agent-dev
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -26,9 +26,6 @@ logs: ## Follow stack logs
 
 migrate: env ## Apply buywise-services schema migrations with Flyway
 	$(COMPOSE) run --rm flyway
-
-seed: migrate ## Load data/seed into the services database (seed job, Option B)
-	$(DATA_PY) data/tools/seed_db.py
 
 ingest: ## RAG ingestion (phase 3)
 	@echo "make ingest arrives in phase 3 (ADR-039)"; exit 1

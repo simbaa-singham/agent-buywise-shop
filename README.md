@@ -24,7 +24,8 @@ Prerequisites: Docker, Node 24, Python 3.12+, Ollama running on the host with `q
 ```bash
 make data-tools agent-dev   # one-time: Python tool environments
 make up                     # Postgres (+pgvector), Redis, Keycloak, LiteLLM
-make seed                   # Flyway schema + catalog/inventory seed into the services database
+make migrate                # create the services tables (Flyway)
+# load the seed data by hand: docs/walkthroughs/load-seed-data.md
 make k                      # measure the LLM hardware factor k -> deploy/local/scale.yaml
 make test                   # contract tests + lint
 make help                   # all targets

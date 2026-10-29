@@ -29,6 +29,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 |---|---|---|
 | Edge | Envoy Gateway (Gateway API) | Envoy Gateway, multiple replicas |
 | Postgres | CloudNativePG, 1 cluster, 1 instance, hosting all databases (ADR-010) | Business cluster (primary + synchronous replica) and AI cluster (primary + read replica for RAG) |
+| Connection pooling | Not needed (few connections) | PgBouncer via CloudNativePG `Pooler` in front of each cluster; apps connect to the pooler service, not to Postgres directly (design only) |
 | Kafka | Strimzi, KRaft, 1 broker | 3 brokers |
 | Redis | 1 | HA |
 | Keycloak | 1 | HA |
@@ -37,6 +38,8 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | Model gateway | LiteLLM proxy, 1 replica; shadow price table; points at Ollama | LiteLLM, 2+ replicas; points at vLLM or hosted API |
 | LLM | Ollama on the local machine (host GPU), reached only via LiteLLM | vLLM or hosted API |
 | Service-to-service security | JWT | Service mesh (mTLS) - future option |
+
+**Local Postgres data location (local-dev):** set `PG_DATA_DIR` in `deploy/compose/.env` to keep the data files in a host folder outside the repo (bind mount, e.g. `../buywise-data/postgres`); unset uses the Docker volume `pgdata`. Production keeps data on dedicated attached disks (PersistentVolumes / managed disks), never inside the container.
 
 ## 4a. Not run locally (local machine: 8 cores, 16 GB RAM) - production design only
 | Item | Reason | Local impact |

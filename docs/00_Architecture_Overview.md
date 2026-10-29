@@ -170,7 +170,7 @@ Production-grade design throughout. Production-scale operations are **design onl
 |---|---|
 | Database backups, WAL archiving, point-in-time recovery, restore drills, immutable off-site copies (ADR-035) | All application code and contracts |
 | Disaster recovery environment, multi-zone / multi-region | Auth: BFF sessions, token exchange, scopes (ADR-021, ADR-028) |
-| Postgres synchronous replica and read replicas; separate business/AI clusters (ADR-010) | Rate limits, admission control, degradation ladders (ADR-026, ADR-032, section 7.3) |
+| Postgres synchronous replica and read replicas; separate business/AI clusters (ADR-010); PgBouncer connection pooling | Rate limits, admission control, degradation ladders (ADR-026, ADR-032, section 7.3) |
 | Kafka 3-broker replication | PII masking, field encryption, audit logging (ADR-036) |
 | Service mesh (mTLS) | Observability: OTel, Prometheus, Grafana, Tempo, Loki, AI Operations |
 | External secrets manager | Eval suites, contract tests, Playwright/axe, k6 at local scale |

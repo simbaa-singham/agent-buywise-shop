@@ -5,6 +5,7 @@
 - Each topic: options -> trade-offs -> architect's decision -> update module doc + ADR log.
 - Design before implementation. Explain each technology/technique when it is introduced.
 - Whenever a decision changes the design, list what in the project no longer matches and ask before changing it.
+- After every change, explain each changed file in plain words: what it is, what it does, why it is needed, and how to see it working. ADR numbers are references only, never the explanation.
 - During implementation, before writing code in an area, remind Sachin of the decisions (ADR numbers + what they mean in code) that apply to it; flag any new decision that comes up instead of making it silently.
 
 ## What we are building

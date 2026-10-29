@@ -14,7 +14,8 @@ services:
       LITELLM_DB_PASSWORD: ${LITELLM_DB_PASSWORD}
     ports: ["5432:5432"]
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # PG_DATA_DIR set in .env -> data in that folder on the host (bind mount); unset -> Docker volume "pgdata"
+      - ${PG_DATA_DIR:-pgdata}:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
