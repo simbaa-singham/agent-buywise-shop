@@ -16,6 +16,15 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 | `data/` | - | Seed data, knowledge documents, eval sets | [data](data/README.md) | [design](data/docs/design.md) |
 | `deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [deploy](deploy/README.md) | [design](deploy/docs/design.md) |
 
+**One repo, one editor per module.** All IDEs share this Git repo; each opens only its module folder:
+
+| Editor | Open folder | Notes |
+|---|---|---|
+| WebStorm | `ui/` | Angular + NestJS BFF + chat contract (npm workspaces; web and bff join in phase 1) |
+| PyCharm | `agent/` + attach `mcp/` | Each with its own `.venv` interpreter |
+| IntelliJ IDEA | `services/` (+ `events/` in phase 4) | Spring Boot / Java |
+| Any (IntelliJ or VS Code) | repo root, `deploy/`, `data/`, `docs/` | Compose, data, cross-module docs |
+
 Cross-module documents (`docs/`): [architecture overview](docs/00_Architecture_Overview.md), [decisions (ADR log)](docs/adr/ADR_Log.md), [roadmap](docs/09_Implementation_Roadmap.md), learning index: [Phase 0](docs/learning/Phase-0.md).
 
 ## Local quick start (phase 0)

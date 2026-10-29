@@ -2,6 +2,8 @@
 
 The AI agent (Python, LangGraph): routes each message, calls tools through MCP, answers from documents with RAG, streams replies through Redis. Also runs the document ingestion worker.
 
+**Open in:** PyCharm -> open `agent/` (interpreter: `agent/.venv`). Attach `mcp/` to the same window (File > Open > Attach) with its own `.venv`.
+
 ## Contents
 | Path | Purpose |
 |---|---|

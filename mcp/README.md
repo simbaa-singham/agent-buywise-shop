@@ -2,6 +2,8 @@
 
 MCP tool servers (Python, MCP SDK v2): one server per business domain, wrapping the buywise-services REST APIs as tools for the agent.
 
+**Open in:** PyCharm -> attached to the `agent/` window (File > Open > Attach), with its own interpreter `mcp/.venv` (created in phase 1).
+
 ## Contents
 | Path | Purpose |
 |---|---|

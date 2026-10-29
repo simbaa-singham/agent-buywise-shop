@@ -27,6 +27,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 
 ## Where things are
 - Main design: docs/00_Architecture_Overview.md
+- Editors: one Git repo, one IDE per module folder - WebStorm `ui/`, PyCharm `agent/` + attached `mcp/`, IntelliJ `services/` (+ `events/`), any editor for root/deploy/data/docs.
 - Module layout: each module has README.md, Makefile, docs/design.md, docs/learning.md (agent also docs/rag.md). Root Makefile delegates to module Makefiles.
 - Implementation roadmap: docs/09_Implementation_Roadmap.md
 - Learning: per module in <module>/docs/learning.md (one section per phase); phase index in docs/learning/Phase-<N>.md

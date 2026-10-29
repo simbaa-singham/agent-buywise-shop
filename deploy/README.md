@@ -2,6 +2,8 @@
 
 Everything needed to run the system: Docker Compose stack (Postgres, Redis, Keycloak, LiteLLM), Keycloak realm and LiteLLM config as code, runtime scripts; later Helm charts and the kind cluster.
 
+**Open in:** any editor (IntelliJ or VS Code); Docker/Compose support in JetBrains IDEs works on `compose/compose.yaml`.
+
 ## Contents
 | Path | Purpose |
 |---|---|

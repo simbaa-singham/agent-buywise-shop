@@ -2,9 +2,12 @@
 
 Customer web app and staff console (Angular 22) plus the BFF (NestJS 11 on Fastify), shipped as one deployable. Owns the chat message contract shared with the agent.
 
+**Open in:** WebStorm -> open the `ui/` folder (npm workspaces: the contract today; `web` and `bff` join in phase 1). Git is detected from the repo root automatically.
+
 ## Contents
 | Path | Purpose |
 |---|---|
+| `package.json` | npm workspaces root (run `npm install` here) |
 | `web/` | Angular workspace: customer-web, staff-console, shared (built from phase 1) |
 | `web/projects/shared/contracts/` | Chat contract: JSON Schema, examples, generated TypeScript (ADR-024) |
 | `bff/` | NestJS BFF (built from phase 1) |

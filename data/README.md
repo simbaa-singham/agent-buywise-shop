@@ -2,6 +2,8 @@
 
 All project data: the product catalog, synthetic stores/customers/orders/tickets, 103 knowledge documents in 11 formats, eval sets, and the tools that generate them.
 
+**Open in:** any editor (IntelliJ or VS Code) for data files; PyCharm if you work on the generators in `tools/` (interpreter `data/tools/.venv`).
+
 ## Contents
 | Path | Purpose |
 |---|---|
