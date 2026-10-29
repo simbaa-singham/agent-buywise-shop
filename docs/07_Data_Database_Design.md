@@ -9,7 +9,7 @@ Data ownership, storage choices and data model.
 | Store | Use |
 |---|---|
 | PostgreSQL | Database per deployable (ADR-010), see table below |
-| Redis | Semantic cache, rate limits, OTP codes, sessions (ADR-021), chat event replay streams (ADR-024), token budget counters (ADR-026) |
+| Redis | Semantic cache, rate limits, OTP codes, sessions (ADR-021), conversation event streams `conv:{id}` - delivery and replay, capped by count and time (ADR-024, ADR-029), token budget counters (ADR-026) |
 | Kafka | Event log (see 06) |
 
 **PostgreSQL databases (ADR-010):**

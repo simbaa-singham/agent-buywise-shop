@@ -66,7 +66,7 @@ AI shopping assistant for an online electronics store (Apple products as the sam
 
 **Request path (chat message)**
 1. Browser -> Envoy Gateway -> `buywise-web` (HTTP POST to send; SSE stream to receive).
-2. BFF -> `buywise-agent` (streaming HTTP).
+2. BFF -> `buywise-agent` `POST /turns` (202 Accepted; turn runs in the background). Agent appends contract events to the conversation's Redis Stream; the BFF pod holding the SSE connection reads and forwards them (ADR-029).
 3. Agent: load state -> sentiment -> intent router -> intent handler.
 4. Handler -> `buywise-mcp` (MCP, stateless) -> `buywise-services` REST.
 5. Handler -> RAG retrieval for knowledge questions.
@@ -155,7 +155,7 @@ Same mechanisms locally and in production; only the limits differ (derived from 
 | LLM/LiteLLM down | Circuit breaker (open at 50% failures over 20 calls, half-open after 30 s) | FAQ answers from RAG retrieval (no generation) + staff handoff |
 | Tool/service errors | Retries only for idempotent calls (2, exponential backoff + jitter); circuit breakers (Resilience4j in services, policies in LangGraph nodes) | "I couldn't check stock right now" + retry or handoff; never invented data |
 | Budget limits hit | Degradation ladder (ADR-026, docs/03 section 7a) | Cheaper model, then FAQ + handoff; per-turn cap -> "Want me to continue?" |
-| SSE stream drops | Auto-reconnect + `Last-Event-ID` replay (ADR-020/024); REST reload if gap too old | Reply continues where it stopped |
+| SSE stream drops / BFF pod dies mid-reply | Agent keeps writing to the Redis Stream (ADR-029); browser reconnects to any pod and replays from `Last-Event-ID`; REST reload if gap too old | Reply continues where it stopped |
 | Redis down | Sessions unavailable -> login prompt; replay/budget counters fail closed for budgets, open for replay (REST reload) | Re-login; chat history reloads |
 | Duplicate sends (retries) | `clientMessageId` idempotency (ADR-024) | Message appears once |
 

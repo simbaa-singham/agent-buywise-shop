@@ -17,7 +17,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 ## 3. Deployables and local replicas
 | Deployable | local-k8s replicas | Production design |
 |---|---|---|
-| `buywise-web` | 2 (SSE streams + Redis pub/sub across pods, no sticky sessions) | 3+, autoscaled |
+| `buywise-web` | 2 (SSE served from conversation Redis Streams, no sticky sessions, ADR-029) | 3+, autoscaled |
 | `buywise-services` | 2 | 3+, autoscaled |
 | `buywise-agent` | 2 (stateless with Postgres checkpointer) | 3+, autoscaled |
 | `buywise-mcp` | 2 | 2+ |

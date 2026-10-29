@@ -21,15 +21,16 @@
 | ADR-017 | Envoy Gateway at the edge; no internal gateway; Spring Security in services; service mesh as future option | Accepted | 2026-10-28 |
 | ADR-018 | UI app structure: one Angular workspace with two apps (customer-web, staff-console) + shared library; one deployable | Accepted | 2026-10-28 |
 | ADR-019 | Angular Material (Material 3) + CDK with custom theme; SCSS + design tokens, no Tailwind; custom chat UI on CDK | Accepted | 2026-10-28 |
-| ADR-020 | Browser real-time channel: SSE (server -> browser) + HTTP POST (browser -> server); Redis pub/sub across pods, no sticky sessions; WebSocket as planned upgrade for staff takeover | Accepted | 2026-10-28 |
+| ADR-020 | Browser real-time channel: SSE (server -> browser) + HTTP POST (browser -> server); Redis pub/sub across pods (amended by ADR-029: Redis Streams), no sticky sessions; WebSocket as planned upgrade for staff takeover | Accepted | 2026-10-28 |
 | ADR-021 | Session pattern: BFF session (token handler), tokens in Redis, opaque `__Host-` cookie; guest sessions; separate staff session with MFA | Accepted | 2026-10-28 |
 | ADR-022 | UI state: NgRx SignalStore for shared/live state, plain signals for local state, `httpResource` for read-only server data | Accepted | 2026-10-28 |
 | ADR-023 | UI rendering: hybrid per route - prerender product/category pages, client rendering elsewhere; no per-request SSR | Accepted | 2026-10-28 |
-| ADR-024 | Chat message contract: own versioned JSON Schema envelope, AG-UI-shaped reply events, structured blocks, Redis Stream replay, idempotent sends | Accepted | 2026-10-28 |
+| ADR-024 | Chat message contract: own versioned JSON Schema envelope, AG-UI-shaped reply events, structured blocks, Redis Stream replay (amended by ADR-029: SSE id = stream entry id, `seq` removed), idempotent sends | Accepted | 2026-10-28 |
 | ADR-025 | Accessibility: WCAG 2.2 AA enforced by angular-eslint + axe-core in CI plus a manual per-release checklist; chat-specific rules | Accepted | 2026-10-28 |
 | ADR-026 | LLM metering and budgets: LiteLLM model gateway (pricing, spend, global budget, rate limits) + agent LLM client (per-turn/conversation/customer caps, degradation); shadow pricing locally | Accepted | 2026-10-28 |
 | ADR-027 | LLM observability in the UI: Grafana for trends/alerts + staff-console AI Operations (ops-admin) + customer-web dev overlay; `status.updated` and `message.metrics` events | Accepted | 2026-10-28 |
 | ADR-028 | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-lived JWTs with `act` chain; identity never a tool argument | Accepted | 2026-10-28 |
+| ADR-029 | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; BFF pods read and forward; replaces pub/sub and separate replay buffer | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -169,3 +170,12 @@
   - D. Own internal signed token minted by the BFF (Passport-style) - fast; custom protocol and key management, does not fit MCP OAuth.
 - **Decision:** C. Rules: identity never a tool argument (`customer_id` removed from tools, taken from `sub`); scopes narrowed per hop and per intent; exchanged tokens ~5 min, cached in memory only, never in checkpoints/logs/traces; guests get public scopes + own cart, OTP gives a short-lived grant for that contact's orders; staff actions go BFF -> services directly; services log `sub` + `act` chain on writes. Services verify JWTs locally via JWKS.
 - **Consequences:** A leaked token is useless outside its audience and few minutes; full delegation audit trail. More Keycloak configuration. Verify Keycloak's support for the `act` claim in standard token exchange before implementation; if partial, add the actor chain via a Keycloak protocol mapper. In production, mTLS (service mesh, future) would add workload identity; locally JWTs carry it.
+
+## ADR-029 - Agent output path to the browser
+- **Context:** NFR 7.2 #6: if a BFF pod dies mid-reply, the reply must complete after reconnect. Any design where the agent streams through a specific BFF pod loses the rest of the reply.
+- **Options considered:**
+  - A. Agent emits ADR-024 events over a streaming HTTP response to the BFF - simple; reply dies with the BFF pod.
+  - B. Agent emits its own format, BFF maps it - agent independent of UI contract; same pod-death problem plus a mapping layer.
+  - C. Agent appends ADR-024 events to the conversation's Redis Stream; BFF only reads - reply independent of BFF pods.
+- **Decision:** C. `POST /turns` returns 202 and the turn runs in the background; events go to `conv:{id}` (capped by count and time); BFF also appends its own events (staff messages, handoff, tickets) there; one shared stream reader per BFF pod; SSE `id` = stream entry id; cancel via `POST /turns/{id}/cancel`.
+- **Consequences:** NFR #6 met by design; one mechanism for delivery and replay (replaces pub/sub + replay buffer). Agent depends on Redis (already used for budgets). Amends ADR-020 (cross-pod mechanism) and ADR-024 rule 3 (`seq` removed from the envelope; SSE id is the stream entry id). Staff console composite cursor detailed at implementation. Same pattern as LangGraph Server's background runs with a joinable stream.

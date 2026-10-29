@@ -80,8 +80,9 @@ Packaging: multi-stage Docker build -> both `ng build` outputs copied into the B
 | Browser -> BFF | `POST /api/chat/messages` (any pod) | Customer or staff sends a message |
 | BFF -> browser | `GET /api/chat/stream` (SSE, `EventSource`) | Agent reply tokens, staff messages, ticket queue updates, order status |
 
-- Each event has an increasing per-stream `id`; on reconnect the browser sends `Last-Event-ID` and the BFF replays missed events from a short-lived buffer (detail in chat message contract).
-- Cross-pod delivery: the pod that receives a message or agent output publishes it on Redis pub/sub; the pod holding the customer's SSE connection forwards it. No sticky sessions.
+- Event delivery and replay (ADR-029): every conversation has a Redis Stream (`conv:{id}`), capped by count and time. The agent appends reply events; the BFF appends staff messages, handoff and ticket events. The BFF pod holding the SSE connection reads the stream (one shared reader per pod, multiplexed over its SSE connections) and forwards events. No sticky sessions, no pub/sub.
+- SSE `id` = Redis Stream entry id; on reconnect the browser sends `Last-Event-ID` and the BFF reads the stream from that point. Staff console streams that span several Redis Streams (queue + taken-over conversations) use a composite cursor - detail at implementation.
+- Sending a turn: BFF calls agent `POST /turns` (202 Accepted); stop button -> `POST /api/chat/turns/{id}/cancel` -> agent cancel.
 - Heartbeat comment every ~15 s keeps idle streams open through Envoy and proxies.
 - Envoy serves HTTP/2 to browsers, so open streams don't hit the HTTP/1.1 per-site connection limit.
 - Planned upgrade: WebSocket for the staff takeover conversation only, if typing indicators / read receipts are needed (see ADR-020).
@@ -90,9 +91,9 @@ Packaging: multi-stage Docker build -> both `ng build` outputs copied into the B
 
 SSE envelope:
 ```
-id: 4182
+id: 1793212800123-0
 event: message.delta
-data: {"v":1,"seq":4182,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","messageId":"m_77a","payload":{"text":"The iPhone 17 Pro"}}
+data: {"v":1,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","messageId":"m_77a","payload":{"text":"The iPhone 17 Pro"}}
 ```
 
 | Group | Events |
@@ -110,7 +111,7 @@ data: {"v":1,"seq":4182,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","me
 Rules:
 1. Versioning: `v` on every event; adding fields is allowed, renaming/removing bumps `v`; clients ignore unknown event types.
 2. Rich content is data rendered by Angular components. Agent text is Markdown, sanitized, HTML stripped; LLM output is never inserted as raw HTML.
-3. Replay: `seq` is the SSE `id`; recent events kept in a Redis Stream per stream (capped by count and time); reconnect replays after `Last-Event-ID`; gap too old -> client reloads the conversation via REST.
+3. Replay: the SSE `id` is the Redis Stream entry id of the conversation stream (ADR-029); reconnect replays after `Last-Event-ID`; gap too old (trimmed) -> client reloads the conversation via REST.
 4. Idempotent sends: `POST /api/chat/messages` carries a client-generated `clientMessageId`; duplicates are ignored.
 5. Source of truth: JSON Schema in `shared/contracts/`; TypeScript (web, BFF) and Pydantic (agent) types generated from it; CI fails if generated types drift.
 - BFF -> `buywise-agent`: chat requests, streamed responses.
@@ -128,7 +129,7 @@ Rules:
 - Data source: BFF `ops` module reads the agent's usage tables (docs/07) via the agent API; Grafana remains the place for alerts and long-range trends.
 
 ## 6. Non-functional
-- 2 replicas locally: Redis pub/sub so any pod can deliver chat events to the pod holding the SSE stream; no sticky sessions.
+- 2 replicas locally: any pod can serve any SSE connection by reading the conversation's Redis Stream (ADR-029); no sticky sessions.
 - Reconnect: covered by ADR-020/ADR-024 (SSE auto-reconnect + `Last-Event-ID` replay). Browser support: TBD.
 
 **Accessibility (ADR-025): WCAG 2.2 AA, automated + manual checks.**
