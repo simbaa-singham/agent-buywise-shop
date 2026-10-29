@@ -40,7 +40,8 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Done 2026-10-29: implementation roadmap approved (docs/09) as drafted.
 - Done 2026-10-29: phase 0 foundations (docs/09). Local k = 2.96 (deploy/local/scale.yaml).
-- Next: phase 1 thin slice (docs/09).
+- In progress: step-by-step walkthrough of phase 0 for the architect. Done: step 1 (supporting programs in Docker; Postgres data in ../buywise-data/postgres). Resume at step 2 (separate databases), then step 3 (make migrate), step 4 (architect loads data by hand: docs/walkthroughs/load-seed-data.md), steps 5-7.
+- Then: phase 1 thin slice (docs/09).
 
 ## Pending housekeeping
 - Done 2026-10-28: folders restructured to docs/00 section 6; agent/pyproject.toml aligned with ADR-011 (pgvector) and ADR-026 (LiteLLM via langchain-openai); agent/.env.example aligned with ADR-010/026/029.
