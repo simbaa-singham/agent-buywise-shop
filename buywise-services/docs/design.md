@@ -31,7 +31,7 @@ One Spring Boot application (modular monolith) that owns all business data and r
 
 ## 3. Module structure
 ```
-services/
+buywise-services/
 └── src/main/java/.../buywise/
     ├── catalog/     # api (controllers), application (services), domain, infrastructure (repositories)
     ├── inventory/
@@ -50,8 +50,8 @@ services/
 
 ## 5. Interfaces
 - REST APIs per module (OpenAPI) - TBD.
-- Consumed as tools via `buywise-mcp` - see [mcp/docs/design.md](../../mcp/docs/design.md).
-- Events - see [events/docs/design.md](../../events/docs/design.md).
+- Consumed as tools via `buywise-mcp` - see [buywise-mcp/docs/design.md](../../buywise-mcp/docs/design.md).
+- Events - see [buywise-events/docs/design.md](../../buywise-events/docs/design.md).
 
 ## 6. Key flows
 - Checkout: cart -> price from catalog -> stock reservation -> order -> payment link -> paid -> reservation confirmed. TBD in detail.

@@ -1,6 +1,6 @@
-# services - Learning Notes
+# buywise-services - Learning Notes
 
-What the services module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
+What the buywise-services module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
 
 ---
 

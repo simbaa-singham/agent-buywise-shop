@@ -1,6 +1,6 @@
-# ui - Learning Notes
+# buywise-web - Learning Notes
 
-What the ui module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
+What the buywise-web module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
 
 ---
 
@@ -8,7 +8,7 @@ What the ui module taught us, phase by phase. Index of all phases: [docs/learnin
 
 ### The chat message contract (step 5, in progress)
 - **Problem:** the agent (Python) and the website (TypeScript) must agree exactly on every chat message; a mismatch (`text` vs `content`) silently breaks the chat.
-- **Solution:** one definition in **JSON Schema** - `web/projects/shared/contracts/schemas/chat-events.schema.json` - and code **generated** from it for both sides: `web/projects/shared/contracts/generated/chat-events.ts` (TypeScript) and `agent/buywise_agent/contracts/chat_contract.py` (Python/Pydantic). Generated files are never edited by hand (`make contracts`).
+- **Solution:** one definition in **JSON Schema** - `web/projects/shared/contracts/schemas/chat-events.schema.json` - and code **generated** from it for both sides: `web/projects/shared/contracts/generated/chat-events.ts` (TypeScript) and `buywise-agent/buywise_agent/contracts/chat_contract.py` (Python/Pydantic). Generated files are never edited by hand (`make contracts`).
 - **CI drift check:** `make contracts-check` fails if the schema changed but the generated code was not regenerated.
 
 **Message shape** - every message has:

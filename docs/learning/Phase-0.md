@@ -8,9 +8,9 @@ The detailed notes live **inside each module**; this page is the map. Status: st
 |---|---|---|
 | 1 | Supporting programs in Docker (Postgres, Redis, Keycloak, LiteLLM), compose.yaml, .env, health checks, make | [deploy/docs/learning.md](../../deploy/docs/learning.md) |
 | 2 | Separate databases and users | [deploy/docs/learning.md](../../deploy/docs/learning.md#separate-databases-step-2) |
-| 3 | Tables with Flyway, schemas | [services/docs/learning.md](../../services/docs/learning.md) |
+| 3 | Tables with Flyway, schemas | [buywise-services/docs/learning.md](../../buywise-services/docs/learning.md) |
 | 4 | Loading data by hand (SQL from JSON, transactions, UI tools) | [data/docs/learning.md](../../data/docs/learning.md) |
-| 5 | Chat message contract (JSON Schema, generated code, tests) - in progress | [ui/docs/learning.md](../../ui/docs/learning.md), [agent/docs/learning.md](../../agent/docs/learning.md) |
+| 5 | Chat message contract (JSON Schema, generated code, tests) - in progress | [buywise-web/docs/learning.md](../../buywise-web/docs/learning.md), [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md) |
 | 6 | Measuring AI speed, k = 2.96 | [deploy/docs/learning.md](../../deploy/docs/learning.md#measuring-ai-speed---k-step-6) |
 | 7 | Glue: Makefiles, CI, README - to be completed | this page |
 

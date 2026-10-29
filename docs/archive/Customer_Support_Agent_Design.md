@@ -38,10 +38,10 @@ place orders, check order status, and get answers to product and store questions
 
 ```
 agent-customer-support/
-├── ui/                      # TypeScript
+├── buywise-web/                      # TypeScript
 │   ├── web/                 # Angular 22: customer chat widget + staff console
 │   └── bff/                 # NestJS 11 + Fastify adapter
-├── services/                # Java 25, Spring Boot 4.1 - Maven multi-module
+├── buywise-services/                # Java 25, Spring Boot 4.1 - Maven multi-module
 │   ├── pom.xml              # parent POM
 │   ├── common/              # shared DTOs, error model, Kafka event schemas
 │   ├── gateway/             # Spring Cloud Gateway (internal)
@@ -55,7 +55,7 @@ agent-customer-support/
 │   ├── compose/             # local Postgres, Redis, Kafka, Keycloak
 │   ├── seed/                # products, variants, stock, sample customers/orders
 │   └── knowledge/           # spec sheets, store policies (RAG source docs)
-├── agent/                   # Python 3.12
+├── buywise-agent/                   # Python 3.12
 │   ├── pyproject.toml
 │   ├── src/                 # LangGraph agent API, MCP client, RAG pipeline + indexer
 │   └── evals/               # Ragas + DeepEval suites

@@ -1,8 +1,8 @@
-# services - buywise-services
+# buywise-services
 
 Business services: one Spring Boot 4.1 modular monolith (Spring Modulith) with modules catalog, inventory, order, customer, payment (mock), helpdesk. Owns business data and rules.
 
-**Open in:** IntelliJ IDEA -> open `services/` (build file added in phase 1). Add `events/` to the same window in phase 4.
+**Open in:** IntelliJ IDEA -> open `buywise-services/` (build file added in phase 1). Add `buywise-events/` to the same window in phase 4.
 
 ## Contents
 | Path | Purpose |

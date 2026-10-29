@@ -47,7 +47,7 @@ Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - 
 ## 3. Module structure
 **App structure (ADR-018):** one Angular workspace with two applications and a shared library.
 ```
-ui/
+buywise-web/
 ├── web/                    # Angular 22 workspace
 │   ├── projects/
 │   │   ├── customer-web/   # served at /       - chat widget, products, cart, orders

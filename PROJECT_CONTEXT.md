@@ -27,7 +27,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 
 ## Where things are
 - Main design: docs/00_Architecture_Overview.md
-- Editors: one Git repo, one IDE per module folder - WebStorm `ui/`, PyCharm `agent/` + attached `mcp/`, IntelliJ `services/` (+ `events/`), any editor for root/deploy/data/docs.
+- Editors: one Git repo, one IDE per module folder - WebStorm `buywise-web/`, PyCharm `buywise-agent/` + attached `buywise-mcp/`, IntelliJ `buywise-services/` (+ `buywise-events/`), any editor for root/deploy/data/docs.
 - Module layout: each module has README.md, Makefile, docs/design.md, docs/learning.md (agent also docs/rag.md). Root Makefile delegates to module Makefiles.
 - Implementation roadmap: docs/09_Implementation_Roadmap.md
 - Learning: per module in <module>/docs/learning.md (one section per phase); phase index in docs/learning/Phase-<N>.md
@@ -36,11 +36,11 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 
 ## Current status
 - Design phase. Docs updated 2026-10-28 for: modular monolith, 6 deployables, buywise-mcp, no internal gateway, rename.
-- Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (ui/docs/design.md section 6).
+- Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (buywise-web/docs/design.md section 6).
 - Done 2026-10-28: NFR targets set as ideal production targets, local scaled by S=40 and LLM hardware factor k, with failure behavior (docs/00 section 7); LLM metering/budgets (ADR-026) and LLM observability UI (ADR-027).
-- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (ui/docs/design.md section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: docs/00 section 7.4.
-- Open items raised for later modules: AI Operations chart library (ui/docs/design.md).
-- Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (events/docs/design.md), secrets management (deploy/docs/design.md).
+- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (buywise-web/docs/design.md section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: docs/00 section 7.4.
+- Open items raised for later modules: AI Operations chart library (buywise-web/docs/design.md).
+- Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (buywise-events/docs/design.md), secrets management (deploy/docs/design.md).
 - Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Done 2026-10-29: implementation roadmap approved (docs/09) as drafted.
 - Done 2026-10-29: phase 0 foundations (docs/09). Local k = 2.96 (deploy/local/scale.yaml).
@@ -48,5 +48,5 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Then: phase 1 thin slice (docs/09).
 
 ## Pending housekeeping
-- Done 2026-10-28: folders restructured to docs/00 section 6; agent/pyproject.toml aligned with ADR-011 (pgvector) and ADR-026 (LiteLLM via langchain-openai); agent/.env.example aligned with ADR-010/026/029.
+- Done 2026-10-28: folders restructured to docs/00 section 6; buywise-agent/pyproject.toml aligned with ADR-011 (pgvector) and ADR-026 (LiteLLM via langchain-openai); buywise-agent/.env.example aligned with ADR-010/026/029.
 - Done 2026-10-28: git init + first commit, pushed to github.com:simbaa-singham/agent-buywise-shop (main).

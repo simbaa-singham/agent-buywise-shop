@@ -1,8 +1,8 @@
-# events - event publisher and consumers
+# buywise-events (event publisher and consumers)
 
 Kafka event publisher (committed business events) and event consumers (notifications, projections, staff console updates). Several design decisions are still open.
 
-**Open in:** IntelliJ IDEA -> added to the `services/` window (build file added in phase 4).
+**Open in:** IntelliJ IDEA -> added to the `buywise-services/` window (build file added in phase 4).
 
 ## Contents
 | Path | Purpose |

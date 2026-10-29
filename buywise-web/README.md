@@ -1,8 +1,8 @@
-# ui - buywise-web
+# buywise-web
 
 Customer web app and staff console (Angular 22) plus the BFF (NestJS 11 on Fastify), shipped as one deployable. Owns the chat message contract shared with the agent.
 
-**Open in:** WebStorm -> open the `ui/` folder (npm workspaces: the contract today; `web` and `bff` join in phase 1). Git is detected from the repo root automatically.
+**Open in:** WebStorm -> open the `buywise-web/` folder (npm workspaces: the contract today; `web` and `bff` join in phase 1). Git is detected from the repo root automatically.
 
 ## Contents
 | Path | Purpose |

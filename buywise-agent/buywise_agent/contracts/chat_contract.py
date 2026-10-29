@@ -1,4 +1,4 @@
-# Generated from ui/web/projects/shared/contracts/schemas/chat-events.schema.json - do not edit. Run make contracts.
+# Generated from buywise-web/web/projects/shared/contracts/schemas/chat-events.schema.json - do not edit. Run make contracts.
 
 from __future__ import annotations
 

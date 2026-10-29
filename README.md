@@ -8,11 +8,11 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 
 | Module | Deployable | Stack | Module README | Design |
 |---|---|---|---|---|
-| `ui/` | buywise-web | Angular 22 + NestJS 11 (Fastify), Node.js 24 | [ui](ui/README.md) | [design](ui/docs/design.md) |
-| `services/` | buywise-services | Java 25, Spring Boot 4.1, Spring Modulith | [services](services/README.md) | [design](services/docs/design.md) |
-| `agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [agent](agent/README.md) | [design](agent/docs/design.md), [RAG](agent/docs/rag.md) |
-| `mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [mcp](mcp/README.md) | [design](mcp/docs/design.md) |
-| `events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [events](events/README.md) | [design](events/docs/design.md) |
+| `buywise-web/` | buywise-web | Angular 22 + NestJS 11 (Fastify), Node.js 24 | [buywise-web](buywise-web/README.md) | [design](buywise-web/docs/design.md) |
+| `buywise-services/` | buywise-services | Java 25, Spring Boot 4.1, Spring Modulith | [buywise-services](buywise-services/README.md) | [design](buywise-services/docs/design.md) |
+| `buywise-agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [buywise-agent](buywise-agent/README.md) | [design](buywise-agent/docs/design.md), [RAG](buywise-agent/docs/rag.md) |
+| `buywise-mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [buywise-mcp](buywise-mcp/README.md) | [design](buywise-mcp/docs/design.md) |
+| `buywise-events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [buywise-events](buywise-events/README.md) | [design](buywise-events/docs/design.md) |
 | `data/` | - | Seed data, knowledge documents, eval sets | [data](data/README.md) | [design](data/docs/design.md) |
 | `deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [deploy](deploy/README.md) | [design](deploy/docs/design.md) |
 
@@ -20,9 +20,9 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 
 | Editor | Open folder | Notes |
 |---|---|---|
-| WebStorm | `ui/` | Angular + NestJS BFF + chat contract (npm workspaces; web and bff join in phase 1) |
-| PyCharm | `agent/` + attach `mcp/` | Each with its own `.venv` interpreter |
-| IntelliJ IDEA | `services/` (+ `events/` in phase 4) | Spring Boot / Java |
+| WebStorm | `buywise-web/` | Angular + NestJS BFF + chat contract (npm workspaces; web and bff join in phase 1) |
+| PyCharm | `buywise-agent/` + attach `buywise-mcp/` | Each with its own `.venv` interpreter |
+| IntelliJ IDEA | `buywise-services/` (+ `buywise-events/` in phase 4) | Spring Boot / Java |
 | Any (IntelliJ or VS Code) | repo root, `deploy/`, `data/`, `docs/` | Compose, data, cross-module docs |
 
 Cross-module documents (`docs/`): [architecture overview](docs/00_Architecture_Overview.md), [decisions (ADR log)](docs/adr/ADR_Log.md), [roadmap](docs/09_Implementation_Roadmap.md), learning index: [Phase 0](docs/learning/Phase-0.md).

@@ -51,7 +51,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Keycloak clients (customer, staff, ops-admin roles), BFF login/logout/callback, session rotation, CSRF, timeout warning | ADR-021, ADR-025 |
 | Full token exchange with per-intent scopes and `act` chain; verify Keycloak `act` support | ADR-028 |
 | Customer module: profiles, field-level envelope encryption + blind index, OTP (`verify_customer`) with lockout | ADR-036, ADR-032 |
-| Guest -> customer conversation linking | ui/docs/design.md section 5.1 |
+| Guest -> customer conversation linking | buywise-web/docs/design.md section 5.1 |
 
 **Done when:** login mid-conversation keeps the chat; a customer can only see their own data (negative tests); OTP brute force is locked out.
 
@@ -63,7 +63,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Chunking on the Document model, parent-child, context headers, metadata, embeddings, pgvector + full-text | ADR-011, ADR-034 |
 | Embedding bake-off: bge-m3 vs Qwen3-Embedding-0.6B vs nomic-embed-text v1.5 on the RAG eval set (context precision/recall, query latency); winner adopted via blue/green re-index | ADR-040 |
 | Retrieval: filters, hybrid search, RRF, rerank, citations; retriever interface | ADR-011 |
-| Handlers: product_question, compatibility, store_question, browse/recommend | agent/docs/design.md section 5 |
+| Handlers: product_question, compatibility, store_question, browse/recommend | buywise-agent/docs/design.md section 5 |
 | Ragas + RAG eval set in CI; "no price from chunks" check | NFR 8 |
 
 **Done when:** every format parses to the expected Document model (golden tests); a corrupted file lands in quarantine with a reason; RAG eval thresholds met (NFR 8); citations point to page / slide / row; zero prices taken from chunks.
@@ -76,7 +76,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Product/category pages prerendered; cart, checkout, account client-rendered | ADR-023 |
 | Kafka + `buywise-event-publisher` + `buywise-event-consumers`; order/payment/catalog events; idempotent consumers | ADR-009, ADR-016 |
 
-**Blocked on architect decisions:** event schema format (docs/00 #6), partitions/retention/DLQ (events/docs/design.md), outbox relay vs Debezium (deferred to this phase), RAG re-indexing location (deferred to this phase).
+**Blocked on architect decisions:** event schema format (docs/00 #6), partitions/retention/DLQ (buywise-events/docs/design.md), outbox relay vs Debezium (deferred to this phase), RAG re-indexing location (deferred to this phase).
 
 **Done when:** a customer orders through chat with explicit confirmation; order status flows through events; consumers are idempotent under redelivery.
 
@@ -85,7 +85,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 |---|---|
 | `staff-console` app: ticket queue (Material table), live updates via SSE composite cursor | ADR-018, ADR-019, ADR-020 |
 | Helpdesk module: tickets, assignment, conversation ownership + audit; BFF owner cache | ADR-037 |
-| Takeover flow: accept, pause agent, customer <-> staff messages, release/resume | ui/docs/design.md section 5.3 |
+| Takeover flow: accept, pause agent, customer <-> staff messages, release/resume | buywise-web/docs/design.md section 5.3 |
 | Masked contact details with audited reveal; staff MFA | ADR-036, ADR-021 |
 
 **Done when:** a handoff completes end to end in Playwright; customer messages never reach the agent while staff own the chat.
@@ -126,7 +126,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Decision | Needed by |
 |---|---|
 | Event schema format (docs/00 #6) | Phase 4 |
-| Partitions, retention, dead-letter topics (events/docs/design.md) | Phase 4 |
+| Partitions, retention, dead-letter topics (buywise-events/docs/design.md) | Phase 4 |
 | Outbox relay vs Debezium (deferred) | Phase 4 |
 | RAG re-indexing location (deferred) | Phase 4 |
 | Production LLM (docs/00 #5) | Phase 6 (placeholder prices until then) |

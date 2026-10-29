@@ -91,7 +91,7 @@ services:
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_DEFAULT_SCHEMA: flyway
     volumes:
-      - ../../services/src/main/resources/db/migration:/flyway/sql:ro
+      - ../../buywise-services/src/main/resources/db/migration:/flyway/sql:ro
     depends_on:
       postgres: {condition: service_healthy}
 

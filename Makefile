@@ -14,23 +14,23 @@ ps: ## [deploy] Show stack status
 	@$(MAKE) --no-print-directory -C deploy ps
 logs: ## [deploy] Follow stack logs
 	@$(MAKE) --no-print-directory -C deploy logs
-migrate: ## [services] Apply schema migrations (Flyway)
-	@$(MAKE) --no-print-directory -C services migrate
-flyway-info: ## [services] Show applied / pending migrations
-	@$(MAKE) --no-print-directory -C services flyway-info
+migrate: ## [buywise-services] Apply schema migrations (Flyway)
+	@$(MAKE) --no-print-directory -C buywise-services migrate
+flyway-info: ## [buywise-services] Show applied / pending migrations
+	@$(MAKE) --no-print-directory -C buywise-services flyway-info
 k: ## [deploy] Measure the LLM hardware factor k
 	@$(MAKE) --no-print-directory -C deploy k
 data-tools: ## [data] Create the data-generation virtualenv
 	@$(MAKE) --no-print-directory -C data tools
 data: ## [data] Regenerate catalog, seed data, knowledge docs, eval sets
 	@$(MAKE) --no-print-directory -C data generate
-agent-dev: ## [agent] Create agent/.venv with dev tools
-	@$(MAKE) --no-print-directory -C agent dev
-test: ## [agent] Run tests and lint
-	@$(MAKE) --no-print-directory -C agent test
-ingest: ## [agent] RAG ingestion (phase 3)
-	@$(MAKE) --no-print-directory -C agent ingest
-contracts: ## [ui] Regenerate contract types (TypeScript + Python)
-	@$(MAKE) --no-print-directory -C ui contracts
-contracts-check: ## [ui] Fail if generated contract types are out of date
-	@$(MAKE) --no-print-directory -C ui contracts-check
+agent-dev: ## [buywise-agent] Create buywise-agent/.venv with dev tools
+	@$(MAKE) --no-print-directory -C buywise-agent dev
+test: ## [buywise-agent] Run tests and lint
+	@$(MAKE) --no-print-directory -C buywise-agent test
+ingest: ## [buywise-agent] RAG ingestion (phase 3)
+	@$(MAKE) --no-print-directory -C buywise-agent ingest
+contracts: ## [buywise-web] Regenerate contract types (TypeScript + Python)
+	@$(MAKE) --no-print-directory -C buywise-web contracts
+contracts-check: ## [buywise-web] Fail if generated contract types are out of date
+	@$(MAKE) --no-print-directory -C buywise-web contracts-check

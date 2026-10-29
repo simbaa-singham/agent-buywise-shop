@@ -8,7 +8,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from buywise_agent.contracts.chat_contract import ChatEvent, SendMessageRequest
 
-CONTRACTS = Path(__file__).resolve().parents[3] / "ui" / "web" / "projects" / "shared" / "contracts"
+CONTRACTS = Path(__file__).resolve().parents[3] / "buywise-web" / "web" / "projects" / "shared" / "contracts"
 SCHEMA = json.loads((CONTRACTS / "schemas" / "chat-events.schema.json").read_text())
 EVENT_SCHEMA = {**SCHEMA, "$ref": "#/$defs/ChatEvent"}
 EXAMPLES = sorted((CONTRACTS / "examples").glob("*.json"))

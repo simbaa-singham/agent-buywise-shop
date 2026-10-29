@@ -39,6 +39,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          docker run --rm --network host -v "$PWD/services/src/main/resources/db/migration:/flyway/sql:ro" \
+          docker run --rm --network host -v "$PWD/buywise-services/src/main/resources/db/migration:/flyway/sql:ro" \
             flyway/flyway:11 -url=jdbc:postgresql://localhost:5432/services -user=services -password=ci \
             -locations=filesystem:/flyway/sql -createSchemas=true -defaultSchema=flyway migrate
