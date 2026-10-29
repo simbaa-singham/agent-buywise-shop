@@ -46,6 +46,13 @@ services:
     ports: ["8080:8080"]
     volumes:
       - ./keycloak/buywise-realm.json:/opt/keycloak/data/import/buywise-realm.json:ro
+    healthcheck:
+      # The image has no curl; bash sends a raw HTTP request to the readiness endpoint on the management port 9000
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"status\": \"UP\"' <&3"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
     depends_on:
       postgres: {condition: service_healthy}
 
@@ -61,6 +68,13 @@ services:
     ports: ["4000:4000"]
     volumes:
       - ./litellm/config.yaml:/app/config.yaml:ro
+    healthcheck:
+      # The image has Python; call LiteLLM's liveness endpoint
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
     depends_on:
       postgres: {condition: service_healthy}
 
