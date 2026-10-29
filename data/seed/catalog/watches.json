@@ -1,0 +1,165 @@
+[
+  {
+    "product_id": "wt-se3",
+    "brand_id": "b01",
+    "category": "watch",
+    "family": "Watch",
+    "model": "Watch SE 3",
+    "release_date": "2025-09-19",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "case": "aluminum",
+      "chip": null
+    },
+    "compatibility_tags": [
+      "band:small",
+      "band:large",
+      "watch-charger"
+    ],
+    "variants": [
+      {
+        "sku": "WT-SE3-40MM-MIDNIGHT",
+        "size": "40mm",
+        "color": "Midnight",
+        "list_price": 249,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-SE3-40MM-STARLIGHT",
+        "size": "40mm",
+        "color": "Starlight",
+        "list_price": 249,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-SE3-44MM-MIDNIGHT",
+        "size": "44mm",
+        "color": "Midnight",
+        "list_price": 279,
+        "price_verified": false
+      },
+      {
+        "sku": "WT-SE3-44MM-STARLIGHT",
+        "size": "44mm",
+        "color": "Starlight",
+        "list_price": 279,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "wt-s12",
+    "brand_id": "b01",
+    "category": "watch",
+    "family": "Watch",
+    "model": "Watch Series 12",
+    "release_date": "2026-09-18",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "case": "aluminum (titanium and ceramic finishes also exist; not stocked)",
+      "chip": "S11"
+    },
+    "compatibility_tags": [
+      "band:small",
+      "band:large",
+      "watch-charger"
+    ],
+    "variants": [
+      {
+        "sku": "WT-S12-42MM-JETBLACK",
+        "size": "42mm",
+        "color": "Jet Black",
+        "list_price": 399,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-S12-42MM-ROSEGOLD",
+        "size": "42mm",
+        "color": "Rose Gold",
+        "list_price": 399,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-S12-42MM-SILVER",
+        "size": "42mm",
+        "color": "Silver",
+        "list_price": 399,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-S12-42MM-SPACEGRAY",
+        "size": "42mm",
+        "color": "Space Gray",
+        "list_price": 399,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-S12-46MM-JETBLACK",
+        "size": "46mm",
+        "color": "Jet Black",
+        "list_price": 429,
+        "price_verified": false
+      },
+      {
+        "sku": "WT-S12-46MM-ROSEGOLD",
+        "size": "46mm",
+        "color": "Rose Gold",
+        "list_price": 429,
+        "price_verified": false
+      },
+      {
+        "sku": "WT-S12-46MM-SILVER",
+        "size": "46mm",
+        "color": "Silver",
+        "list_price": 429,
+        "price_verified": false
+      },
+      {
+        "sku": "WT-S12-46MM-SPACEGRAY",
+        "size": "46mm",
+        "color": "Space Gray",
+        "list_price": 429,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "wt-ultra4",
+    "brand_id": "b01",
+    "category": "watch",
+    "family": "Watch",
+    "model": "Watch Ultra 4",
+    "release_date": "2026-09-18",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "case": "titanium",
+      "battery": "up to 84 hours in Low Power Mode"
+    },
+    "compatibility_tags": [
+      "band:large",
+      "watch-charger"
+    ],
+    "variants": [
+      {
+        "sku": "WT-ULTRA4-49MM-NATURALTITANIUM",
+        "size": "49mm",
+        "color": "Natural Titanium",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "WT-ULTRA4-49MM-BLACKTITANIUM",
+        "size": "49mm",
+        "color": "Black Titanium",
+        "list_price": 799,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  }
+]

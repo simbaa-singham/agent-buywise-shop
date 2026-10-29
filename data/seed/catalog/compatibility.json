@@ -1,0 +1,824 @@
+[
+  {
+    "accessory_id": "ac-case-sil-ph-17e",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Fits only iPhone 17e."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-17e",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Fits only iPhone 17e."
+  },
+  {
+    "accessory_id": "ac-case-sil-ph-16",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Fits only iPhone 16."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-16",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Fits only iPhone 16."
+  },
+  {
+    "accessory_id": "ac-case-sil-ph-17",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Fits only iPhone 17."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-17",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Fits only iPhone 17."
+  },
+  {
+    "accessory_id": "ac-case-sil-ph-air",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Fits only iPhone Air."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-air",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Fits only iPhone Air."
+  },
+  {
+    "accessory_id": "ac-case-sil-ph-18pro",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Fits only iPhone 18 Pro."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-18pro",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Fits only iPhone 18 Pro."
+  },
+  {
+    "accessory_id": "ac-case-sil-ph-18promax",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Fits only iPhone 18 Pro Max."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-18promax",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Fits only iPhone 18 Pro Max."
+  },
+  {
+    "accessory_id": "ac-case-sil-ph-duo",
+    "device_id": "ph-duo",
+    "compatible": true,
+    "note": "Fits only iPhone Duo."
+  },
+  {
+    "accessory_id": "ac-case-clr-ph-duo",
+    "device_id": "ph-duo",
+    "compatible": true,
+    "note": "Fits only iPhone Duo."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "au-pods4anc",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-1m",
+    "device_id": "au-pro3",
+    "compatible": true,
+    "note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "au-pods4anc",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-magsafe-2m",
+    "device_id": "au-pro3",
+    "compatible": true,
+    "note": "Same as 1 m model, longer cable."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "ph-duo",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "tb-ipad",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "tb-mini",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "tb-air11",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "tb-air13",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "tb-pro11",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "tb-pro13",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "lt-neo",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "lt-air13",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "lt-air15",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "lt-pro14",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "lt-pro16",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "au-pods4",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "au-pods4anc",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "au-pro3",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-20w",
+    "device_id": "au-max2",
+    "compatible": true,
+    "note": "Charges any USB-C device; slower for laptops and 60 W phones."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "ph-duo",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "tb-ipad",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "tb-mini",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "tb-air11",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "tb-air13",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "tb-pro11",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "tb-pro13",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "lt-neo",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "lt-air13",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "lt-air15",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "lt-pro14",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "lt-pro16",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "au-pods4",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "au-pods4anc",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "au-pro3",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-adapter-40w",
+    "device_id": "au-max2",
+    "compatible": true,
+    "note": "Enables fastest wired charging on phones that support 40-60 W."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "ph-duo",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "tb-ipad",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "tb-mini",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "tb-air11",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "tb-air13",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "tb-pro11",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "tb-pro13",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "lt-neo",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "lt-air13",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "lt-air15",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "lt-pro14",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "lt-pro16",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "au-pods4",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "au-pods4anc",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "au-pro3",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-1m",
+    "device_id": "au-max2",
+    "compatible": true,
+    "note": "USB-C to USB-C."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-17e",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-16",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-17",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-air",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-18pro",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-18promax",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "ph-duo",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "tb-ipad",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "tb-mini",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "tb-air11",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "tb-air13",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "tb-pro11",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "tb-pro13",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "lt-neo",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "lt-air13",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "lt-air15",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "lt-pro14",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "lt-pro16",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "au-pods4",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "au-pods4anc",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "au-pro3",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-cable-240w",
+    "device_id": "au-max2",
+    "compatible": true,
+    "note": "Supports laptop fast charging."
+  },
+  {
+    "accessory_id": "ac-watch-charger",
+    "device_id": "wt-se3",
+    "compatible": true,
+    "note": "For all stocked watches."
+  },
+  {
+    "accessory_id": "ac-watch-charger",
+    "device_id": "wt-s12",
+    "compatible": true,
+    "note": "For all stocked watches."
+  },
+  {
+    "accessory_id": "ac-watch-charger",
+    "device_id": "wt-ultra4",
+    "compatible": true,
+    "note": "For all stocked watches."
+  },
+  {
+    "accessory_id": "ac-band-sport-s",
+    "device_id": "wt-se3",
+    "compatible": true,
+    "note": "Fits 40 mm (SE 3) and 42 mm (Series 12) cases."
+  },
+  {
+    "accessory_id": "ac-band-sport-s",
+    "device_id": "wt-s12",
+    "compatible": true,
+    "note": "Fits 40 mm (SE 3) and 42 mm (Series 12) cases."
+  },
+  {
+    "accessory_id": "ac-band-sport-l",
+    "device_id": "wt-se3",
+    "compatible": true,
+    "note": "Fits 44 mm (SE 3), 46 mm (Series 12) and 49 mm (Ultra 4) cases."
+  },
+  {
+    "accessory_id": "ac-band-sport-l",
+    "device_id": "wt-s12",
+    "compatible": true,
+    "note": "Fits 44 mm (SE 3), 46 mm (Series 12) and 49 mm (Ultra 4) cases."
+  },
+  {
+    "accessory_id": "ac-band-sport-l",
+    "device_id": "wt-ultra4",
+    "compatible": true,
+    "note": "Fits 44 mm (SE 3), 46 mm (Series 12) and 49 mm (Ultra 4) cases."
+  },
+  {
+    "accessory_id": "ac-pencil-pro",
+    "device_id": "tb-mini",
+    "compatible": true,
+    "note": "Works with iPad Pro (M5), iPad Air (M4) and iPad mini (A17 Pro); not with iPad (A16)."
+  },
+  {
+    "accessory_id": "ac-pencil-pro",
+    "device_id": "tb-air11",
+    "compatible": true,
+    "note": "Works with iPad Pro (M5), iPad Air (M4) and iPad mini (A17 Pro); not with iPad (A16)."
+  },
+  {
+    "accessory_id": "ac-pencil-pro",
+    "device_id": "tb-air13",
+    "compatible": true,
+    "note": "Works with iPad Pro (M5), iPad Air (M4) and iPad mini (A17 Pro); not with iPad (A16)."
+  },
+  {
+    "accessory_id": "ac-pencil-pro",
+    "device_id": "tb-pro11",
+    "compatible": true,
+    "note": "Works with iPad Pro (M5), iPad Air (M4) and iPad mini (A17 Pro); not with iPad (A16)."
+  },
+  {
+    "accessory_id": "ac-pencil-pro",
+    "device_id": "tb-pro13",
+    "compatible": true,
+    "note": "Works with iPad Pro (M5), iPad Air (M4) and iPad mini (A17 Pro); not with iPad (A16)."
+  },
+  {
+    "accessory_id": "ac-pencil-usbc",
+    "device_id": "tb-ipad",
+    "compatible": true,
+    "note": "Works with every stocked iPad."
+  },
+  {
+    "accessory_id": "ac-pencil-usbc",
+    "device_id": "tb-mini",
+    "compatible": true,
+    "note": "Works with every stocked iPad."
+  },
+  {
+    "accessory_id": "ac-pencil-usbc",
+    "device_id": "tb-air11",
+    "compatible": true,
+    "note": "Works with every stocked iPad."
+  },
+  {
+    "accessory_id": "ac-pencil-usbc",
+    "device_id": "tb-air13",
+    "compatible": true,
+    "note": "Works with every stocked iPad."
+  },
+  {
+    "accessory_id": "ac-pencil-usbc",
+    "device_id": "tb-pro11",
+    "compatible": true,
+    "note": "Works with every stocked iPad."
+  },
+  {
+    "accessory_id": "ac-pencil-usbc",
+    "device_id": "tb-pro13",
+    "compatible": true,
+    "note": "Works with every stocked iPad."
+  }
+]

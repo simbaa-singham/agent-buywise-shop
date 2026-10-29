@@ -1,0 +1,135 @@
+[
+  {
+    "product_id": "au-pods4",
+    "brand_id": "b01",
+    "category": "audio",
+    "family": "AirPods",
+    "model": "AirPods 4",
+    "release_date": "2024-09-20",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "noise_cancellation": false,
+      "case": "USB-C"
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "AU-PODS4-WHITE",
+        "color": "White",
+        "list_price": 129,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "au-pods4anc",
+    "brand_id": "b01",
+    "category": "audio",
+    "family": "AirPods",
+    "model": "AirPods 4 with Active Noise Cancellation",
+    "release_date": "2024-09-20",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "noise_cancellation": true,
+      "case": "USB-C, wireless"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "qi2"
+    ],
+    "variants": [
+      {
+        "sku": "AU-PODS4ANC-WHITE",
+        "color": "White",
+        "list_price": 179,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "au-pro3",
+    "brand_id": "b01",
+    "category": "audio",
+    "family": "AirPods",
+    "model": "AirPods Pro 3",
+    "release_date": "2025-09-19",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "noise_cancellation": true,
+      "health": "heart-rate sensing",
+      "case": "USB-C, MagSafe"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2"
+    ],
+    "variants": [
+      {
+        "sku": "AU-PRO3-WHITE",
+        "color": "White",
+        "list_price": 249,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "au-max2",
+    "brand_id": "b01",
+    "category": "audio",
+    "family": "AirPods",
+    "model": "AirPods Max 2",
+    "release_date": "2026-04-01",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "type": "over-ear",
+      "chip": "H2",
+      "connector": "USB-C"
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "AU-MAX2-MIDNIGHT",
+        "color": "Midnight",
+        "list_price": 549,
+        "price_verified": true
+      },
+      {
+        "sku": "AU-MAX2-STARLIGHT",
+        "color": "Starlight",
+        "list_price": 549,
+        "price_verified": true
+      },
+      {
+        "sku": "AU-MAX2-BLUE",
+        "color": "Blue",
+        "list_price": 549,
+        "price_verified": true
+      },
+      {
+        "sku": "AU-MAX2-PURPLE",
+        "color": "Purple",
+        "list_price": 549,
+        "price_verified": true
+      },
+      {
+        "sku": "AU-MAX2-ORANGE",
+        "color": "Orange",
+        "list_price": 549,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  }
+]

@@ -1,0 +1,1070 @@
+[
+  {
+    "product_id": "ph-17e",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone 17e",
+    "release_date": "2026-03-11",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "6.1-inch Super Retina XDR OLED, 2532 x 1170, 460 ppi, 60 Hz, 1200 nits",
+      "chip": "A19 (4-core GPU)",
+      "rear_camera": "48 MP f/1.6 26 mm, 2x optical-quality zoom",
+      "front_camera": "12 MP f/1.9",
+      "battery_mah": 4005,
+      "wired_charging": "30 W",
+      "wireless_charging": "MagSafe 25 W, Qi2",
+      "connector": "USB-C",
+      "weight_g": 169,
+      "dimensions_mm": "146.7 x 71.5 x 7.8",
+      "water_resistance": "IP68 (6 m, 30 min)"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2",
+      "case:ph-17e"
+    ],
+    "variants": [
+      {
+        "sku": "PH-17E-256GB-SOFTPINK",
+        "storage_gb": 256,
+        "color": "Soft Pink",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17E-256GB-WHITE",
+        "storage_gb": 256,
+        "color": "White",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17E-256GB-BLACK",
+        "storage_gb": 256,
+        "color": "Black",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17E-512GB-SOFTPINK",
+        "storage_gb": 512,
+        "color": "Soft Pink",
+        "list_price": 899,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17E-512GB-WHITE",
+        "storage_gb": 512,
+        "color": "White",
+        "list_price": 899,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17E-512GB-BLACK",
+        "storage_gb": 512,
+        "color": "Black",
+        "list_price": 899,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ph-16",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone 16",
+    "release_date": "2024-09-20",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "6.1-inch Super Retina XDR OLED, 2556 x 1179, 60 Hz",
+      "chip": "A18",
+      "rear_camera": "48 MP wide + 12 MP ultra wide",
+      "front_camera": "12 MP",
+      "battery_mah": 3561,
+      "wired_charging": "up to 25 W with 30 W adapter",
+      "wireless_charging": "MagSafe",
+      "connector": "USB-C",
+      "weight_g": 170,
+      "dimensions_mm": "147.6 x 71.6 x 7.8",
+      "water_resistance": "IP68 (6 m, 30 min)"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2",
+      "case:ph-16"
+    ],
+    "variants": [
+      {
+        "sku": "PH-16-128GB-ULTRAMARINE",
+        "storage_gb": 128,
+        "color": "Ultramarine",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-16-128GB-TEAL",
+        "storage_gb": 128,
+        "color": "Teal",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-16-128GB-PINK",
+        "storage_gb": 128,
+        "color": "Pink",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-16-128GB-WHITE",
+        "storage_gb": 128,
+        "color": "White",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-16-128GB-BLACK",
+        "storage_gb": 128,
+        "color": "Black",
+        "list_price": 799,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ph-17",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone 17",
+    "release_date": "2025-09-19",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "6.3-inch Super Retina XDR OLED (LTPO), 2622 x 1206, 460 ppi, 120 Hz",
+      "chip": "A19",
+      "rear_camera": "Dual 48 MP (main + ultra wide)",
+      "front_camera": "18 MP with Dual Capture",
+      "battery_mah": 3692,
+      "wired_charging": "USB-C, 50% in 20 min with 40 W+ adapter",
+      "wireless_charging": "MagSafe, Qi2",
+      "connector": "USB-C",
+      "weight_g": 177,
+      "dimensions_mm": "149.6 x 71.5 x 7.95",
+      "water_resistance": "IP68"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2",
+      "case:ph-17"
+    ],
+    "variants": [
+      {
+        "sku": "PH-17-256GB-LAVENDER",
+        "storage_gb": 256,
+        "color": "Lavender",
+        "list_price": 899,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-256GB-SAGE",
+        "storage_gb": 256,
+        "color": "Sage",
+        "list_price": 899,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-256GB-MISTBLUE",
+        "storage_gb": 256,
+        "color": "Mist Blue",
+        "list_price": 899,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-256GB-WHITE",
+        "storage_gb": 256,
+        "color": "White",
+        "list_price": 899,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-256GB-BLACK",
+        "storage_gb": 256,
+        "color": "Black",
+        "list_price": 899,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 799,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 899,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-512GB-LAVENDER",
+        "storage_gb": 512,
+        "color": "Lavender",
+        "list_price": 1099,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-512GB-SAGE",
+        "storage_gb": 512,
+        "color": "Sage",
+        "list_price": 1099,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-512GB-MISTBLUE",
+        "storage_gb": 512,
+        "color": "Mist Blue",
+        "list_price": 1099,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-512GB-WHITE",
+        "storage_gb": 512,
+        "color": "White",
+        "list_price": 1099,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-17-512GB-BLACK",
+        "storage_gb": 512,
+        "color": "Black",
+        "list_price": 1099,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ph-air",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone Air",
+    "release_date": "2025-09-19",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "6.5-inch Super Retina XDR OLED, 2736 x 1260, 460 ppi, 120 Hz, 3000 nits peak",
+      "chip": "A19 Pro",
+      "rear_camera": "48 MP Fusion f/1.6 (single camera)",
+      "front_camera": "18 MP Center Stage",
+      "battery_mah": 3149,
+      "wired_charging": "USB-C fast charge",
+      "wireless_charging": "MagSafe, Qi2",
+      "connector": "USB-C (USB 2 speed)",
+      "sim": "eSIM only",
+      "weight_g": 165,
+      "dimensions_mm": "156.2 x 74.7 x 5.64",
+      "water_resistance": "IP68 (6 m, 30 min)"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2",
+      "case:ph-air"
+    ],
+    "variants": [
+      {
+        "sku": "PH-AIR-256GB-SKYBLUE",
+        "storage_gb": 256,
+        "color": "Sky Blue",
+        "list_price": 1099,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-256GB-LIGHTGOLD",
+        "storage_gb": 256,
+        "color": "Light Gold",
+        "list_price": 1099,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-256GB-CLOUDWHITE",
+        "storage_gb": 256,
+        "color": "Cloud White",
+        "list_price": 1099,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-256GB-SPACEBLACK",
+        "storage_gb": 256,
+        "color": "Space Black",
+        "list_price": 1099,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 999,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1099,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-512GB-SKYBLUE",
+        "storage_gb": 512,
+        "color": "Sky Blue",
+        "list_price": 1199,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1099,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1199,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-512GB-LIGHTGOLD",
+        "storage_gb": 512,
+        "color": "Light Gold",
+        "list_price": 1199,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1099,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1199,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-512GB-CLOUDWHITE",
+        "storage_gb": 512,
+        "color": "Cloud White",
+        "list_price": 1199,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1099,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1199,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-512GB-SPACEBLACK",
+        "storage_gb": 512,
+        "color": "Space Black",
+        "list_price": 1199,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1099,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1199,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-1024GB-SKYBLUE",
+        "storage_gb": 1024,
+        "color": "Sky Blue",
+        "list_price": 1399,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1299,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1399,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-1024GB-LIGHTGOLD",
+        "storage_gb": 1024,
+        "color": "Light Gold",
+        "list_price": 1399,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1299,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1399,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-1024GB-CLOUDWHITE",
+        "storage_gb": 1024,
+        "color": "Cloud White",
+        "list_price": 1399,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1299,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1399,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "PH-AIR-1024GB-SPACEBLACK",
+        "storage_gb": 1024,
+        "color": "Space Black",
+        "list_price": 1399,
+        "price_verified": false,
+        "price_history": [
+          {
+            "list_price": 1299,
+            "effective_from": "launch",
+            "effective_to": "2026-09-09"
+          },
+          {
+            "list_price": 1399,
+            "effective_from": "2026-09-09",
+            "effective_to": null
+          }
+        ]
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ph-18pro",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone 18 Pro",
+    "release_date": "2026-09-18",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "6.3-inch OLED, 2622 x 1206, 120 Hz ProMotion, 3000 nits outdoor",
+      "chip": "A20 Pro",
+      "ram_gb": 12,
+      "rear_camera": null,
+      "front_camera": null,
+      "battery_mah": 4288,
+      "wired_charging": "60 W (50% in 15 min)",
+      "wireless_charging": "MagSafe, Qi2",
+      "connector": "USB-C",
+      "weight_g": 211,
+      "dimensions_mm": "150.0 x 71.9 x 8.75",
+      "water_resistance": "IP68 (6 m, 30 min)"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2",
+      "case:ph-18pro"
+    ],
+    "variants": [
+      {
+        "sku": "PH-18PRO-256GB-BLACK",
+        "storage_gb": 256,
+        "color": "Black",
+        "list_price": 1199,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-256GB-GLACIER",
+        "storage_gb": 256,
+        "color": "Glacier",
+        "list_price": 1199,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-256GB-BURGUNDY",
+        "storage_gb": 256,
+        "color": "Burgundy",
+        "list_price": 1199,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-256GB-SILVER",
+        "storage_gb": 256,
+        "color": "Silver",
+        "list_price": 1199,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-512GB-BLACK",
+        "storage_gb": 512,
+        "color": "Black",
+        "list_price": 1399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-512GB-GLACIER",
+        "storage_gb": 512,
+        "color": "Glacier",
+        "list_price": 1399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-512GB-BURGUNDY",
+        "storage_gb": 512,
+        "color": "Burgundy",
+        "list_price": 1399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 1399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-1024GB-BLACK",
+        "storage_gb": 1024,
+        "color": "Black",
+        "list_price": 1799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-1024GB-GLACIER",
+        "storage_gb": 1024,
+        "color": "Glacier",
+        "list_price": 1799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-1024GB-BURGUNDY",
+        "storage_gb": 1024,
+        "color": "Burgundy",
+        "list_price": 1799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1799,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-2048GB-BLACK",
+        "storage_gb": 2048,
+        "color": "Black",
+        "list_price": 2399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-2048GB-GLACIER",
+        "storage_gb": 2048,
+        "color": "Glacier",
+        "list_price": 2399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-2048GB-BURGUNDY",
+        "storage_gb": 2048,
+        "color": "Burgundy",
+        "list_price": 2399,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PRO-2048GB-SILVER",
+        "storage_gb": 2048,
+        "color": "Silver",
+        "list_price": 2399,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ph-18promax",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone 18 Pro Max",
+    "release_date": "2026-09-18",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "6.9-inch OLED, 2868 x 1320, 120 Hz ProMotion, 3000 nits outdoor",
+      "chip": "A20 Pro",
+      "ram_gb": 12,
+      "rear_camera": null,
+      "front_camera": null,
+      "battery_mah": 5567,
+      "wired_charging": "60 W",
+      "wireless_charging": "MagSafe, Qi2",
+      "connector": "USB-C",
+      "weight_g": 249,
+      "dimensions_mm": "163.4 x 78.0 x 8.75",
+      "water_resistance": "IP68 (6 m, 30 min)"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "magsafe",
+      "qi2",
+      "case:ph-18promax"
+    ],
+    "variants": [
+      {
+        "sku": "PH-18PROMAX-256GB-BLACK",
+        "storage_gb": 256,
+        "color": "Black",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-256GB-GLACIER",
+        "storage_gb": 256,
+        "color": "Glacier",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-256GB-BURGUNDY",
+        "storage_gb": 256,
+        "color": "Burgundy",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-256GB-SILVER",
+        "storage_gb": 256,
+        "color": "Silver",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-512GB-BLACK",
+        "storage_gb": 512,
+        "color": "Black",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-512GB-GLACIER",
+        "storage_gb": 512,
+        "color": "Glacier",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-512GB-BURGUNDY",
+        "storage_gb": 512,
+        "color": "Burgundy",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-1024GB-BLACK",
+        "storage_gb": 1024,
+        "color": "Black",
+        "list_price": 1899,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-1024GB-GLACIER",
+        "storage_gb": 1024,
+        "color": "Glacier",
+        "list_price": 1899,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-1024GB-BURGUNDY",
+        "storage_gb": 1024,
+        "color": "Burgundy",
+        "list_price": 1899,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1899,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-2048GB-BLACK",
+        "storage_gb": 2048,
+        "color": "Black",
+        "list_price": 2499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-2048GB-GLACIER",
+        "storage_gb": 2048,
+        "color": "Glacier",
+        "list_price": 2499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-2048GB-BURGUNDY",
+        "storage_gb": 2048,
+        "color": "Burgundy",
+        "list_price": 2499,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-18PROMAX-2048GB-SILVER",
+        "storage_gb": 2048,
+        "color": "Silver",
+        "list_price": 2499,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ph-duo",
+    "brand_id": "b01",
+    "category": "phone",
+    "family": "iPhone",
+    "model": "iPhone Duo",
+    "release_date": "2026-10-23",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "Foldable: 7.6-inch inner + 5.4-inch outer Super Retina XDR, ProMotion, 3000 nits outdoor",
+      "chip": "A20 Pro",
+      "battery": "up to 31 hours inner-display video playback",
+      "connector": "USB-C",
+      "wireless_charging": null,
+      "weight_g": null,
+      "dimensions_mm": null
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "case:ph-duo"
+    ],
+    "variants": [
+      {
+        "sku": "PH-DUO-256GB-STARWHITE",
+        "storage_gb": 256,
+        "color": "Star White",
+        "list_price": 1999,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-DUO-256GB-NIGHTSKY",
+        "storage_gb": 256,
+        "color": "Night Sky",
+        "list_price": 1999,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-DUO-512GB-STARWHITE",
+        "storage_gb": 512,
+        "color": "Star White",
+        "list_price": 2199,
+        "price_verified": false
+      },
+      {
+        "sku": "PH-DUO-512GB-NIGHTSKY",
+        "storage_gb": 512,
+        "color": "Night Sky",
+        "list_price": 2199,
+        "price_verified": false
+      },
+      {
+        "sku": "PH-DUO-1024GB-STARWHITE",
+        "storage_gb": 1024,
+        "color": "Star White",
+        "list_price": 2599,
+        "price_verified": false
+      },
+      {
+        "sku": "PH-DUO-1024GB-NIGHTSKY",
+        "storage_gb": 1024,
+        "color": "Night Sky",
+        "list_price": 2599,
+        "price_verified": false
+      },
+      {
+        "sku": "PH-DUO-2048GB-STARWHITE",
+        "storage_gb": 2048,
+        "color": "Star White",
+        "list_price": 3199,
+        "price_verified": true
+      },
+      {
+        "sku": "PH-DUO-2048GB-NIGHTSKY",
+        "storage_gb": 2048,
+        "color": "Night Sky",
+        "list_price": 3199,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  }
+]

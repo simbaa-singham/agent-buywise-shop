@@ -1,0 +1,152 @@
+[
+ {
+  "store_id": "st-aus",
+  "name": "BuyWise Austin",
+  "city": "Austin",
+  "state": "TX",
+  "zip": "78701",
+  "timezone": "America/Chicago",
+  "address": "732 Belinda Forest",
+  "sales_tax_rate": 0.0825,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-sjc",
+  "name": "BuyWise San Jose",
+  "city": "San Jose",
+  "state": "CA",
+  "zip": "95113",
+  "timezone": "America/Los_Angeles",
+  "address": "671 Victor Divide",
+  "sales_tax_rate": 0.09375,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-bkn",
+  "name": "BuyWise Brooklyn",
+  "city": "Brooklyn",
+  "state": "NY",
+  "zip": "11201",
+  "timezone": "America/New_York",
+  "address": "805 Smith Fort",
+  "sales_tax_rate": 0.08875,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-chi",
+  "name": "BuyWise Chicago",
+  "city": "Chicago",
+  "state": "IL",
+  "zip": "60601",
+  "timezone": "America/Chicago",
+  "address": "841 Brenda Trail",
+  "sales_tax_rate": 0.1025,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-sea",
+  "name": "BuyWise Seattle",
+  "city": "Seattle",
+  "state": "WA",
+  "zip": "98101",
+  "timezone": "America/Los_Angeles",
+  "address": "697 Brenda Alley",
+  "sales_tax_rate": 0.1035,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-mia",
+  "name": "BuyWise Miami",
+  "city": "Miami",
+  "state": "FL",
+  "zip": "33130",
+  "timezone": "America/New_York",
+  "address": "146 Stephen Knoll",
+  "sales_tax_rate": 0.07,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-den",
+  "name": "BuyWise Denver",
+  "city": "Denver",
+  "state": "CO",
+  "zip": "80202",
+  "timezone": "America/Denver",
+  "address": "692 Jason Corners",
+  "sales_tax_rate": 0.0881,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-atl",
+  "name": "BuyWise Atlanta",
+  "city": "Atlanta",
+  "state": "GA",
+  "zip": "30303",
+  "timezone": "America/New_York",
+  "address": "800 Mallory Springs",
+  "sales_tax_rate": 0.089,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-bos",
+  "name": "BuyWise Boston",
+  "city": "Boston",
+  "state": "MA",
+  "zip": "02108",
+  "timezone": "America/New_York",
+  "address": "317 James Centers",
+  "sales_tax_rate": 0.0625,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ },
+ {
+  "store_id": "st-phx",
+  "name": "BuyWise Phoenix",
+  "city": "Phoenix",
+  "state": "AZ",
+  "zip": "85004",
+  "timezone": "America/Phoenix",
+  "address": "138 Moore Throughway",
+  "sales_tax_rate": 0.086,
+  "hours": {
+   "mon_sat": "10:00-21:00",
+   "sun": "11:00-18:00"
+  },
+  "same_day_radius_miles": 20
+ }
+]

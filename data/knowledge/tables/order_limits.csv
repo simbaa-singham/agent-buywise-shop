@@ -1,0 +1,7 @@
+category,max_per_order,scope
+phone,2,per model
+tablet,5,per category
+laptop,5,per category
+watch,5,per category
+audio,5,per category
+accessory,5,per category

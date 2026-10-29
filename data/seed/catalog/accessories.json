@@ -1,0 +1,712 @@
+[
+  {
+    "product_id": "ac-case-sil-ph-17e",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone 17e",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-17e"
+    ],
+    "compatibility_note": "Fits only iPhone 17e.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-17E-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-17E-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-17E-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-17e",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone 17e",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-17e"
+    ],
+    "compatibility_note": "Fits only iPhone 17e.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-17E-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-sil-ph-16",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone 16",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-16"
+    ],
+    "compatibility_note": "Fits only iPhone 16.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-16-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-16-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-16-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-16",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone 16",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-16"
+    ],
+    "compatibility_note": "Fits only iPhone 16.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-16-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-sil-ph-17",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone 17",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-17"
+    ],
+    "compatibility_note": "Fits only iPhone 17.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-17-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-17-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-17-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-17",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone 17",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-17"
+    ],
+    "compatibility_note": "Fits only iPhone 17.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-17-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-sil-ph-air",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone Air",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-air"
+    ],
+    "compatibility_note": "Fits only iPhone Air.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-AIR-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-AIR-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-AIR-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-air",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone Air",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-air"
+    ],
+    "compatibility_note": "Fits only iPhone Air.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-AIR-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-sil-ph-18pro",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone 18 Pro",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-18pro"
+    ],
+    "compatibility_note": "Fits only iPhone 18 Pro.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-18PRO-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-18PRO-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-18PRO-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-18pro",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone 18 Pro",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-18pro"
+    ],
+    "compatibility_note": "Fits only iPhone 18 Pro.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-18PRO-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-sil-ph-18promax",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone 18 Pro Max",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-18promax"
+    ],
+    "compatibility_note": "Fits only iPhone 18 Pro Max.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-18PROMAX-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-18PROMAX-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-18PROMAX-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-18promax",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone 18 Pro Max",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-18promax"
+    ],
+    "compatibility_note": "Fits only iPhone 18 Pro Max.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-18PROMAX-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-sil-ph-duo",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Silicone Case with MagSafe for iPhone Duo",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-duo"
+    ],
+    "compatibility_note": "Fits only iPhone Duo.",
+    "variants": [
+      {
+        "sku": "AC-CASE-SIL-PH-DUO-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-DUO-STONE",
+        "color": "Stone",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-CASE-SIL-PH-DUO-LAKEGREEN",
+        "color": "Lake Green",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-case-clr-ph-duo",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Case",
+    "model": "Clear Case with MagSafe for iPhone Duo",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "case:ph-duo"
+    ],
+    "compatibility_note": "Fits only iPhone Duo.",
+    "variants": [
+      {
+        "sku": "AC-CASE-CLR-PH-DUO-CLEAR",
+        "color": "Clear",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-magsafe-1m",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Charger",
+    "model": "MagSafe Charger (1 m)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "magsafe",
+      "qi2"
+    ],
+    "compatibility_note": "Up to 25 W on supported phones with a 30 W+ adapter; Qi2 devices charge at lower power.",
+    "variants": [
+      {
+        "sku": "AC-MAGSAFE-1M-DEFAULT",
+        "color": "Default",
+        "list_price": 39,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-magsafe-2m",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Charger",
+    "model": "MagSafe Charger (2 m)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "magsafe",
+      "qi2"
+    ],
+    "compatibility_note": "Same as 1 m model, longer cable.",
+    "variants": [
+      {
+        "sku": "AC-MAGSAFE-2M-DEFAULT",
+        "color": "Default",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-adapter-20w",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Power adapter",
+    "model": "20W USB-C Power Adapter",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "usb-c"
+    ],
+    "compatibility_note": "Charges any USB-C device; slower for laptops and 60 W phones.",
+    "variants": [
+      {
+        "sku": "AC-ADAPTER-20W-DEFAULT",
+        "color": "Default",
+        "list_price": 19,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-adapter-40w",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Power adapter",
+    "model": "40W Dynamic Power Adapter with 60W Max",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "usb-c"
+    ],
+    "compatibility_note": "Enables fastest wired charging on phones that support 40-60 W.",
+    "variants": [
+      {
+        "sku": "AC-ADAPTER-40W-DEFAULT",
+        "color": "Default",
+        "list_price": 39,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-cable-1m",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Cable",
+    "model": "USB-C Charge Cable (1 m)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "usb-c"
+    ],
+    "compatibility_note": "USB-C to USB-C.",
+    "variants": [
+      {
+        "sku": "AC-CABLE-1M-DEFAULT",
+        "color": "Default",
+        "list_price": 19,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-cable-240w",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Cable",
+    "model": "240W USB-C Charge Cable (2 m)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "usb-c"
+    ],
+    "compatibility_note": "Supports laptop fast charging.",
+    "variants": [
+      {
+        "sku": "AC-CABLE-240W-DEFAULT",
+        "color": "Default",
+        "list_price": 29,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-watch-charger",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Charger",
+    "model": "Watch Magnetic Fast Charger to USB-C Cable (1 m)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "watch-charger"
+    ],
+    "compatibility_note": "For all stocked watches.",
+    "variants": [
+      {
+        "sku": "AC-WATCH-CHARGER-DEFAULT",
+        "color": "Default",
+        "list_price": 29,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-band-sport-s",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Watch band",
+    "model": "Sport Band (fits 40mm and 42mm cases)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "band:small"
+    ],
+    "compatibility_note": "Fits 40 mm (SE 3) and 42 mm (Series 12) cases.",
+    "variants": [
+      {
+        "sku": "AC-BAND-SPORT-S-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-BAND-SPORT-S-LIGHTBLUSH",
+        "color": "Light Blush",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-BAND-SPORT-S-DENIM",
+        "color": "Denim",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-band-sport-l",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Watch band",
+    "model": "Sport Band (fits 44mm, 46mm and 49mm cases)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "band:large"
+    ],
+    "compatibility_note": "Fits 44 mm (SE 3), 46 mm (Series 12) and 49 mm (Ultra 4) cases.",
+    "variants": [
+      {
+        "sku": "AC-BAND-SPORT-L-BLACK",
+        "color": "Black",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-BAND-SPORT-L-LIGHTBLUSH",
+        "color": "Light Blush",
+        "list_price": 49,
+        "price_verified": false
+      },
+      {
+        "sku": "AC-BAND-SPORT-L-DENIM",
+        "color": "Denim",
+        "list_price": 49,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-pencil-pro",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Stylus",
+    "model": "Pencil Pro",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "pencil-pro"
+    ],
+    "compatibility_note": "Works with iPad Pro (M5), iPad Air (M4) and iPad mini (A17 Pro); not with iPad (A16).",
+    "variants": [
+      {
+        "sku": "AC-PENCIL-PRO-DEFAULT",
+        "color": "Default",
+        "list_price": 129,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "ac-pencil-usbc",
+    "brand_id": "b01",
+    "category": "accessory",
+    "family": "Stylus",
+    "model": "Pencil (USB-C)",
+    "release_date": null,
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {},
+    "fits_tags": [
+      "pencil-usb-c"
+    ],
+    "compatibility_note": "Works with every stocked iPad.",
+    "variants": [
+      {
+        "sku": "AC-PENCIL-USBC-DEFAULT",
+        "color": "Default",
+        "list_price": 79,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  }
+]

@@ -10,3 +10,4 @@ logs/*
 # ingestion drop folder (runtime)
 data/inbox/*
 !data/inbox/.gitkeep
+.venv/

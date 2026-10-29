@@ -1,0 +1,11 @@
+BuyWise internal quick tips for store staff (plain text)
+Last updated: 2026-10-01
+
+- Pickup: check photo ID against the order name or the named alternate person.
+- Pickup orders are held 7 days after they are ready, then cancelled automatically.
+- Payment links expire after 30 minutes - send a new one, the cart is kept.
+- Phones are limited to 2 per model per order. Other categories: 5.
+- Returns and exchanges: the assistant hands these to staff. Use the store's returns process.
+- Warranty: 1-year manufacturer warranty from delivery or pickup date. Accidental and liquid damage are not covered.
+- Never ask a customer to read out their one-time code.
+- Holiday hours are in the holiday notice; Thanksgiving and Christmas Day are closed.

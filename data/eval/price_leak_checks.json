@@ -1,0 +1,24 @@
+{
+  "description": "Product prices planted in knowledge docs; ingestion cleaning must remove them and no answer may take a product price from a chunk (NFR 8). Policy fees (shipping $5.99, $14.99, $9.99, thresholds) are policy facts and must be kept.",
+  "planted": [
+    {
+      "file": "faq/faq_products_phones.html",
+      "location": "promo banner (boilerplate)",
+      "text": "iPhone 18 Pro - from $1,199. iPhone Duo - from $1,999."
+    },
+    {
+      "file": "faq/faq_products_phones.html",
+      "location": "Q&A 'What is the cheapest phone?'",
+      "text": "starts at $699 for 256GB"
+    }
+  ],
+  "keep": [
+    "$50",
+    "$75",
+    "$5.99",
+    "$14.99",
+    "$9.99",
+    "$500",
+    "$1,000"
+  ]
+}

@@ -1,0 +1,10 @@
+status,meaning
+Placed,We received your order; it can still be changed or cancelled.
+Processing,We are preparing your order; changes need staff help.
+Shipped,Your order left our warehouse; a tracking number is available.
+Out for delivery,The carrier is delivering your order today.
+Delivered,The carrier confirmed delivery.
+Ready for pickup,Your order is waiting at the store for 7 days.
+Picked up,You collected your order.
+Delayed,Your order is late; we are working with the carrier and will update you.
+Cancelled,The order was cancelled and any payment authorization released.

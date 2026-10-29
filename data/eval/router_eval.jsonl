@@ -1,0 +1,35 @@
+{"id": "rt-001", "message": "Is the iPhone 18 Pro in stock at the Austin store?", "history": [], "expected_intents": ["stock_check"]}
+{"id": "rt-002", "message": "do you have airpods pro 3 in seattle", "history": [], "expected_intents": ["stock_check"]}
+{"id": "rt-003", "message": "Any iPad Air 13 inch available for pickup today?", "history": [], "expected_intents": ["stock_check"]}
+{"id": "rt-004", "message": "Where is my order BW-100002?", "history": [], "expected_intents": ["order_status"]}
+{"id": "rt-005", "message": "BW-100005", "history": [], "expected_intents": ["order_status"]}
+{"id": "rt-006", "message": "has my package shipped yet", "history": [], "expected_intents": ["order_status"]}
+{"id": "rt-007", "message": "I want to buy the iPhone 17 in Sage, 256GB", "history": [], "expected_intents": ["place_order"]}
+{"id": "rt-008", "message": "add a silicone case to my cart", "history": [], "expected_intents": ["place_order"]}
+{"id": "rt-009", "message": "checkout please", "history": [], "expected_intents": ["place_order"]}
+{"id": "rt-010", "message": "Which phone has the best battery?", "history": [], "expected_intents": ["browse_recommend"]}
+{"id": "rt-011", "message": "I need a laptop for school under 1000", "history": [], "expected_intents": ["browse_recommend"]}
+{"id": "rt-012", "message": "what's a good watch for running", "history": [], "expected_intents": ["browse_recommend"]}
+{"id": "rt-013", "message": "Compare iPhone 18 Pro and iPhone 18 Pro Max", "history": [], "expected_intents": ["product_question"]}
+{"id": "rt-014", "message": "Does the iPhone Air have a physical SIM?", "history": [], "expected_intents": ["product_question"]}
+{"id": "rt-015", "message": "how heavy is the iPhone 17e", "history": [], "expected_intents": ["product_question"]}
+{"id": "rt-016", "message": "Will this charger work with my iPhone 16?", "history": [], "expected_intents": ["compatibility"]}
+{"id": "rt-017", "message": "does pencil pro work with my ipad a16", "history": [], "expected_intents": ["compatibility"]}
+{"id": "rt-018", "message": "which band fits a 46mm watch", "history": [], "expected_intents": ["compatibility"]}
+{"id": "rt-019", "message": "What time does the Brooklyn store close?", "history": [], "expected_intents": ["store_question"]}
+{"id": "rt-020", "message": "are you open on thanksgiving", "history": [], "expected_intents": ["store_question"]}
+{"id": "rt-021", "message": "how long do you hold pickup orders", "history": [], "expected_intents": ["store_question"]}
+{"id": "rt-022", "message": "Is shipping free?", "history": [], "expected_intents": ["store_question"]}
+{"id": "rt-023", "message": "I want to return my tablet", "history": [], "expected_intents": ["out_of_scope"]}
+{"id": "rt-024", "message": "can I trade in my old phone", "history": [], "expected_intents": ["out_of_scope"]}
+{"id": "rt-025", "message": "What's the weather in Austin?", "history": [], "expected_intents": ["out_of_scope"]}
+{"id": "rt-026", "message": "talk to a person", "history": [], "expected_intents": ["handoff"]}
+{"id": "rt-027", "message": "this is useless, get me a human", "history": [], "expected_intents": ["handoff"]}
+{"id": "rt-028", "message": "I need help with a warranty claim", "history": [], "expected_intents": ["handoff"]}
+{"id": "rt-029", "message": "yes, the blue one", "history": [{"role": "user", "text": "Do you have iPhone 17 in stock?"}, {"role": "assistant", "text": "Yes, in Mist Blue and Sage."}], "expected_intents": ["place_order"]}
+{"id": "rt-030", "message": "what about in Denver?", "history": [{"role": "user", "text": "Is iPhone Duo in stock in Austin?"}, {"role": "assistant", "text": "Not right now."}], "expected_intents": ["stock_check"]}
+{"id": "rt-031", "message": "and the Pro Max?", "history": [{"role": "user", "text": "How fast does iPhone 18 Pro charge?"}, {"role": "assistant", "text": "Up to 60 W wired."}], "expected_intents": ["product_question"]}
+{"id": "rt-032", "message": "ok cancel it", "history": [{"role": "user", "text": "Where is BW-100000?"}, {"role": "assistant", "text": "It is Placed."}], "expected_intents": ["order_status"]}
+{"id": "rt-033", "message": "Is the iPhone 18 Pro in stock and does the MagSafe charger work with it?", "history": [], "expected_intents": ["stock_check", "compatibility"]}
+{"id": "rt-034", "message": "Where is my order BW-100003 and what are your Black Friday hours?", "history": [], "expected_intents": ["order_status", "store_question"]}
+{"id": "rt-035", "message": "Compare the two Air laptops and tell me if Austin has the 15-inch", "history": [], "expected_intents": ["product_question", "stock_check"]}

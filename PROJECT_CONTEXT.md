@@ -36,6 +36,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (docs/01 section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: docs/00 section 7.4.
 - Open items raised for later modules: AI Operations chart library (docs/01).
 - Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (docs/00 #5), event schema format (docs/00 #6), event partitions/retention/DLQ (docs/06), secrets management (docs/08).
+- Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Next: architect review of the implementation roadmap (docs/09), then phase 0.
 
 ## Pending housekeeping

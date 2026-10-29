@@ -1,0 +1,37 @@
+[
+ {
+  "staff_id": "sf-01",
+  "name": "Darius Goodman",
+  "email": "staff1@example.com",
+  "role": "staff",
+  "mfa_required": true
+ },
+ {
+  "staff_id": "sf-02",
+  "name": "Katrina Jarvis",
+  "email": "staff2@example.com",
+  "role": "staff",
+  "mfa_required": true
+ },
+ {
+  "staff_id": "sf-03",
+  "name": "Ethan Bailey",
+  "email": "staff3@example.com",
+  "role": "staff",
+  "mfa_required": true
+ },
+ {
+  "staff_id": "sf-04",
+  "name": "Patricia Hale",
+  "email": "staff4@example.com",
+  "role": "staff_lead",
+  "mfa_required": true
+ },
+ {
+  "staff_id": "sf-05",
+  "name": "Angel Gonzalez",
+  "email": "staff5@example.com",
+  "role": "ops-admin",
+  "mfa_required": true
+ }
+]

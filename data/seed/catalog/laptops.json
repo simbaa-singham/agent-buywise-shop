@@ -1,0 +1,375 @@
+[
+  {
+    "product_id": "lt-neo",
+    "brand_id": "b01",
+    "category": "laptop",
+    "family": "MacBook",
+    "model": "MacBook Neo",
+    "release_date": "2026-03-11",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "13-inch Liquid Retina IPS, 2408 x 1506, 219 ppi, 500 nits",
+      "chip": "A18 Pro (6-core CPU, 5-core GPU)",
+      "memory_gb": 8,
+      "battery_wh": 36.5,
+      "ports": "1x USB-C 10 Gb/s (DisplayPort), 1x USB-C (USB 2), 3.5 mm headphone jack",
+      "weight_kg": 1.22
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "LT-NEO-256GB-SILVER",
+        "storage_gb": 256,
+        "color": "Silver",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-06-25"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-06-25",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "LT-NEO-256GB-BLUSH",
+        "storage_gb": 256,
+        "color": "Blush",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-06-25"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-06-25",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "LT-NEO-256GB-CITRUS",
+        "storage_gb": 256,
+        "color": "Citrus",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-06-25"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-06-25",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "LT-NEO-256GB-INDIGO",
+        "storage_gb": 256,
+        "color": "Indigo",
+        "list_price": 699,
+        "price_verified": true,
+        "price_history": [
+          {
+            "list_price": 599,
+            "effective_from": "launch",
+            "effective_to": "2026-06-25"
+          },
+          {
+            "list_price": 699,
+            "effective_from": "2026-06-25",
+            "effective_to": null
+          }
+        ]
+      },
+      {
+        "sku": "LT-NEO-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-NEO-512GB-BLUSH",
+        "storage_gb": 512,
+        "color": "Blush",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-NEO-512GB-CITRUS",
+        "storage_gb": 512,
+        "color": "Citrus",
+        "list_price": 799,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-NEO-512GB-INDIGO",
+        "storage_gb": 512,
+        "color": "Indigo",
+        "list_price": 799,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "lt-air13",
+    "brand_id": "b01",
+    "category": "laptop",
+    "family": "MacBook",
+    "model": "MacBook Air 13-inch (M5)",
+    "release_date": "2026-03-04",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "13.6-inch Liquid Retina",
+      "chip": "M5",
+      "memory_gb": 16,
+      "connector": "USB-C, MagSafe 3"
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "LT-AIR13-512GB-SKYBLUE",
+        "storage_gb": 512,
+        "color": "Sky Blue",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR13-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR13-512GB-STARLIGHT",
+        "storage_gb": 512,
+        "color": "Starlight",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR13-512GB-MIDNIGHT",
+        "storage_gb": 512,
+        "color": "Midnight",
+        "list_price": 1299,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR13-1024GB-SKYBLUE",
+        "storage_gb": 1024,
+        "color": "Sky Blue",
+        "list_price": 1499,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-AIR13-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1499,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-AIR13-1024GB-STARLIGHT",
+        "storage_gb": 1024,
+        "color": "Starlight",
+        "list_price": 1499,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-AIR13-1024GB-MIDNIGHT",
+        "storage_gb": 1024,
+        "color": "Midnight",
+        "list_price": 1499,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "lt-air15",
+    "brand_id": "b01",
+    "category": "laptop",
+    "family": "MacBook",
+    "model": "MacBook Air 15-inch (M5)",
+    "release_date": "2026-03-04",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "15.3-inch Liquid Retina",
+      "chip": "M5",
+      "memory_gb": 16,
+      "connector": "USB-C, MagSafe 3"
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "LT-AIR15-512GB-SKYBLUE",
+        "storage_gb": 512,
+        "color": "Sky Blue",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR15-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR15-512GB-STARLIGHT",
+        "storage_gb": 512,
+        "color": "Starlight",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR15-512GB-MIDNIGHT",
+        "storage_gb": 512,
+        "color": "Midnight",
+        "list_price": 1499,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-AIR15-1024GB-SKYBLUE",
+        "storage_gb": 1024,
+        "color": "Sky Blue",
+        "list_price": 1699,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-AIR15-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1699,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-AIR15-1024GB-STARLIGHT",
+        "storage_gb": 1024,
+        "color": "Starlight",
+        "list_price": 1699,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-AIR15-1024GB-MIDNIGHT",
+        "storage_gb": 1024,
+        "color": "Midnight",
+        "list_price": 1699,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "lt-pro14",
+    "brand_id": "b01",
+    "category": "laptop",
+    "family": "MacBook",
+    "model": "MacBook Pro 14-inch (M6)",
+    "release_date": "2026-11-06",
+    "availability": "preorder (pre-orders from 2026-10-28, ships 2026-11-06)",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "14-inch Liquid Retina XDR, 1600 nits HDR peak, nano-texture option",
+      "chip": "M6 (12-core CPU, 12-core GPU)",
+      "memory_gb": "16 (configurable to 32)",
+      "battery": "up to 24 hours",
+      "wireless": "Wi-Fi 7, Bluetooth 6",
+      "ports": "3x Thunderbolt 4, HDMI, MagSafe 3, SDXC, headphone jack",
+      "camera": "12 MP Center Stage"
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "LT-PRO14-1024GB-SPACEBLACK",
+        "storage_gb": 1024,
+        "color": "Space Black",
+        "list_price": 1999,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-PRO14-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1999,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-PRO14-2048GB-SPACEBLACK",
+        "storage_gb": 2048,
+        "color": "Space Black",
+        "list_price": 2399,
+        "price_verified": false
+      },
+      {
+        "sku": "LT-PRO14-2048GB-SILVER",
+        "storage_gb": 2048,
+        "color": "Silver",
+        "list_price": 2399,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "lt-pro16",
+    "brand_id": "b01",
+    "category": "laptop",
+    "family": "MacBook",
+    "model": "MacBook Pro 16-inch (M5 Pro)",
+    "release_date": "2026-03-04",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "16-inch Liquid Retina XDR",
+      "chip": "M5 Pro",
+      "memory_gb": null,
+      "ports": "Thunderbolt, HDMI, MagSafe 3, SDXC, headphone jack"
+    },
+    "compatibility_tags": [
+      "usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "LT-PRO16-1024GB-SPACEBLACK",
+        "storage_gb": 1024,
+        "color": "Space Black",
+        "list_price": 2999,
+        "price_verified": true
+      },
+      {
+        "sku": "LT-PRO16-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 2999,
+        "price_verified": true
+      }
+    ],
+    "image": null
+  }
+]

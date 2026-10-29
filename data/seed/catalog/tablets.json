@@ -1,0 +1,647 @@
+[
+  {
+    "product_id": "tb-ipad",
+    "brand_id": "b01",
+    "category": "tablet",
+    "family": "iPad",
+    "model": "iPad (A16)",
+    "release_date": "2025-03-12",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "11-inch Liquid Retina",
+      "chip": "A16",
+      "connector": "USB-C"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "pencil-usb-c"
+    ],
+    "variants": [
+      {
+        "sku": "TB-IPAD-128GB-BLUE",
+        "storage_gb": 128,
+        "color": "Blue",
+        "list_price": 349,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-IPAD-128GB-PINK",
+        "storage_gb": 128,
+        "color": "Pink",
+        "list_price": 349,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-IPAD-128GB-YELLOW",
+        "storage_gb": 128,
+        "color": "Yellow",
+        "list_price": 349,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-IPAD-128GB-SILVER",
+        "storage_gb": 128,
+        "color": "Silver",
+        "list_price": 349,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-IPAD-256GB-BLUE",
+        "storage_gb": 256,
+        "color": "Blue",
+        "list_price": 449,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-256GB-PINK",
+        "storage_gb": 256,
+        "color": "Pink",
+        "list_price": 449,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-256GB-YELLOW",
+        "storage_gb": 256,
+        "color": "Yellow",
+        "list_price": 449,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-256GB-SILVER",
+        "storage_gb": 256,
+        "color": "Silver",
+        "list_price": 449,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-512GB-BLUE",
+        "storage_gb": 512,
+        "color": "Blue",
+        "list_price": 649,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-512GB-PINK",
+        "storage_gb": 512,
+        "color": "Pink",
+        "list_price": 649,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-512GB-YELLOW",
+        "storage_gb": 512,
+        "color": "Yellow",
+        "list_price": 649,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-IPAD-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 649,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "tb-mini",
+    "brand_id": "b01",
+    "category": "tablet",
+    "family": "iPad",
+    "model": "iPad mini (A17 Pro)",
+    "release_date": "2024-10-23",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "8.3-inch Liquid Retina",
+      "chip": "A17 Pro",
+      "connector": "USB-C"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "pencil-usb-c",
+      "pencil-pro"
+    ],
+    "variants": [
+      {
+        "sku": "TB-MINI-128GB-SPACEGRAY",
+        "storage_gb": 128,
+        "color": "Space Gray",
+        "list_price": 499,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-MINI-128GB-BLUE",
+        "storage_gb": 128,
+        "color": "Blue",
+        "list_price": 499,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-MINI-128GB-PURPLE",
+        "storage_gb": 128,
+        "color": "Purple",
+        "list_price": 499,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-MINI-128GB-STARLIGHT",
+        "storage_gb": 128,
+        "color": "Starlight",
+        "list_price": 499,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-MINI-256GB-SPACEGRAY",
+        "storage_gb": 256,
+        "color": "Space Gray",
+        "list_price": 599,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-256GB-BLUE",
+        "storage_gb": 256,
+        "color": "Blue",
+        "list_price": 599,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-256GB-PURPLE",
+        "storage_gb": 256,
+        "color": "Purple",
+        "list_price": 599,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-256GB-STARLIGHT",
+        "storage_gb": 256,
+        "color": "Starlight",
+        "list_price": 599,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-512GB-SPACEGRAY",
+        "storage_gb": 512,
+        "color": "Space Gray",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-512GB-BLUE",
+        "storage_gb": 512,
+        "color": "Blue",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-512GB-PURPLE",
+        "storage_gb": 512,
+        "color": "Purple",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-MINI-512GB-STARLIGHT",
+        "storage_gb": 512,
+        "color": "Starlight",
+        "list_price": 799,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "tb-air11",
+    "brand_id": "b01",
+    "category": "tablet",
+    "family": "iPad",
+    "model": "iPad Air 11-inch (M4)",
+    "release_date": "2026-03-04",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "11-inch Liquid Retina",
+      "chip": "M4",
+      "connector": "USB-C"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "pencil-usb-c",
+      "pencil-pro"
+    ],
+    "variants": [
+      {
+        "sku": "TB-AIR11-128GB-SPACEGRAY",
+        "storage_gb": 128,
+        "color": "Space Gray",
+        "list_price": 599,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-AIR11-128GB-BLUE",
+        "storage_gb": 128,
+        "color": "Blue",
+        "list_price": 599,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-AIR11-128GB-PURPLE",
+        "storage_gb": 128,
+        "color": "Purple",
+        "list_price": 599,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-AIR11-128GB-STARLIGHT",
+        "storage_gb": 128,
+        "color": "Starlight",
+        "list_price": 599,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-AIR11-256GB-SPACEGRAY",
+        "storage_gb": 256,
+        "color": "Space Gray",
+        "list_price": 699,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-256GB-BLUE",
+        "storage_gb": 256,
+        "color": "Blue",
+        "list_price": 699,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-256GB-PURPLE",
+        "storage_gb": 256,
+        "color": "Purple",
+        "list_price": 699,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-256GB-STARLIGHT",
+        "storage_gb": 256,
+        "color": "Starlight",
+        "list_price": 699,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-512GB-SPACEGRAY",
+        "storage_gb": 512,
+        "color": "Space Gray",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-512GB-BLUE",
+        "storage_gb": 512,
+        "color": "Blue",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-512GB-PURPLE",
+        "storage_gb": 512,
+        "color": "Purple",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-512GB-STARLIGHT",
+        "storage_gb": 512,
+        "color": "Starlight",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-1024GB-SPACEGRAY",
+        "storage_gb": 1024,
+        "color": "Space Gray",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-1024GB-BLUE",
+        "storage_gb": 1024,
+        "color": "Blue",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-1024GB-PURPLE",
+        "storage_gb": 1024,
+        "color": "Purple",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR11-1024GB-STARLIGHT",
+        "storage_gb": 1024,
+        "color": "Starlight",
+        "list_price": 1099,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "tb-air13",
+    "brand_id": "b01",
+    "category": "tablet",
+    "family": "iPad",
+    "model": "iPad Air 13-inch (M4)",
+    "release_date": "2026-03-04",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "13-inch Liquid Retina",
+      "chip": "M4",
+      "connector": "USB-C"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "pencil-usb-c",
+      "pencil-pro"
+    ],
+    "variants": [
+      {
+        "sku": "TB-AIR13-128GB-SPACEGRAY",
+        "storage_gb": 128,
+        "color": "Space Gray",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-128GB-BLUE",
+        "storage_gb": 128,
+        "color": "Blue",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-128GB-PURPLE",
+        "storage_gb": 128,
+        "color": "Purple",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-128GB-STARLIGHT",
+        "storage_gb": 128,
+        "color": "Starlight",
+        "list_price": 799,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-256GB-SPACEGRAY",
+        "storage_gb": 256,
+        "color": "Space Gray",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-256GB-BLUE",
+        "storage_gb": 256,
+        "color": "Blue",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-256GB-PURPLE",
+        "storage_gb": 256,
+        "color": "Purple",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-256GB-STARLIGHT",
+        "storage_gb": 256,
+        "color": "Starlight",
+        "list_price": 899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-512GB-SPACEGRAY",
+        "storage_gb": 512,
+        "color": "Space Gray",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-512GB-BLUE",
+        "storage_gb": 512,
+        "color": "Blue",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-512GB-PURPLE",
+        "storage_gb": 512,
+        "color": "Purple",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-512GB-STARLIGHT",
+        "storage_gb": 512,
+        "color": "Starlight",
+        "list_price": 1099,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-1024GB-SPACEGRAY",
+        "storage_gb": 1024,
+        "color": "Space Gray",
+        "list_price": 1299,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-1024GB-BLUE",
+        "storage_gb": 1024,
+        "color": "Blue",
+        "list_price": 1299,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-1024GB-PURPLE",
+        "storage_gb": 1024,
+        "color": "Purple",
+        "list_price": 1299,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-AIR13-1024GB-STARLIGHT",
+        "storage_gb": 1024,
+        "color": "Starlight",
+        "list_price": 1299,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "tb-pro11",
+    "brand_id": "b01",
+    "category": "tablet",
+    "family": "iPad",
+    "model": "iPad Pro 11-inch (M5)",
+    "release_date": "2025-10-22",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "11-inch Ultra Retina XDR (tandem OLED)",
+      "chip": "M5",
+      "ram_gb": "12 (256/512 GB) or 16 (1/2 TB)",
+      "connector": "Thunderbolt / USB 4 (40 Gb/s)",
+      "wireless": "Wi-Fi 7"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "pencil-usb-c",
+      "pencil-pro"
+    ],
+    "variants": [
+      {
+        "sku": "TB-PRO11-256GB-SPACEBLACK",
+        "storage_gb": 256,
+        "color": "Space Black",
+        "list_price": 999,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-PRO11-256GB-SILVER",
+        "storage_gb": 256,
+        "color": "Silver",
+        "list_price": 999,
+        "price_verified": true
+      },
+      {
+        "sku": "TB-PRO11-512GB-SPACEBLACK",
+        "storage_gb": 512,
+        "color": "Space Black",
+        "list_price": 1199,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO11-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 1199,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO11-1024GB-SPACEBLACK",
+        "storage_gb": 1024,
+        "color": "Space Black",
+        "list_price": 1599,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO11-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1599,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO11-2048GB-SPACEBLACK",
+        "storage_gb": 2048,
+        "color": "Space Black",
+        "list_price": 1999,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO11-2048GB-SILVER",
+        "storage_gb": 2048,
+        "color": "Silver",
+        "list_price": 1999,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  },
+  {
+    "product_id": "tb-pro13",
+    "brand_id": "b01",
+    "category": "tablet",
+    "family": "iPad",
+    "model": "iPad Pro 13-inch (M5)",
+    "release_date": "2025-10-22",
+    "availability": "available",
+    "specs_verified": "2026-10-28",
+    "specs": {
+      "display": "13-inch Ultra Retina XDR (tandem OLED)",
+      "chip": "M5",
+      "ram_gb": "12 (256/512 GB) or 16 (1/2 TB)",
+      "connector": "Thunderbolt / USB 4 (40 Gb/s)",
+      "wireless": "Wi-Fi 7"
+    },
+    "compatibility_tags": [
+      "usb-c",
+      "pencil-usb-c",
+      "pencil-pro"
+    ],
+    "variants": [
+      {
+        "sku": "TB-PRO13-256GB-SPACEBLACK",
+        "storage_gb": 256,
+        "color": "Space Black",
+        "list_price": 1299,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-256GB-SILVER",
+        "storage_gb": 256,
+        "color": "Silver",
+        "list_price": 1299,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-512GB-SPACEBLACK",
+        "storage_gb": 512,
+        "color": "Space Black",
+        "list_price": 1499,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-512GB-SILVER",
+        "storage_gb": 512,
+        "color": "Silver",
+        "list_price": 1499,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-1024GB-SPACEBLACK",
+        "storage_gb": 1024,
+        "color": "Space Black",
+        "list_price": 1899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-1024GB-SILVER",
+        "storage_gb": 1024,
+        "color": "Silver",
+        "list_price": 1899,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-2048GB-SPACEBLACK",
+        "storage_gb": 2048,
+        "color": "Space Black",
+        "list_price": 2299,
+        "price_verified": false
+      },
+      {
+        "sku": "TB-PRO13-2048GB-SILVER",
+        "storage_gb": 2048,
+        "color": "Silver",
+        "list_price": 2299,
+        "price_verified": false
+      }
+    ],
+    "image": null
+  }
+]
