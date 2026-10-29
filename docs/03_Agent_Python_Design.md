@@ -20,7 +20,7 @@ Understand customer messages, route to the right handler, call tools and knowled
 - Stateless instances (state in Postgres checkpointer); 2 replicas locally.
 
 ## 4. Graph design
-- **State:** conversation_id, customer_id, messages, intent, confidence, sentiment, tool_results, owner (bot/staff).
+- **State:** conversation_id, customer_id (from the token `sub`, read-only, never from the LLM), messages, intent, confidence, sentiment, tool_results, owner (bot/staff).
 - **Nodes:** load_context -> sentiment_check -> route_intent -> handler -> guardrails -> respond.
 - **Handlers:** browse/recommend, product_question, compatibility, stock_check, place_order, order_status, store_question, out_of_scope, handoff.
 
@@ -40,6 +40,7 @@ Understand customer messages, route to the right handler, call tools and knowled
 - Place order and order status - TBD in detail.
 
 ## 7. Guardrails and safety
+- Identity (ADR-028): agent accepts only tokens with `aud: buywise-agent`; exchanges them for `aud: buywise-mcp` with scopes for the current intent; exchanged tokens held in memory only, never written to LangGraph checkpoints, logs or traces.
 - Prices, stock, status only from tools; no card data; explicit confirmation before checkout; prompt-injection defense; PII masking.
 
 ## 7a. LLM client, metering and budgets (ADR-026)
@@ -82,5 +83,5 @@ Degradation ladder (never a bare error):
 ## 9. Open decisions
 1. Router: LLM classifier vs small fine-tuned classifier.
 2. Production LLM choice.
-3. User identity propagation BFF -> agent -> `buywise-mcp` -> services (e.g. token exchange RFC 8693 vs passing the user token through). Raised by ADR-021.
+3. ~~User identity propagation~~ - decided: token exchange per hop (ADR-028).
 4. Agent -> BFF stream format: agent emits ADR-024 contract events directly vs BFF maps an agent-specific stream into the contract.

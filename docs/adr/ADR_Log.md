@@ -29,6 +29,7 @@
 | ADR-025 | Accessibility: WCAG 2.2 AA enforced by angular-eslint + axe-core in CI plus a manual per-release checklist; chat-specific rules | Accepted | 2026-10-28 |
 | ADR-026 | LLM metering and budgets: LiteLLM model gateway (pricing, spend, global budget, rate limits) + agent LLM client (per-turn/conversation/customer caps, degradation); shadow pricing locally | Accepted | 2026-10-28 |
 | ADR-027 | LLM observability in the UI: Grafana for trends/alerts + staff-console AI Operations (ops-admin) + customer-web dev overlay; `status.updated` and `message.metrics` events | Accepted | 2026-10-28 |
+| ADR-028 | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-lived JWTs with `act` chain; identity never a tool argument | Accepted | 2026-10-28 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -158,3 +159,13 @@
   - Local: one CloudNativePG cluster hosting all databases with the same names and users; production split is connection-string config only (ADR-013).
   - Inside `services`: one app user; no cross-schema joins or foreign keys, enforced by Spring Modulith verification and tests.
 - **Consequences:** AI load cannot affect checkout. More databases and credentials to manage (ties to secrets decision, docs/08). Other deployables read business data only via REST or events.
+
+## ADR-028 - Identity propagation
+- **Context:** User identity must reach `buywise-services` through BFF -> agent -> `buywise-mcp`. The LLM chooses tools and arguments and can be steered by prompt injection. The MCP spec forbids token passthrough. Draft tools took `customer_id` as an argument.
+- **Options considered:**
+  - A. Pass the user token through - simplest; one token valid everywhere; MCP token passthrough anti-pattern.
+  - B. Service accounts + user id header - simple; services trust any claimed user (confused deputy).
+  - C. Token exchange per hop (RFC 8693, "on-behalf-of") - audience-restricted, scope-narrowed, short-lived JWTs with `act` delegation chain; extra Keycloak calls (cached), more config.
+  - D. Own internal signed token minted by the BFF (Passport-style) - fast; custom protocol and key management, does not fit MCP OAuth.
+- **Decision:** C. Rules: identity never a tool argument (`customer_id` removed from tools, taken from `sub`); scopes narrowed per hop and per intent; exchanged tokens ~5 min, cached in memory only, never in checkpoints/logs/traces; guests get public scopes + own cart, OTP gives a short-lived grant for that contact's orders; staff actions go BFF -> services directly; services log `sub` + `act` chain on writes. Services verify JWTs locally via JWKS.
+- **Consequences:** A leaked token is useless outside its audience and few minutes; full delegation audit trail. More Keycloak configuration. Verify Keycloak's support for the `act` claim in standard token exchange before implementation; if partial, add the actor chain via a Keycloak protocol mapper. In production, mTLS (service mesh, future) would add workload identity; locally JWTs carry it.

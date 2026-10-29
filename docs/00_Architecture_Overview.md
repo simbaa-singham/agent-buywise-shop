@@ -161,7 +161,7 @@ Same mechanisms locally and in production; only the limits differ (derived from 
 
 ## 8. Cross-cutting concerns
 
-- **Security:** Keycloak for customers, staff and service accounts; BFF session pattern; Spring Security JWT checks in `buywise-services`; OAuth for `buywise-mcp`; OTP for order status. Service mesh (mTLS) is the future path for service-to-service security.
+- **Security:** Keycloak for customers, staff and service accounts; BFF session pattern; Spring Security JWT checks in `buywise-services`; OAuth for `buywise-mcp`; OTP for order status. User identity flows by token exchange per hop (RFC 8693): each JWT is audience-restricted, scope-narrowed, ~5 min, with an `act` delegation chain; identity is never a tool argument (ADR-028). Service mesh (mTLS) is the future path for service-to-service security.
 - **Observability:** OpenTelemetry end to end (browser -> BFF -> agent -> MCP -> services); Langfuse for LLM traces; Prometheus/Grafana; structured logs. LLM latency, speed, tokens and cost per call (OTel GenAI conventions) on Grafana and in the staff-console AI Operations area (ADR-027).
 - **Resilience:** timeouts, retries, circuit breakers (Resilience4j, LangGraph node policies); fallback to human handoff.
 - **Evaluation:** RAG and agent scenario suites in CI (Ragas, DeepEval); contract tests for MCP tools and REST APIs.

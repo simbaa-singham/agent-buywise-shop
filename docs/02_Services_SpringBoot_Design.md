@@ -22,7 +22,7 @@ One Spring Boot application (modular monolith) that owns all business data and r
 | Modularity | Spring Modulith 2.x: boundary verification, module events, Event Publication Registry, per-module Flyway |
 | API | Spring Web (REST), controllers per use case, OpenAPI (springdoc) |
 | Data | Spring Data JPA + Flyway on Postgres (schema per module) |
-| Security | Spring Security OAuth2 resource server (JWT); roles: customer, staff, mcp-service, events-service |
+| Security | Spring Security OAuth2 resource server (JWT, verified locally via Keycloak JWKS). User calls: `aud: buywise-services`, scopes (`catalog:read`, `cart:write`, `orders:read`, `orders:write`, `tickets:write`, staff scopes) + ownership check on `sub`; `act` chain logged on writes (ADR-028). Staff: staff token via BFF. Event consumers: client-credentials service token (`events-service`), no user |
 | Resilience | Resilience4j; Bucket4j for per-caller rate limits |
 | Jobs | Scheduled jobs guarded by ShedLock (run once across replicas) |
 | Observability | Micrometer + OpenTelemetry |

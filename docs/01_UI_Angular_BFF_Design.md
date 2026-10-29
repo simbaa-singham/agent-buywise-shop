@@ -71,8 +71,8 @@ Packaging: multi-stage Docker build -> both `ng build` outputs copied into the B
 - Staff: own Keycloak client and own cookie scoped to `/staff` and `/api/staff`; shorter idle timeout; MFA required.
 - Session limits: idle and absolute timeouts in Redis (values set with NFR targets).
 - CSRF: `SameSite` cookie + required custom header on every state-changing request.
-- BFF attaches the user's access token to calls to `buywise-services` and refreshes it when it expires.
-- Open (agent/MCP design): how user identity flows BFF -> agent -> `buywise-mcp` -> services (see docs/03, docs/05).
+- BFF calls `buywise-services` (screens, staff actions) with the user's or staff member's token, and refreshes it when it expires.
+- Calls to `buywise-agent` use a token exchanged for `aud: buywise-agent` (ADR-028); staff takeover actions never go through the agent.
 
 **Real-time channel (ADR-020): SSE down, HTTP POST up.**
 | Direction | Mechanism | Example |

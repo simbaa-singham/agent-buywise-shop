@@ -12,7 +12,7 @@ Expose business capabilities to agents as versioned, scoped, secure tools. A sep
 | Spec | MCP 2026-07-28 (stateless core) |
 | Transport | Streamable HTTP behind Envoy Gateway / Kubernetes Service |
 | Backend | Wraps `buywise-services` REST APIs |
-| Auth | OAuth 2.0 with Keycloak as authorization server |
+| Auth | OAuth 2.0 resource server, Keycloak as authorization server; accepts only tokens with `aud: buywise-mcp`; calls services with an exchanged token (RFC 8693), never passes tokens through (ADR-028) |
 | Tracing | OpenTelemetry (on by default in SDK v2), W3C trace context in `_meta` |
 
 ## 3. How the 2026-07-28 spec is used
@@ -34,11 +34,11 @@ Expose business capabilities to agents as versioned, scoped, secure tools. A sep
 | catalog | `get_product` | product_id | details, variants, prices |
 | catalog | `check_compatibility` | accessory_id, device_model | compatible + note |
 | inventory | `check_stock` | variant_id, fulfilment | qty, pickup ready time |
-| order | `create_cart` | customer_id (optional) | cart_id |
+| order | `create_cart` | - (customer from token `sub`; guest carts anonymous) | cart_id |
 | order | `add_to_cart` | cart_id, variant_id, qty | cart summary |
 | order | `get_cart` | cart_id | items, subtotal, tax, total |
 | order | `checkout` | cart_id, fulfilment, address/pickup | order_id, payment_link (confirmation required) |
-| order | `list_orders` | customer_id | orders |
+| order | `list_orders` | - (customer from token `sub`, or guest OTP grant) | orders |
 | order | `get_order_status` | order_id | status, tracking/pickup info |
 | customer | `verify_customer` | email/phone, otp | customer_id |
 | helpdesk | `create_ticket` | conversation_id, intent, summary | ticket_id |
@@ -49,7 +49,14 @@ Expose business capabilities to agents as versioned, scoped, secure tools. A sep
 - Per-intent tool scoping stays in the agent.
 - Timeouts, retries and circuit breakers on calls to `buywise-services`.
 
+## 5a. Identity and authorization (ADR-028)
+- Identity is never a tool argument: user comes from the token `sub`; tools never accept `customer_id`.
+- Inbound: JWT with `aud: buywise-mcp`, scopes narrowed by the agent per intent; MCP checks the tool's required scope before running it.
+- Outbound: MCP exchanges the inbound token at Keycloak for `aud: buywise-services` with the scopes the tool needs; `act` chain records agent -> mcp. Exchanged tokens cached in memory until expiry (~5 min).
+- Tool -> scope map (initial): catalog/inventory/knowledge tools `catalog:read`; cart tools `cart:write`; `checkout` `orders:write` (+ confirmation); `list_orders`, `get_order_status` `orders:read`; `create_ticket` `tickets:write`; `verify_customer` public.
+- Guests: public scopes only, plus their own cart via `cart_id`. `verify_customer` (OTP) returns a short-lived grant limited to that contact's orders; MCP sends it with order tools. Details at implementation.
+
 ## 6. Open decisions
 1. One MCP server process with grouped tools vs one server per domain inside the deployable.
 2. Tool-level rate limits.
-3. User identity propagation BFF -> agent -> `buywise-mcp` -> services (e.g. token exchange RFC 8693 vs passing the user token through). Raised by ADR-021.
+3. ~~User identity propagation~~ - decided: token exchange per hop (ADR-028).
