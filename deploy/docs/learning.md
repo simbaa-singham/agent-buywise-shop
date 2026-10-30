@@ -76,7 +76,29 @@ Without a health check, Docker reports a container as ready as soon as the proce
 `make` (`/usr/bin/make`) runs named command shortcuts from a `Makefile`. Each module has its own Makefile; the root Makefile delegates (`make up` -> `make -C deploy up`). `make -n <target>` prints commands without running them; `make help` lists targets.
 
 ### Measuring AI speed - k (step 6)
-`make k` sends the same prompt 5 times through LiteLLM and measures tokens/second. Locally 16.9 tokens/s vs 50 tokens/s production target -> **k = 2.96** (written to `local/scale.yaml`). Local AI deadlines and latency targets are multiplied by k; non-AI targets stay the same as production.
+**Why:** the Mac generates text ~3x slower than the production target. A 250-token reply takes 5 s at 50 tokens/s but ~15 s locally. With production deadlines every local reply would time out (customer always sees the fallback); with a hand-picked generous deadline (say 60 s) tests stop catching real slowdowns such as a prompt that triples in size. `k` stretches only the model-dependent limits by a measured amount: 5 s x k. REST, MCP tools and the first "thinking..." status keep production limits.
+
+**How `make k` works** (`scripts/benchmark_k.py`):
+1. Sends a streaming chat request to LiteLLM (`buywise-primary` -> `qwen2.5:7b` on Ollama) - the same path the agent uses (ADR-026).
+2. Records when the first token arrives (TTFT) and the token count from the final `usage` chunk.
+3. Speed = tokens / (end - first token): pure generation speed, waiting before the first token excluded.
+4. One warm-up run (loads the model into memory) is thrown away, then 5 runs; the **median** is kept so one slow run does not skew it.
+5. `k = max(1, 50 / local tokens/s)` - a fast machine never makes local limits stricter than production.
+6. Writes `local/scale.yaml`; later code reads `S` and `k` from it instead of hand-tuning limits.
+
+**Runs:** 2026-10-29: 16.9 tokens/s -> k = 2.96. 2026-10-30 rerun: **17.8 tokens/s, TTFT 0.12 s -> k = 2.82**. ~5% difference between runs is normal (heat, other load on the Mac).
+
+**Decisions (ADR-045):**
+- `k` measures **one reply at a time** (hardware speed). Locally ~8 replies generate at once and share the GPU, so each is slower - that is a **capacity** question, measured separately with k6 in phase 7 (how many at once before each drops below 50/k tokens/s); it sets the agent admission limit. Mixing both into `k` would hide two different problems.
+- `local/scale.yaml` is the **only** place `S` and `k` live; phase 7 Helm `values-local.yaml` is filled from it.
+
+**Limits of this benchmark:** the prompt is tiny, so TTFT is ~0.1 s. Real turns carry retrieved documents and history (long prompts), so their TTFT is much higher - checked in phase 1.
+
+| Question | Answer |
+|---|---|
+| Why do we need k at all? | Local hardware is slower only at AI generation. Without k, local deadlines are either production values (everything times out) or guesses (nothing gets caught). k makes them fair and still strict. |
+| Why measure instead of pick a number? | It depends on machine and model; rerunning `make k` after a change updates every derived limit at once. |
+| Why through LiteLLM and not Ollama directly? | Measures the real path the agent uses, including the gateway's overhead. |
 
 ### Production comparison (Q&A)
 | Question | Answer |

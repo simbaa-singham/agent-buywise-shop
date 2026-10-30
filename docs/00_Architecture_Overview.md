@@ -129,7 +129,7 @@ Production targets are ideal production-grade targets (SLOs with error budgets).
 | Error rates, correctness, security, accessibility, retention | Same as production | x1 |
 | Availability | Proven by failure scenarios instead of uptime over months | see 7.2 #6 |
 
-`S` and `k` live in `values-local.yaml` (deploy/docs/design.md); every derived local limit (concurrency caps, rate limits, LLM timeouts) is computed from them, never hand-tuned.
+`S` and `k` live in `deploy/local/scale.yaml`, written by `make k` (ADR-045; phase 7 Helm `values-local.yaml` reads from it). `k` is single-stream speed; how many replies can generate at once is a separate capacity test (k6, phase 7); every derived local limit (concurrency caps, rate limits, LLM timeouts) is computed from them, never hand-tuned.
 
 ### 7.2 Targets
 | # | Category | Production target | Local target (S = 40, k measured) |

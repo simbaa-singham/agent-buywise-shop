@@ -1,7 +1,7 @@
 # Phase 0 - Learning Index
 
 Phase 0 (foundations) built nothing a customer sees: it prepared the database with products and stock, the login server, the AI gateway and the chat message format that phase 1 needs.
-The detailed notes live **inside each module**; this page is the map. Status: steps 1-4 done; 5-7 in progress.
+The detailed notes live **inside each module**; this page is the map. Status: steps 1-6 done; step 7 in progress.
 
 ## Steps and where to read them
 | Step | What | Learning notes |
@@ -10,8 +10,8 @@ The detailed notes live **inside each module**; this page is the map. Status: st
 | 2 | Separate databases and users | [deploy/docs/learning.md](../../deploy/docs/learning.md#separate-databases-step-2) |
 | 3 | Tables with Flyway, schemas | [buywise-services/docs/learning.md](../../buywise-services/docs/learning.md) |
 | 4 | Loading data by hand (SQL from JSON, transactions, UI tools) | [data/docs/learning.md](../../data/docs/learning.md) |
-| 5 | Chat message contract (JSON Schema, generated code, tests) - in progress | [buywise-web/docs/learning.md](../../buywise-web/docs/learning.md), [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md) |
-| 6 | Measuring AI speed, k = 2.96 | [deploy/docs/learning.md](../../deploy/docs/learning.md#measuring-ai-speed---k-step-6) |
+| 5 | Chat message contract (JSON Schema, generated code, tests) | [buywise-web/docs/learning.md](../../buywise-web/docs/learning.md), [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md) |
+| 6 | Measuring AI speed: k = 2.82 (rerun 2026-10-30), single-stream; capacity tested separately (ADR-045) | [deploy/docs/learning.md](../../deploy/docs/learning.md#measuring-ai-speed---k-step-6) |
 | 7 | Glue: Makefiles, CI, README - to be completed | this page |
 | - | Build tools decided mid-phase: Gradle Kotlin DSL for Java (ADR-041), uv for Python (ADR-042) | [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md#switching-from-pip-to-uv-adr-042) |
 

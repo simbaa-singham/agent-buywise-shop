@@ -5,7 +5,7 @@ Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - 
 ## 1. Principle
 Production-grade design and configuration, run locally at small scale. Scale changes only through configuration (Helm values), never code.
 
-**Scale-down rule (docs/00 section 7.1):** `values-local.yaml` holds the scale factor `S = 40` and the measured LLM hardware factor `k`. Local limits (replica concurrency caps, Envoy rate limits, agent admission queue, LLM timeouts, global USD budget) are derived from production values using `S` and `k`; `k` is measured by a benchmark script (production model tokens/s vs local model tokens/s) during setup.
+**Scale-down rule (docs/00 section 7.1, ADR-045):** `local/scale.yaml` holds the scale factor `S = 40` and the measured LLM hardware factor `k`; in phase 7 `values-local.yaml` is filled from it. Local limits (replica concurrency caps, Envoy rate limits, agent admission queue, LLM timeouts, global USD budget) are derived from production values using `S` and `k`; `k` is measured by a benchmark script (production model tokens/s vs local model tokens/s, one reply at a time) during setup; concurrent capacity is measured separately with k6.
 
 ## 2. Environments
 | Environment | Runtime | Use |

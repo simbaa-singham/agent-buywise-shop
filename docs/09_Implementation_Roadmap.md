@@ -109,10 +109,10 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 ### Phase 7 - Production-shaped runtime (local-k8s)
 | Item | ADRs |
 |---|---|
-| Helm chart per deployable; `values-local.yaml` with `S` and `k`; kind cluster; Envoy Gateway (TLS, routing, rate limits) | ADR-013, ADR-017, deploy/docs/design.md |
+| Helm chart per deployable; `values-local.yaml` filled from `deploy/local/scale.yaml` (`S`, `k`; ADR-045); kind cluster; Envoy Gateway (TLS, routing, rate limits) | ADR-013, ADR-017, deploy/docs/design.md |
 | Observability stack: OTel Collector (redaction processor), Prometheus, Grafana (SLO + budget alerts), Tempo, Loki | ADR-027, ADR-036 |
 | Probes, limits, graceful shutdown, PDBs, rolling deploys, HPA 2 -> 3 | deploy/docs/design.md section 6 |
-| Failure scenarios (docs/00 section 7.2 #6) and k6 at local scale | NFR 1, 6, 7 |
+| Failure scenarios (docs/00 section 7.2 #6) and k6 at local scale, incl. LLM capacity test (replies generating at once before each drops below 50/k tokens/s; sets the admission limit) | NFR 1, 5, 6, 7, ADR-045 |
 | Lighthouse CI (Core Web Vitals) | NFR 3 |
 
 **Done when:** all local NFR targets in docs/00 section 7.2 are met and reported on Grafana.
