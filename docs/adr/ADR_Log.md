@@ -122,8 +122,8 @@
   - A. Own typed contract - covers all event kinds, explicit versioning; we maintain it.
   - B. AG-UI protocol - published standard with TS/Python SDKs; agent events only, community Angular support, still evolving.
   - C. Forward raw LangGraph events - no mapping; leaks internals, UI breaks on graph refactors.
-- **Decision:** A, with agent-reply events shaped like AG-UI start/content/end. Versioned envelope (`v`, `seq`, `ts`, `conversationId`, `messageId`, `payload`); structured `block.*` content rendered by components; sanitized Markdown for text; Redis Stream replay keyed by `seq`/`Last-Event-ID`; `clientMessageId` for idempotent sends; JSON Schema in `shared/contracts/` generating TS and Pydantic types, drift checked in CI.
-- **Consequences:** One contract across Python and TypeScript; adoption of AG-UI remains possible. We own schema evolution. Open item in buywise-agent/docs/design.md: whether the agent emits contract events directly or the BFF maps them.
+- **Decision:** A, with agent-reply events shaped like AG-UI start/content/end. Versioned envelope (`v`, `type`, `ts`, `conversationId`, `messageId`, `payload`); structured `block.*` content rendered by components; sanitized Markdown for text; Redis Stream replay keyed by the SSE `id` / `Last-Event-ID`, where the SSE `id` is the Redis Stream entry id (amended by ADR-029: the original `seq` envelope field was removed); `clientMessageId` for idempotent sends; JSON Schema in `shared/contracts/` generating TS and Pydantic types, drift checked in CI.
+- **Consequences:** One contract across Python and TypeScript; adoption of AG-UI remains possible. We own schema evolution. The open item "agent emits contract events directly or the BFF maps them" was resolved by ADR-029: the agent emits ADR-024 events directly to the conversation's Redis Stream.
 
 ## ADR-025 - Accessibility
 - **Context:** US online store (WCAG 2.x AA is the de facto ADA benchmark). Custom chat UI with streaming text, overlays, OTP and session timeouts.
