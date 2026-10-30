@@ -34,7 +34,7 @@ async def call_mcp(name: str, args: dict, customer_id: str | None) -> tuple[bool
             result = await c.call_tool(name, args)
         text = "\n".join(getattr(part, "text", "") for part in result.content)
         return (not result.is_error), text
-    except Exception as e:  # tool server down -> the model says it cannot check right now
+    except Exception as e:  # noqa: BLE001 - any transport failure; tool server down -> the model says it cannot check right now
         return False, f"Tool unavailable: {e}"
 
 
@@ -87,11 +87,11 @@ DESCRIPTIONS = {
     "check_stock": (CheckStock, "Units in stock per variant at one store or all stores."),
     "list_my_orders": (ListOrders, "The logged-in customer's recent orders, newest first. Use this for 'my order', 'my latest order' or when no order id is given."),
     "get_order": (OrderId, "Details of one order. Only with an order id the customer gave or that list_my_orders returned - never guess an id."),
-    "place_order": (PlaceOrder, "Order items for the logged-in customer. The system shows the customer a quote and "
-                                "asks them to confirm before anything is placed."),
+    "place_order": (PlaceOrder, ("Order items for the logged-in customer. The system shows the customer a quote "
+                                 "and asks them to confirm before anything is placed.")),
     "cancel_order": (OrderId, "Cancel one of the customer's orders that has not shipped or been picked up."),
-    "search_knowledge": (Knowledge, "Search store policies, FAQs and how-to guides (shipping, pickup, returns, "
-                                    "warranty, payment, device setup). Use for any policy question."),
+    "search_knowledge": (Knowledge, ("Search store policies, FAQs and how-to guides (shipping, pickup, returns, "
+                                     "warranty, payment, device setup). Use for any policy question.")),
 }
 
 

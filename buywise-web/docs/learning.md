@@ -50,3 +50,9 @@ _To be completed: generated code walk-through (5.2) and contract tests (5.3)._
 |---|---|
 | Regenerate contract code | `make contracts` |
 | Check generated code is up to date | `make contracts-check` |
+
+## Local end-to-end build (2026-10-30)
+- **BFF (NestJS 12 + Fastify):** guest session on first request (cookie `bw_sid` -> `sess:{id}` in Redis); `POST /api/chat/messages` is idempotent by `clientMessageId`; `GET /api/chat/stream` is SSE reading the Redis Stream (`XREAD BLOCK`), each event's SSE `id` = stream entry id so a reconnect resumes with `Last-Event-ID`.
+- **Login:** BFF does the Keycloak code flow with PKCE; tokens stay in Redis, the browser only has the cookie; the conversation is kept across login.
+- **Angular:** `ChatStore` (NgRx SignalStore) is fed only by the SSE stream - reloading the page replays the conversation; components: chat, product card; Markdown rendered through Angular's sanitizer.
+- **Try:** `make start`, open http://localhost:3000.

@@ -38,3 +38,11 @@ Table rules seen in SQL: `PRIMARY KEY`, `REFERENCES` (foreign key within a schem
 |---|---|
 | Apply migrations | `make migrate` |
 | Applied / pending report | `make flyway-info` |
+
+## Local end-to-end build (2026-10-30)
+- **What:** one Spring Boot 4.1 app, one package per module (`catalog`, `inventory`, `customers`, `orders`); `ModularityTest` fails the build if a module reaches into another's internals (Spring Modulith).
+- **Data access:** `JdbcClient` mapping rows straight into Java records (no JPA) - small, explicit SQL.
+- **Orders:** prices always from the catalog; pickup takes stock off the shelf (`UPDATE ... WHERE quantity >= ?`), cancel puts it back; `POST /api/orders/quote` prices without saving.
+- **Who is asking:** `X-Customer-Id` header; an order of another customer answers 404 (no hint it exists).
+- **Build:** Gradle Kotlin DSL + version catalog (ADR-041); `make -C buywise-services build` / `run`.
+- **Try:** `curl "localhost:8081/api/products?q=iphone+18+pro"`, `curl -H 'X-Customer-Id: cu-demo' localhost:8081/api/orders`.

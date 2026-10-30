@@ -31,3 +31,10 @@ What the buywise-agent module taught us, phase by phase. Index of all phases: [d
 | Upgrade all libraries deliberately | `make -C buywise-agent lock ARGS=--upgrade` |
 | Run any tool in the environment | `cd buywise-agent && uv run <tool>` |
 | Tests + lint | `make test` |
+
+## Local end-to-end build (2026-10-30)
+- **Turn:** `POST /turns` answers 202 at once; the turn runs in the background and writes contract events to `conv:{id}` (Redis Stream), validated by the generated Pydantic models first.
+- **LangGraph loop:** `llm` node streams text (each piece = `message.delta`) and may ask for tools -> `tools` node runs them (MCP or knowledge search), emits `status.updated` and `block.product_card` -> back to `llm` until it answers (max 5 rounds).
+- **Ordering safety:** `place_order` from the model only produces a quote (stored as pending for 15 min); the order is placed by code when the customer replies "yes".
+- **RAG:** `make -C buywise-agent ingest` parses md/txt/html/pdf/docx into sections -> ~1,000-char chunks -> bge-m3 vectors via LiteLLM -> `rag.chunks` (pgvector, HNSW cosine). Search returns the 4 nearest chunks under a distance cut-off; they become the answer's citations.
+- **Try:** `make -C buywise-agent turn Q="How long will the store hold my pickup order?"`; tool calls are logged in `logs/agent.log`.

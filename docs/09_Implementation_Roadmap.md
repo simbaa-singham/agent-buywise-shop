@@ -139,3 +139,19 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Ticket categories as a fixed list (`ticket.*` `category` is free text in the chat contract) | Phase 5 |
 | Production LLM (docs/00 #5) | Phase 6 (placeholder prices until then) |
 | Secrets management (deploy/docs/design.md) | Production design only; local uses Kubernetes secrets |
+
+## 4. Local end-to-end build (2026-10-30) - simplifications to revisit
+Built in one pass to get the whole core assistant running on the Mac (architect priority). What differs from the decided design:
+
+| Area | Decided | Built locally now | Revisit when |
+|---|---|---|---|
+| Identity between hops | Token exchange per hop (ADR-028) | BFF puts the logged-in customer id in the agent request; agent sends it to MCP as `X-Customer-Id`; MCP to services the same. Never a tool argument. No JWT checks on agent/MCP/services. | Production hardening |
+| Intent routing | Rules -> classifier -> LLM cascade (ADR-030) | The model picks tools itself (one LLM loop) | Router eval work |
+| Order confirmation | Explicit confirmation | `place_order` becomes a quote; the order is placed only on the customer's "yes" (deterministic, not by the model) | - (keep) |
+| Document parsing | Plugin pipeline, 11 formats (ADR-039) | md, txt, html, digital pdf, docx; staff-only / superseded / not-yet-effective docs skipped | Phase 3 |
+| Customer lookup at login | Customer id claim in token | Customer found by the verified email from Keycloak | Phase 2 |
+| Session cookie | `__Host-` cookie, idle timeout (ADR-021) | `bw_sid` HttpOnly SameSite=Lax, 8 h | Production hardening |
+| Chat UI state | SignalStore (ADR-022) | SignalStore fed only by the SSE stream; replay rebuilds history | - |
+| Metrics, budgets, tracing | ADR-026/027 | Not built (no `message.metrics`, no budget ladder, no OTel) | Phase 6 / 7 |
+| Staff console, handoff, Kafka events | Phases 4-5 | Not built | Next phases |
+| Versions | NestJS 11 | NestJS 12 (current), TypeScript 7 in the BFF | - |

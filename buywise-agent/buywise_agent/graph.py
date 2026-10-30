@@ -142,7 +142,7 @@ async def stores_line() -> str:
             async with httpx.AsyncClient() as c:
                 data = (await c.get(f"{settings.services_url}/api/stores", timeout=5)).json()
             _stores = "; ".join(f"{s['name']} - {s['city']}, {s['state']} (store_id {s['storeId']})" for s in data)
-        except Exception:
+        except (httpx.HTTPError, ValueError, KeyError):
             return "(store list unavailable - use list_stores)"
     return _stores
 
@@ -198,8 +198,13 @@ async def run_turn(conversation_id: str, message_id: str, text: str,
             await place_confirmed(turn, json.loads(pending))
             citations = []
         else:
+            prompt = text
+            if YES.match(text) and customer_id:
+                # a small model often asks "shall I place it?" itself; a yes then means: prepare the real quote
+                prompt += ("\n\n(The customer agrees. If this is about ordering, call place_order now with the sku "
+                           "and pickup/delivery discussed above.)")
             messages = [SystemMessage(await system_prompt(customer_name)), *await load_history(conversation_id),
-                        HumanMessage(text)]
+                        HumanMessage(prompt)]
             result = await app.ainvoke({"messages": messages, "citations": [], "pending": None, "rounds": 0},
                                        config={"configurable": {"turn": turn}, "recursion_limit": 30})
             if not turn.text.strip():
@@ -217,10 +222,10 @@ async def run_turn(conversation_id: str, message_id: str, text: str,
             payload["citations"] = citations
         await emitter.emit("message.completed", payload)
         await save_history(conversation_id, text, turn.text)
-    except Exception as e:  # never leave the customer without an answer or a fallback (NFR 7)
+    except Exception:  # never leave the customer without an answer or a fallback (NFR 7)
         await emitter.emit("message.failed", {"reason": "error", "userMessage":
                            "Sorry, something went wrong on our side. Please try again in a moment."})
-        raise e
+        raise
 
 
 async def place_confirmed(turn: Turn, order: dict) -> None:
@@ -237,9 +242,9 @@ async def place_confirmed(turn: Turn, order: dict) -> None:
         try:
             async with httpx.AsyncClient() as c:
                 store_name = (await c.get(f"{settings.services_url}/api/stores/{store_name}", timeout=5)).json()["name"]
-        except Exception:
-            pass
-        hold = (data.get("pickupHoldUntil") or "")[:10]
+        except (httpx.HTTPError, ValueError, KeyError):
+            log.warning("store name lookup failed for %s", store_name)
+        hold = (data.get("heldAtStoreUntil") or "")[:10]
         where = f"pickup at **{store_name}**" + (f" (held until {hold})" if hold else "")
     lines = "\n".join(f"- {i['quantity']} x {i['model']} ({i['sku']}) - ${i['unitPrice']:,.2f}" for i in data["items"])
     await turn.say(f"Your order **{data['orderId']}** is placed for {where}.\n\n{lines}\n\n"

@@ -61,9 +61,7 @@ def usable(meta: dict) -> bool:
         return False
     if meta.get("expires") and str(meta["expires"]) < today:
         return False
-    if meta.get("effective_date") and str(meta["effective_date"]) > today:
-        return False
-    return True
+    return not (meta.get("effective_date") and str(meta["effective_date"]) > today)
 
 
 def sections(path: Path, md_text: str | None) -> list[tuple[str | None, str]]:
