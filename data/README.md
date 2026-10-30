@@ -2,7 +2,7 @@
 
 All project data: the product catalog, synthetic stores/customers/orders/tickets, 103 knowledge documents in 11 formats, eval sets, and the tools that generate them.
 
-**Open in:** any editor (IntelliJ or VS Code) for data files; PyCharm if you work on the generators in `tools/` (interpreter `data/tools/.venv`).
+**Open in:** any editor (IntelliJ or VS Code) for data files; PyCharm if you work on the generators in `tools/` (interpreter `data/tools/.venv`, created by uv from `tools/pyproject.toml` + `tools/uv.lock`, ADR-042).
 
 ## Contents
 | Path | Purpose |
@@ -16,7 +16,7 @@ All project data: the product catalog, synthetic stores/customers/orders/tickets
 | `docs/` | design.md, learning.md |
 
 ## Run
-`make data-tools` once, then `make data` to regenerate. Loading into Postgres is manual: docs/walkthroughs/load-seed-data.md.
+Needs uv (`brew install uv`). `make data-tools` once, then `make data` to regenerate. Loading into Postgres is manual: docs/walkthroughs/load-seed-data.md.
 
 ## Documents
 - [docs/design.md](docs/design.md) - detailed design

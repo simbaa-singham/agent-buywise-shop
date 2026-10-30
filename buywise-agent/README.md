@@ -2,19 +2,20 @@
 
 The AI agent (Python, LangGraph): routes each message, calls tools through MCP, answers from documents with RAG, streams replies through Redis. Also runs the document ingestion worker.
 
-**Open in:** PyCharm -> open `buywise-agent/` (interpreter: `buywise-agent/.venv`). Attach `buywise-mcp/` to the same window (File > Open > Attach) with its own `.venv`.
+**Open in:** PyCharm -> open `buywise-agent/` (interpreter: `buywise-agent/.venv`, created by uv). Attach `buywise-mcp/` to the same window (File > Open > Attach) with its own `.venv`.
 
 ## Contents
 | Path | Purpose |
 |---|---|
 | `buywise_agent/contracts/` | Generated chat contract models (Pydantic) |
 | `tests/contract/` | Contract tests |
-| `pyproject.toml, .env.example` | Dependencies and local settings |
+| `pyproject.toml, uv.lock, .python-version` | Dependencies, exact pinned versions, Python version (uv, ADR-042) |
+| `.env.example` | Local settings |
 | `Makefile` | dev, test, lint, ingest |
 | `docs/` | design.md, rag.md, learning.md |
 
 ## Run
-`make agent-dev` (create .venv), `make test` (tests + lint).
+Needs uv (`brew install uv`). `make agent-dev` (create .venv from uv.lock), `make test` (tests + lint). After editing dependencies in pyproject.toml: `make -C buywise-agent lock`.
 
 ## Documents
 - [docs/design.md](docs/design.md) - detailed design
@@ -36,3 +37,4 @@ The AI agent (Python, LangGraph): routes each message, calls tools through MCP, 
 | [ADR-036](../docs/adr/ADR_Log.md) | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; m... |
 | [ADR-039](../docs/adr/ADR_Log.md) | Multi-format ingestion: detect by magic bytes -> parser plugin per format -> common Document model with provenance -> normalize, validate, clean, c... |
 | [ADR-040](../docs/adr/ADR_Log.md) | Embeddings: bge-m3 in every environment via LiteLLM; `model_version` per vector; PII-masked queries; phase-3 bake-off; model change via blue/green ... |
+| [ADR-042](../docs/adr/ADR_Log.md) | uv for every Python project: `pyproject.toml` + committed `uv.lock` + `.python-version`; `uv sync --locked` locally and in CI |

@@ -21,17 +21,17 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 | Editor | Open folder | Notes |
 |---|---|---|
 | WebStorm | `buywise-web/` | Angular + NestJS BFF + chat contract (npm workspaces; web and bff join in phase 1) |
-| PyCharm | `buywise-agent/` + attach `buywise-mcp/` | Each with its own `.venv` interpreter |
+| PyCharm | `buywise-agent/` + attach `buywise-mcp/` | Each with its own `.venv` interpreter, created by uv (ADR-042) |
 | IntelliJ IDEA | `buywise-services/` (+ `buywise-events/` in phase 4) | Spring Boot / Java |
 | Any (IntelliJ or VS Code) | repo root, `deploy/`, `data/`, `docs/` | Compose, data, cross-module docs |
 
 Cross-module documents (`docs/`): [architecture overview](docs/00_Architecture_Overview.md), [decisions (ADR log)](docs/adr/ADR_Log.md), [roadmap](docs/09_Implementation_Roadmap.md), learning index: [Phase 0](docs/learning/Phase-0.md).
 
 ## Local quick start (phase 0)
-Prerequisites: Docker, Node 24, Python 3.12+, Ollama running on the host with `qwen2.5:7b` and `bge-m3` pulled.
+Prerequisites: Docker, Node 24, uv (`brew install uv`; it installs Python 3.12 itself), Ollama running on the host with `qwen2.5:7b` and `bge-m3` pulled.
 
 ```bash
-make data-tools agent-dev   # one-time: Python tool environments (commands delegate to module Makefiles)
+make data-tools agent-dev   # one-time: Python environments from uv.lock (commands delegate to module Makefiles)
 make up                     # Postgres (+pgvector), Redis, Keycloak, LiteLLM
 make migrate                # create the services tables (Flyway)
 # load the seed data by hand: data/docs/walkthroughs/load-seed-data.md

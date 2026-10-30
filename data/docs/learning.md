@@ -52,9 +52,11 @@ Connection: host `localhost`, port `5432`, user `postgres`, password `postgres-l
 |---|---|---|
 | `pg_read_file` cannot find `/tmp/seed/...` | Container recreated, `/tmp` wiped | Run `docker cp` again |
 | Copying long SQL from the terminal cut it off | Terminal scrolling/wrapping | Long text is provided as a file + clipboard (`pbcopy`) |
+| `make data` shows 13 changed documents (PDF, DOCX, XLSX, PPTX, EML) although content is the same | Generators embed run-time values: email MIME boundaries are random, PDFs/Office files store creation time and IDs | Open: discard with `git checkout -- data/knowledge`; fix later by fixing those values in the generators. Seed data, catalog and evals are byte-identical |
 
 ### Commands
 | Task | Command |
 |---|---|
+| Create the generator environment (uv, from tools/uv.lock, ADR-042) | `make data-tools` |
 | Regenerate all data files | `make data` (needs `make data-tools` once) |
 | Copy seed files into Postgres | `docker cp data/seed buywise-postgres-1:/tmp/seed` |

@@ -13,6 +13,7 @@ The detailed notes live **inside each module**; this page is the map. Status: st
 | 5 | Chat message contract (JSON Schema, generated code, tests) - in progress | [buywise-web/docs/learning.md](../../buywise-web/docs/learning.md), [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md) |
 | 6 | Measuring AI speed, k = 2.96 | [deploy/docs/learning.md](../../deploy/docs/learning.md#measuring-ai-speed---k-step-6) |
 | 7 | Glue: Makefiles, CI, README - to be completed | this page |
+| - | Build tools decided mid-phase: Gradle Kotlin DSL for Java (ADR-041), uv for Python (ADR-042) | [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md#switching-from-pip-to-uv-adr-042) |
 
 Data created before phase 0 (catalog, synthetic people, 103 documents, eval sets): [data/docs/learning.md](../../data/docs/learning.md).
 

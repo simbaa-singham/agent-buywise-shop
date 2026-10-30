@@ -42,6 +42,8 @@
 | ADR-038 | AI Operations charts: Apache ECharts (modular imports) with own thin signal-based wrapper; "view as table" accessibility toggle | Accepted | 2026-10-28 |
 | ADR-039 | Multi-format ingestion: detect by magic bytes -> parser plugin per format -> common Document model with provenance -> normalize, validate, clean, chunk; quarantine; golden tests; worker inside agent deployable | Accepted | 2026-10-28 |
 | ADR-040 | Embeddings: bge-m3 in every environment via LiteLLM; `model_version` per vector; PII-masked queries; phase-3 bake-off; model change via blue/green re-index | Accepted | 2026-10-28 |
+| ADR-041 | Gradle (Kotlin DSL) with a version catalog for all Java deployables (services, event publisher, event consumers) | Accepted | 2026-10-29 |
+| ADR-042 | uv for every Python project: `pyproject.toml` + committed `uv.lock` + `.python-version`; `uv sync --locked` locally and in CI | Accepted | 2026-10-29 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -266,3 +268,16 @@
 - **Options considered:** nomic-embed-text v1.5 (small, fast, prefixes, English); bge-m3 (proven, multilingual, dense+sparse+multi-vector, no prefixes); mxbai-embed-large (strong English, 512 max input); snowflake-arctic-embed2 (strong, less adopted); Qwen3-Embedding-0.6B (top 2025 benchmarks, newer); hosted-only APIs (cannot run locally).
 - **Decision:** bge-m3 (1024 dims) everywhere from phase 0, called through LiteLLM; `model_version` stored per vector; queries PII-masked before embedding (ADR-036). Phase-3 bake-off vs Qwen3-Embedding-0.6B and nomic-embed-text v1.5 on our eval set decides the final model.
 - **Consequences:** Local retrieval evals predict production. Changing model is a blue/green migration: new vector column, background re-embed, eval, switch by flag, drop old. bge-m3 sparse output available as a future hybrid-search option.
+
+## ADR-041 - Java build tool
+- **Context:** `buywise-services` gets its build file in phase 1; `buywise-events` (publisher, consumers) in phase 4. Three Java deployables should share Spring Boot and library versions, and CI (phase 0 step 7) should stay fast.
+- **Options considered:** A. Maven - declarative XML, fixed lifecycle, most common in Spring shops, easy to read; no real build cache, shared versions need a parent POM. B. Gradle with Kotlin DSL - build cache and incremental builds, clean multi-project builds, version catalog (`gradle/libs.versions.toml`) shared by all apps; steeper learning curve, build scripts can become clever code.
+- **Decision:** B. Gradle Kotlin DSL, Gradle wrapper (`gradlew`) committed, one version catalog for all Java deployables; no custom build logic beyond convention plugins.
+- **Open for phase 1:** build layout - one Gradle build containing services + events vs separate builds sharing the catalog (decided when the first build file is written).
+- **Consequences:** Faster local and CI builds; one place to bump versions. Build scripts must be kept plain and reviewed like code.
+
+## ADR-042 - Python environment and dependency manager
+- **Context:** `buywise-agent` used pip + venv with unpinned dependencies and no lock file; `data/tools` used `requirements.txt` with loose pins; the Python version came from whatever `python3` was on PATH. Installs could differ between laptop, CI and later runs (including transitive dependencies), and pip installs were slow.
+- **Options considered:** A. pip + pip-tools (`requirements.txt` compiled with hashes) - works, two tools and two file styles. B. Poetry - lock file, own dependency syntax and slower resolver. C. uv - reads standard `pyproject.toml`, cross-platform `uv.lock` with hashes, installs/pins Python itself, 10-100x faster than pip.
+- **Decision:** C. Every Python project (`buywise-agent`, `buywise-mcp`, `data/tools`) has `pyproject.toml` + committed `uv.lock` + `.python-version` (3.12). Make targets use `uv sync --locked` / `uv run --locked` (fail if the lock file is out of date); upgrades are deliberate (`uv lock --upgrade`) and reviewed as a lock-file diff. CI uses the `astral-sh/setup-uv` action. Container images (phase 1+) install with `uv sync --locked --no-dev`.
+- **Consequences:** Identical environments everywhere; CI catches a `pyproject.toml` change without a new lock. Developers need uv installed (`brew install uv`). `data/tools/requirements.txt` removed.

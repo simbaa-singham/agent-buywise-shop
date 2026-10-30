@@ -1,0 +1,18 @@
+# Data generation tools (ADR-033, ADR-039). Not runtime dependencies.
+[project]
+name = "buywise-data-tools"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "faker==37.*",
+    "jinja2==3.*",
+    "python-docx==1.*",
+    "openpyxl==3.*",
+    "python-pptx==1.*",
+    "reportlab==4.*",
+    "pillow==11.*",
+    "pyyaml==6.*",
+]
+
+[tool.uv]
+package = false

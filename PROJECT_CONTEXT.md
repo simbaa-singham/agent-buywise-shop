@@ -45,6 +45,8 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-29: implementation roadmap approved (docs/09) as drafted.
 - Done 2026-10-29: phase 0 foundations (docs/09). Local k = 2.96 (deploy/local/scale.yaml).
 - In progress: step-by-step walkthrough of phase 0 for the architect. Done: steps 1-4 (supporting programs in Docker with health checks; separate databases; tables via Flyway; architect loaded seed data by hand in pgAdmin with data/docs/walkthroughs/load-seed-data.sql - counts verified). Resume at step 5.1 (chat message contract: walk through the schema definition with the architect - started, not finished), then 5.2 generated code, 5.3 contract tests, then step 6 (k benchmark), step 7 (Makefile, CI, README).
+- Done 2026-10-29 (during the walkthrough): Java build tool Gradle Kotlin DSL + version catalog (ADR-041; build layout one-build vs separate decided in phase 1); Python switched to uv with committed uv.lock + .python-version (ADR-042) for buywise-agent and data/tools, CI uses setup-uv.
+- Open item: 13 generated knowledge documents are not byte-deterministic (random MIME boundaries, embedded timestamps) - fix in the generators later.
 - Then: phase 1 thin slice (docs/09).
 
 ## Pending housekeeping

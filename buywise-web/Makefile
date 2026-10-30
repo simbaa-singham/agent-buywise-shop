@@ -9,7 +9,7 @@ help:
 
 contracts: ## Regenerate TypeScript and Pydantic types from the JSON Schema
 	npm install --silent --no-audit --no-fund && npm run --silent contracts:generate
-	$(AGENT)/.venv/bin/datamodel-codegen --input $(CONTRACTS)/schemas/chat-events.schema.json \
+	uv run --project $(AGENT) --locked datamodel-codegen --input $(CONTRACTS)/schemas/chat-events.schema.json \
 	  --input-file-type jsonschema --output $(AGENT)/buywise_agent/contracts/chat_contract.py \
 	  --output-model-type pydantic_v2.BaseModel --target-python-version 3.12 --use-annotated \
 	  --enum-field-as-literal all --disable-timestamp --use-title-as-name --formatters black isort \

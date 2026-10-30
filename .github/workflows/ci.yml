@@ -13,8 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: "24"}
-      - uses: actions/setup-python@v5
-        with: {python-version: "3.12"}
+      - uses: astral-sh/setup-uv@v6  # uv installs Python from .python-version and libraries from uv.lock (ADR-042)
       - run: make agent-dev
       - run: make contracts-check
       - run: make test
