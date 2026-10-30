@@ -199,9 +199,9 @@ export interface BlockProductCardPayload {
   listPrice?: number;
   availability?: string;
   stockAtStore?: {
-    storeId?: string;
-    storeName?: string;
-    quantity?: number;
+    storeId: string;
+    storeName: string;
+    quantity: number;
   };
 }
 /**

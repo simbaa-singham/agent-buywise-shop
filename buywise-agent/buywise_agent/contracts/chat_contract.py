@@ -195,9 +195,9 @@ class StockAtStore(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    storeId: str | None = None
-    storeName: str | None = None
-    quantity: Annotated[int | None, Field(ge=0)] = None
+    storeId: str
+    storeName: str
+    quantity: Annotated[int, Field(ge=0)]
 
 
 class BlockProductCardPayload(BaseModel):

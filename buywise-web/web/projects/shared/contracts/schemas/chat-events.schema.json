@@ -562,6 +562,11 @@
             "stockAtStore": {
               "type": "object",
               "additionalProperties": false,
+              "required": [
+                "storeId",
+                "storeName",
+                "quantity"
+              ],
               "properties": {
                 "storeId": {
                   "type": "string"
