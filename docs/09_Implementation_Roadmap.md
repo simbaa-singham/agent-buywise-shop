@@ -18,6 +18,7 @@ Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Appr
 | Accessibility: angular-eslint a11y rules + axe-core in Playwright | ADR-025 |
 | No brand/maker names, no images (placeholders) | ADR-033 |
 | Each module has its own tests; CI runs build, unit, contract tests | deploy/docs/design.md section 7 |
+| Build tools: Gradle Kotlin DSL + version catalog for Java; uv with committed `uv.lock` for Python | ADR-041, ADR-042 |
 
 ## 3. Phases
 
@@ -26,22 +27,24 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Item | Detail | ADRs |
 |---|---|---|
 | Local-dev stack (Docker Compose) | Postgres + pgvector (databases per ADR-010), Redis, Keycloak (realm as code), LiteLLM -> Ollama on host | ADR-010, ADR-011, ADR-013, ADR-026 |
-| Repo tooling | Makefile (`make up`, `make seed`, `make ingest`, `make test`), linters/formatters per language, GitHub Actions skeleton | ADR-001 |
+| Repo tooling | Makefile (`make up`, `make migrate`, `make ingest`, `make test`), linters/formatters per language, GitHub Actions skeleton | ADR-001 |
 | Contracts package | ADR-024 event JSON Schemas + codegen (TS, Pydantic) + CI drift check | ADR-024, ADR-029 |
 | ~~Seed data~~ - **done 2026-10-28** (`make data`): full catalog, stores, stock, customers, orders, tickets | ADR-033 |
 | Load seed data | One-time manual load by the architect with psql, following data/docs/walkthroughs/load-seed-data.md (no seed script) | ADR-010, ADR-033 |
 | Benchmark `k` | Script measuring local tokens/s; writes `k` to local config | docs/00 section 7.1 |
 
-**Done when:** `make up && make seed` gives a running stack with seeded data; CI green on an empty-but-wired repo.
+**Done when:** `make up && make migrate` plus the manual seed load (data/docs/walkthroughs/load-seed-data.md) gives a running stack with seeded data; CI green on an empty-but-wired repo.
 
 ### Phase 1 - Thin slice: "Is the iPhone 18 Pro in stock at my store?" (guest)
 | Layer | Build | ADRs |
 |---|---|---|
-| `buywise-services` | Spring Modulith app; catalog + inventory modules; Flyway; REST + OpenAPI; JWT resource server; Modulith verification test | ADR-014, ADR-010 |
+| `buywise-services` | Gradle Kotlin DSL build + version catalog + wrapper; Spring Modulith app; catalog + inventory modules; Flyway; REST + OpenAPI; JWT resource server; Modulith verification test | ADR-014, ADR-010, ADR-041 |
 | `buywise-mcp` | `/mcp/catalog`, `/mcp/inventory` servers: `search_products`, `get_product`, `check_stock`; inbound token check, outbound token exchange | ADR-015, ADR-028, ADR-031 |
 | `buywise-agent` | FastAPI `POST /turns` (202) + background run; LangGraph: load_context -> route (rules + LLM classifier, phase 1) -> stock_check handler -> respond; events to `conv:{id}` Redis Stream; LLM client via LiteLLM | ADR-008, ADR-026, ADR-029, ADR-030 |
 | `buywise-web` BFF | Guest session (Redis), `POST /api/chat/messages` (idempotent), `GET /api/chat/stream` SSE with `Last-Event-ID` replay, token exchange to agent | ADR-004, ADR-020, ADR-021, ADR-024, ADR-029 |
 | `customer-web` | Chat widget: CDK-based message list, streaming text, `status.updated`, `block.product_card` (placeholder image); chat SignalStore + SSE adapter | ADR-018, ADR-019, ADR-022, ADR-024, ADR-025 |
+
+**Blocked on architect decision:** Gradle build layout - one build containing services + events vs separate builds sharing the version catalog (ADR-041 open point).
 
 **Done when:** a Playwright test asks a stock question as a guest and gets a streamed, tool-grounded answer; killing the BFF mid-reply and reconnecting completes the reply; contract tests and axe pass; one trace spans all five hops.
 
@@ -125,6 +128,8 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 ## 4. Open decisions by phase
 | Decision | Needed by |
 |---|---|
+| Gradle build layout: one build (services + events) vs separate builds sharing the catalog (ADR-041) | Phase 1 |
+| Make generated knowledge documents byte-deterministic (fixed MIME boundaries, timestamps, document IDs) so `make data` gives no diff - needed for stable golden tests | Phase 3 |
 | Event schema format (docs/00 #6) | Phase 4 |
 | Partitions, retention, dead-letter topics (buywise-events/docs/design.md) | Phase 4 |
 | Outbox relay vs Debezium (deferred) | Phase 4 |
