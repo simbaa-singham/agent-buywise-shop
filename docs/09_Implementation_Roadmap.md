@@ -130,9 +130,11 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 |---|---|
 | Gradle build layout: one build (services + events) vs separate builds sharing the catalog (ADR-041) | Phase 1 |
 | Make generated knowledge documents byte-deterministic (fixed MIME boundaries, timestamps, document IDs) so `make data` gives no diff - needed for stable golden tests | Phase 3 |
+| Order status updates for orders without a conversation (placed on the website): `order.status_changed` requires `conversationId` today - where do they go (customer stream, notification only, optional field)? | Phase 4 |
 | Event schema format (docs/00 #6) | Phase 4 |
 | Partitions, retention, dead-letter topics (buywise-events/docs/design.md) | Phase 4 |
 | Outbox relay vs Debezium (deferred) | Phase 4 |
 | RAG re-indexing location (deferred) | Phase 4 |
+| Ticket categories as a fixed list (`ticket.*` `category` is free text in the chat contract) | Phase 5 |
 | Production LLM (docs/00 #5) | Phase 6 (placeholder prices until then) |
 | Secrets management (deploy/docs/design.md) | Production design only; local uses Kubernetes secrets |
