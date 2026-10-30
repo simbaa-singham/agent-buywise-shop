@@ -44,6 +44,7 @@
 | ADR-040 | Embeddings: bge-m3 in every environment via LiteLLM; `model_version` per vector; PII-masked queries; phase-3 bake-off; model change via blue/green re-index | Accepted | 2026-10-28 |
 | ADR-041 | Gradle (Kotlin DSL) with a version catalog for all Java deployables (services, event publisher, event consumers) | Accepted | 2026-10-29 |
 | ADR-042 | uv for every Python project: `pyproject.toml` + committed `uv.lock` + `.python-version`; `uv sync --locked` locally and in CI | Accepted | 2026-10-29 |
+| ADR-043 | Product `availability` = sale status only (`available` / `preorder` / `discontinued`), owned by catalog, DB CHECK + contract enum; preorder ship date = `release_date`; stock only from inventory | Accepted | 2026-10-30 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -281,3 +282,9 @@
 - **Options considered:** A. pip + pip-tools (`requirements.txt` compiled with hashes) - works, two tools and two file styles. B. Poetry - lock file, own dependency syntax and slower resolver. C. uv - reads standard `pyproject.toml`, cross-platform `uv.lock` with hashes, installs/pins Python itself, 10-100x faster than pip.
 - **Decision:** C. Every Python project (`buywise-agent`, `buywise-mcp`, `data/tools`) has `pyproject.toml` + committed `uv.lock` + `.python-version` (3.12). Make targets use `uv sync --locked` / `uv run --locked` (fail if the lock file is out of date); upgrades are deliberate (`uv lock --upgrade`) and reviewed as a lock-file diff. CI uses the `astral-sh/setup-uv` action. Container images (phase 1+) install with `uv sync --locked --no-dev`.
 - **Consequences:** Identical environments everywhere; CI catches a `pyproject.toml` change without a new lock. Developers need uv installed (`brew install uv`). `data/tools/requirements.txt` removed.
+
+## ADR-043 - Product availability means sale status
+- **Context:** The product card (ADR-024) had a free-text `availability`. In the catalog, `availability` is the product's sale status (49 `available`, one free-text `preorder (pre-orders from ..., ships ...)`), with no DB constraint; stock quantities live in the inventory module. A free-text field lets typos through and mixes concepts.
+- **Options considered:** A. Sale status only, enum owned by catalog; stock stays in `stockAtStore.quantity`. B. Combined status (`available` / `low_stock` / `out_of_stock` / `preorder`) computed from catalog + inventory - needs a low-stock threshold rule and mixes two modules' data in one field. C. Enum in the contract only, DB left as free text.
+- **Decision:** A. Values `available`, `preorder`, `discontinued`; Flyway V3 normalizes existing values and adds a CHECK constraint; contract enum + optional `shipsOn` (date). Preorder ship date is the existing `release_date` (no new column).
+- **Consequences:** Typos rejected in the DB and in generated TS/Pydantic types. "Low stock" wording, if wanted later, is a UI or inventory rule on `quantity`, not a catalog value. Adding a status value means a migration + schema change.

@@ -31,6 +31,8 @@ What the buywise-services module taught us, phase by phase. Index of all phases:
 
 Table rules seen in SQL: `PRIMARY KEY`, `REFERENCES` (foreign key within a schema), `CHECK (list_price > 0)`, `NOT NULL`, `DEFAULT`, `jsonb` (JSON column), `text[]` (array column), identity column for `price_history.id`.
 
+**V3 - changing a table that already has data (2026-10-30, ADR-043).** `catalog.products.availability` was free text; V3 limits it to `available | preorder | discontinued`. Applied migrations are never edited (Flyway checks a checksum of each applied file and would refuse to run); a change is always a new file. V3 first `UPDATE`s existing rows (the free-text `preorder (...)` value) so the new `CHECK` constraint can be added on an already-seeded database; on a fresh database the `UPDATE` touches nothing. Test: setting `availability = 'availble'` now fails with `violates check constraint "products_availability_check"`.
+
 ### Commands
 | Task | Command |
 |---|---|

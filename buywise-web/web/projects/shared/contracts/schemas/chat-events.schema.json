@@ -557,7 +557,18 @@
               "type": "number"
             },
             "availability": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "available",
+                "preorder",
+                "discontinued"
+              ],
+              "description": "Sale status from the catalog (ADR-043). Stock is only in stockAtStore.quantity."
+            },
+            "shipsOn": {
+              "type": "string",
+              "format": "date",
+              "description": "Ship date for preorder products (catalog release_date)"
             },
             "stockAtStore": {
               "type": "object",

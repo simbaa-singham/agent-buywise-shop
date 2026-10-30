@@ -27,6 +27,13 @@ What the buywise-web module taught us, phase by phase. Index of all phases: [doc
 
 **A full answer as messages:** `status.updated` "Thinking..." -> `status.updated` "Checking stock..." -> `message.started` -> several `message.delta` -> `block.product_card` -> `message.completed`.
 
+**Tightening found during the walkthrough (step 5.1, 2026-10-30):**
+- `block.product_card.stockAtStore`: `storeId`, `storeName`, `quantity` now required - an empty `{}` was valid before.
+- `block.product_card.availability`: was free text, now `available | preorder | discontinued` (sale status from the catalog, ADR-043) + optional `shipsOn` date. Stock is only `stockAtStore.quantity`.
+- One schema edit -> `make contracts` -> both generated files change (Python `str | None` became `Literal[...]`; TypeScript `storeId?: string` became `storeId: string`) -> contract tests re-run.
+
+**Q: What are NFR and ADR?** NFR = non-functional requirement: *how well* the system works (speed, availability, cost, security), docs/00 section 7.2. ADR = Architecture Decision Record: one decision with context, options, decision, consequences (docs/adr/ADR_Log.md).
+
 _To be completed: generated code walk-through (5.2) and contract tests (5.3)._
 
 ### Problems hit and fixes

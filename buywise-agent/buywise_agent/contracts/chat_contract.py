@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Annotated, Literal
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, RootModel
@@ -209,7 +210,16 @@ class BlockProductCardPayload(BaseModel):
     model: str
     variantLabel: str | None = None
     listPrice: float | None = None
-    availability: str | None = None
+    availability: Annotated[
+        Literal['available', 'preorder', 'discontinued'] | None,
+        Field(
+            description='Sale status from the catalog (ADR-043). Stock is only in stockAtStore.quantity.'
+        ),
+    ] = None
+    shipsOn: Annotated[
+        date | None,
+        Field(description='Ship date for preorder products (catalog release_date)'),
+    ] = None
     stockAtStore: StockAtStore | None = None
 
 

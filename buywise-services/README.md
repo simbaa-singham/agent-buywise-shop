@@ -7,7 +7,7 @@ Business services: one Spring Boot 4.1 modular monolith (Spring Modulith) with m
 ## Contents
 | Path | Purpose |
 |---|---|
-| `src/main/resources/db/migration/` | Flyway migrations (V1 catalog, V2 inventory) |
+| `src/main/resources/db/migration/` | Flyway migrations (V1 catalog, V2 inventory, V3 catalog availability check) |
 | `Makefile` | migrate, flyway-info |
 | `docs/` | design.md, learning.md |
 
@@ -25,6 +25,7 @@ Business services: one Spring Boot 4.1 modular monolith (Spring Modulith) with m
 | [ADR-002](../docs/adr/ADR_Log.md) | Java for business services, Python for AI and MCP, TypeScript for UI/BFF |
 | [ADR-010](../docs/adr/ADR_Log.md) | PostgreSQL: database per deployable (services with schema per module, agent, keycloak, litellm, langfuse); production business and AI clusters; one... |
 | [ADR-014](../docs/adr/ADR_Log.md) | One Spring Boot 4.1 modular monolith (Spring Modulith 2.x), controllers per use case |
+| [ADR-043](../docs/adr/ADR_Log.md) | Product `availability` = sale status only (`available` / `preorder` / `discontinued`), DB CHECK + contract enum; stock only from inventory |
 | [ADR-041](../docs/adr/ADR_Log.md) | Gradle (Kotlin DSL) with a version catalog for all Java deployables (services, event publisher, event consumers) |
 | [ADR-028](../docs/adr/ADR_Log.md) | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-l... |
 | [ADR-032](../docs/adr/ADR_Log.md) | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j |

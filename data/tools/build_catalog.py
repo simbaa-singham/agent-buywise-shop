@@ -168,7 +168,7 @@ LAPTOPS = [
      "specs": {"display": "15.3-inch Liquid Retina", "chip": "M5", "memory_gb": 16, "connector": "USB-C, MagSafe 3"},
      "compat": ["usb-c"]},
     {"product_id": "lt-pro14", "model": "MacBook Pro 14-inch (M6)", "family": "MacBook", "release_date": "2026-11-06",
-     "availability": "preorder (pre-orders from 2026-10-28, ships 2026-11-06)",
+     "availability": "preorder",  # ships on release_date (ADR-043)
      "colors": ["Space Black", "Silver"],
      "tiers": tiers((1024, 1999, True), (2048, 2399, False)),
      "specs": {"display": "14-inch Liquid Retina XDR, 1600 nits HDR peak, nano-texture option",

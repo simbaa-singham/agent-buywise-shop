@@ -197,7 +197,14 @@ export interface BlockProductCardPayload {
   model: string;
   variantLabel?: string;
   listPrice?: number;
-  availability?: string;
+  /**
+   * Sale status from the catalog (ADR-043). Stock is only in stockAtStore.quantity.
+   */
+  availability?: "available" | "preorder" | "discontinued";
+  /**
+   * Ship date for preorder products (catalog release_date)
+   */
+  shipsOn?: string;
   stockAtStore?: {
     storeId: string;
     storeName: string;
