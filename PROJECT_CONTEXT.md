@@ -1,5 +1,10 @@
 # Project Context - read at the start of every work session
 
+## Priority (set by Sachin 2026-10-30) - read first
+- **Goal now: a complete project running end to end on the Mac** (local, small scale). Every feature working: chat, stock, login, RAG, ordering, staff handoff.
+- **Production setup is parked until the end-to-end project is finished:** scaling (S, k), load/failure tests (k6), Kubernetes/Helm, observability stack, CI polish, hardening. Decisions already made (ADRs) stay; we just do not spend time on them now.
+- Build only what is needed to make the next feature run locally. Keep explanations short; no deep dives on setup or production topics unless asked.
+
 ## Working agreement
 - Sachin is the architect; we design step by step at production scale.
 - Each topic: options -> trade-offs -> architect's decision -> update module doc + ADR log.
@@ -47,7 +52,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - In progress: step-by-step walkthrough of phase 0 for the architect. Done: steps 1-4 (supporting programs in Docker with health checks; separate databases; tables via Flyway; architect loaded seed data by hand in pgAdmin with data/docs/walkthroughs/load-seed-data.sql - counts verified). Resume at step 5.1 part 4 (see 2026-10-30 entry below), then 5.2 generated code, 5.3 contract tests, then step 6 (k benchmark), step 7 (Makefile, CI, README).
 - Done 2026-10-29 (during the walkthrough): Java build tool Gradle Kotlin DSL + version catalog (ADR-041; build layout one-build vs separate decided in phase 1); Python switched to uv with committed uv.lock + .python-version (ADR-042) for buywise-agent and data/tools, CI uses setup-uv.
 - Done 2026-10-30 (during 5.1): contract tightened - product card `stockAtStore` fields required; `availability` = sale status enum + `shipsOn` (ADR-043), Flyway V3 applied (CHECK constraint), catalog generator emits `preorder`. docs/09 fixed (manual seed load; Gradle layout + deterministic docs as open items). Steps 5.1 and 5.2 done (discriminator + ruff formatter added); 5.3: ADR-044 strict write / tolerant read decided, 7 contract tests. 5.3 gaps filled 2026-10-30: valid examples for all 13 shapes (16 files) + 5 invalid examples; TypeScript check of examples deferred to phase 1. TicketChanged split into TicketCreated/TicketUpdated (discriminator bug caught by examples); 23 contract tests green. Resume at step 6 (k benchmark walkthrough), then step 7.
-- Done 2026-10-30: step 6 walkthrough - `make k` rerun: 17.8 tokens/s -> k = 2.82. ADR-045: k = single-stream hardware factor (capacity under load = separate k6 test in phase 7); `deploy/local/scale.yaml` is the single source of S and k (Helm values-local.yaml filled from it). Resume at step 7 (Makefiles, CI, README).
+- Done 2026-10-30: step 6 walkthrough - `make k` rerun: 17.8 tokens/s -> k = 2.82. ADR-045: k = single-stream hardware factor (capacity under load = separate k6 test in phase 7); `deploy/local/scale.yaml` is the single source of S and k (Helm values-local.yaml filled from it). Step 7 (Makefiles, CI, README) skipped - existing files are enough for now (priority change 2026-10-30). Next: phase 1 thin slice, built to run locally; production extras in it are deferred.
 - Open item: 13 generated knowledge documents are not byte-deterministic (random MIME boundaries, embedded timestamps) - fix in the generators later.
 - Then: phase 1 thin slice (docs/09).
 

@@ -3,6 +3,7 @@
 Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Approved by architect 2026-10-29. Observability stack stays in phase 7 and prerendered product pages stay in phase 4 (architect decision).
 
 ## 1. Approach
+- **Priority (architect, 2026-10-30): finish the whole project end to end on the Mac first.** In every phase, build what makes the feature work locally. Deferred until the end: phase 7 (Kubernetes, k6, failure scenarios, observability stack, Lighthouse), phase 8 hardening, and the production extras inside phases 0-6 (CI beyond basic tests, tracing across hops, failure tests like killing the BFF mid-reply, scaling with S and k).
 - **Thin vertical slice first:** one real chat turn end to end (browser -> BFF -> agent -> MCP -> services -> back) before widening any layer. Every later phase adds features to a system that already works end to end.
 - **Production practices from day one:** contracts, tests, CI, tracing, accessibility checks and PII-safe logging start in phase 0/1, not at the end.
 - **Scope rule (docs/00 section 7.4):** only "implemented locally" items are built; "design only" items stay documented.
