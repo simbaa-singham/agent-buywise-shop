@@ -44,6 +44,10 @@
     },
     "ChatEvent": {
       "title": "ChatEvent",
+      "description": "Exactly one event shape, selected by its type field. discriminator lets generated code pick the shape from type directly (OpenAPI keyword; JSON Schema validators ignore it).",
+      "discriminator": {
+        "propertyName": "type"
+      },
       "oneOf": [
         {
           "$ref": "#/$defs/StatusUpdated"

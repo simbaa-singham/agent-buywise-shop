@@ -12,7 +12,7 @@ contracts: ## Regenerate TypeScript and Pydantic types from the JSON Schema
 	uv run --project $(AGENT) --locked datamodel-codegen --input $(CONTRACTS)/schemas/chat-events.schema.json \
 	  --input-file-type jsonschema --output $(AGENT)/buywise_agent/contracts/chat_contract.py \
 	  --output-model-type pydantic_v2.BaseModel --target-python-version 3.12 --use-annotated \
-	  --enum-field-as-literal all --disable-timestamp --use-title-as-name --formatters black isort \
+	  --enum-field-as-literal all --disable-timestamp --use-title-as-name --formatters ruff-format ruff-check \
 	  --custom-file-header '# Generated from buywise-web/web/projects/shared/contracts/schemas/chat-events.schema.json - do not edit. Run make contracts.'
 
 contracts-check: contracts ## Fail if generated contract types are out of date (CI drift check)

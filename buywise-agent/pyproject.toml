@@ -25,7 +25,7 @@ dev = [
     "pytest-asyncio",
     "ruff",
     "jsonschema",
-    "datamodel-code-generator",
+    "datamodel-code-generator[ruff]",
 ]
 
 [tool.pytest.ini_options]

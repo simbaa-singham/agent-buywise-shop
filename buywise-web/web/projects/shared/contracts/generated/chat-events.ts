@@ -1,6 +1,8 @@
 /* Generated from schemas/chat-events.schema.json - do not edit. Run make contracts. */
 
 /**
+ * Exactly one event shape, selected by its type field. discriminator lets generated code pick the shape from type directly (OpenAPI keyword; JSON Schema validators ignore it).
+ *
  * This interface was referenced by `ChatContract`'s JSON-Schema
  * via the `definition` "ChatEvent".
  */
