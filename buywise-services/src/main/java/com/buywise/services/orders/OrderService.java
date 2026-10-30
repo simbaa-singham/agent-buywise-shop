@@ -96,7 +96,7 @@ public class OrderService {
             fulfilmentJson = jdbc.sql("SELECT jsonb_build_object('type','pickup','store_id',?)::text")
                     .param(store.storeId()).query(String.class).single();
             taxRate = store.salesTaxRate();
-            holdUntil = LocalDateTime.now().plusDays(5);
+            holdUntil = LocalDateTime.now().plusDays(7); // pickup policy: held 7 days
         } else {
             if (customer.address() == null) throw error(HttpStatus.BAD_REQUEST, "No delivery address on file");
             fulfilmentJson = jdbc.sql("SELECT jsonb_build_object('type','delivery','method','standard','address',CAST(? AS jsonb))::text")

@@ -93,4 +93,7 @@ async def cancel_order(ctx: Context, order_id: str) -> dict:
 def _order_summary(o: dict) -> dict:
     keep = ("orderId", "placedAt", "status", "fulfilment", "subtotal", "tax", "total", "trackingNumber",
             "pickupHoldUntil", "items")
-    return {k: o[k] for k in keep if o.get(k) is not None}
+    out = {k: o[k] for k in keep if o.get(k) is not None}
+    if "pickupHoldUntil" in out:  # clearer for the model: the last day the store keeps the order
+        out["heldAtStoreUntil"] = out.pop("pickupHoldUntil")
+    return out

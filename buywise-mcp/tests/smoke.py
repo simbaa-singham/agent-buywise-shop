@@ -1,6 +1,5 @@
 """Calls each MCP domain server over HTTP. Needs services (8081) and MCP (8090) running: uv run python tests/smoke.py"""
 import asyncio
-import json
 
 import httpx2
 from mcp import Client

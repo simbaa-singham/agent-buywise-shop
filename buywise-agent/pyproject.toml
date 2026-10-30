@@ -13,10 +13,14 @@ dependencies = [
     "httpx",
     "pydantic",
     "pydantic-settings",
-    "sqlalchemy",
     "psycopg[binary]",
     "pgvector",
-    "opentelemetry-sdk",
+    "redis",
+    "pypdf",
+    "python-docx",
+    "beautifulsoup4",
+    "pyyaml",
+    "numpy>=2.5.4",
 ]
 
 [dependency-groups]
