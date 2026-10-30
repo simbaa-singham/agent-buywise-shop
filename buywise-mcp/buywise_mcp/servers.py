@@ -73,14 +73,14 @@ async def get_order(ctx: Context, order_id: str) -> dict:
 async def quote_order(ctx: Context, items: list[dict], fulfilment: str, store_id: str | None = None) -> dict:
     """Price an order without placing it. items: [{"sku": "...", "quantity": 1}]; fulfilment: pickup or delivery
     (pickup needs store_id; delivery goes to the address on file)."""
-    body = {"items": items, "fulfilment": fulfilment, "storeId": store_id}
+    body = {"items": _lines(items), "fulfilment": fulfilment, "storeId": store_id}
     return _order_summary(await call("POST", "/api/orders/quote", customer_id=_customer(ctx), json=body))
 
 
 @orders.tool()
 async def place_order(ctx: Context, items: list[dict], fulfilment: str, store_id: str | None = None) -> dict:
     """Place an order. Only after the customer explicitly confirmed the quote."""
-    body = {"items": items, "fulfilment": fulfilment, "storeId": store_id}
+    body = {"items": _lines(items), "fulfilment": fulfilment, "storeId": store_id}
     return _order_summary(await call("POST", "/api/orders", customer_id=_customer(ctx), json=body))
 
 
@@ -88,6 +88,11 @@ async def place_order(ctx: Context, items: list[dict], fulfilment: str, store_id
 async def cancel_order(ctx: Context, order_id: str) -> dict:
     """Cancel an order that has not shipped or been picked up yet."""
     return _order_summary(await call("POST", f"/api/orders/{order_id}/cancel", customer_id=_customer(ctx)))
+
+
+def _lines(items: list[dict]) -> list[dict]:
+    """SKUs are upper case in the catalog; models sometimes lower-case them."""
+    return [{"sku": str(i.get("sku", "")).strip().upper(), "quantity": int(i.get("quantity", 1))} for i in items]
 
 
 def _order_summary(o: dict) -> dict:

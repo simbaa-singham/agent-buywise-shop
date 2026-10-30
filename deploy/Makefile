@@ -1,7 +1,7 @@
 # deploy module: local stack (Docker Compose) and runtime tooling. Run from repo root via `make <target>` or here.
 COMPOSE := docker compose -f compose/compose.yaml --env-file compose/.env
 
-.PHONY: help env up down ps logs migrate flyway-info k
+.PHONY: help env up down ps logs migrate flyway-info k demo-user
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -29,3 +29,6 @@ flyway-info: env ## Show which migrations are applied / pending (changes nothing
 
 k: ## Measure the LLM hardware factor k and write local/scale.yaml
 	python3 scripts/benchmark_k.py
+
+demo-user: env ## Local only: Keycloak client secret + demo customer login (username demo)
+	./compose/keycloak/add-demo-user.sh

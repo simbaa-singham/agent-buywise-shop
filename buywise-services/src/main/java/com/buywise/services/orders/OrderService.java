@@ -72,7 +72,8 @@ public class OrderService {
         List<OrderItem> items = new ArrayList<>();
         for (PlaceOrder.Line line : request.items()) {
             Variant v = variants.get(line.sku());
-            if (v == null) throw error(HttpStatus.BAD_REQUEST, "Unknown SKU " + line.sku());
+            if (v == null) throw error(HttpStatus.BAD_REQUEST, "Unknown SKU " + line.sku()
+                    + ". Call get_product to find the exact sku of the variant, then try again.");
             if ("discontinued".equals(v.availability())) throw error(HttpStatus.CONFLICT, v.model() + " is discontinued");
             items.add(new OrderItem(v.sku(), v.productId(), v.model(), line.quantity(), v.listPrice()));
         }

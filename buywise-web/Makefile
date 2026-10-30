@@ -17,3 +17,15 @@ contracts: ## Regenerate TypeScript and Pydantic types from the JSON Schema
 
 contracts-check: contracts ## Fail if generated contract types are out of date (CI drift check)
 	git diff --exit-code -- $(CONTRACTS)/generated $(AGENT)/buywise_agent/contracts/chat_contract.py
+
+.PHONY: install build run
+install: ## Install web app and BFF packages
+	cd web && npm install --no-audit --no-fund
+	cd bff && npm install --no-audit --no-fund
+
+build: ## Build the Angular app and the BFF
+	cd web && npx ng build customer-web
+	cd bff && npx tsc -p tsconfig.json
+
+run: build ## Serve the app + BFF on http://localhost:3000 (needs agent, Redis, Keycloak)
+	cd bff && node dist/main.js

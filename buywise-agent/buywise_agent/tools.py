@@ -66,7 +66,7 @@ class OrderId(BaseModel):
 
 
 class Line(BaseModel):
-    sku: str = Field(description="Exact variant sku from get_product or check_stock")
+    sku: str = Field(description="Exact variant sku as returned by get_product or check_stock, e.g. PH-18PRO-256GB-SILVER. If you have not seen it in a tool result, call get_product first.")
     quantity: int = 1
 
 

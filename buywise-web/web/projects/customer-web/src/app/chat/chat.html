@@ -1,0 +1,54 @@
+<section class="chat" aria-label="Shopping assistant chat">
+  <div class="list" #list role="log" aria-live="polite" aria-relevant="additions">
+    @if (store.items().length === 0) {
+      <div class="welcome">
+        <h2>Hi{{ store.name() ? ' ' + store.name() : '' }}! How can I help?</h2>
+        <p>Ask about products, stock at a store, store policies, or your orders.</p>
+        <div class="suggestions">
+          @for (s of suggestions; track s) {
+            <button mat-stroked-button type="button" (click)="submit(s)">{{ s }}</button>
+          }
+        </div>
+      </div>
+    }
+    @for (item of store.items(); track item.messageId) {
+      <article class="msg" [class.customer]="item.role === 'customer'" [class.failed]="item.failed"
+               [attr.aria-busy]="item.streaming">
+        <span class="sr-only">{{ item.role === 'customer' ? 'You said' : 'Assistant said' }}</span>
+        @if (item.cards.length) {
+          <div class="cards">
+            @for (card of item.cards; track $index) { <bw-product-card [card]="card" /> }
+          </div>
+        }
+        @if (item.text) { <div class="bubble" [innerHTML]="markdown(item.text)"></div> }
+        @if (item.citations.length) {
+          <div class="sources">
+            Sources:
+            @for (c of item.citations; track $index) {
+              <span class="source">{{ c.title }}{{ c.location ? ' – ' + c.location : '' }}</span>
+            }
+          </div>
+        }
+      </article>
+    }
+  </div>
+
+  @if (store.status(); as status) {
+    <div class="status" role="status">
+      <mat-progress-bar mode="indeterminate" />
+      <span>{{ status }}…</span>
+    </div>
+  }
+  @if (!store.connected() && store.conversationId()) {
+    <div class="status offline" role="status">Reconnecting…</div>
+  }
+
+  <form class="composer" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="input" subscriptSizing="dynamic">
+      <mat-label>Message the assistant</mat-label>
+      <textarea matInput rows="1" maxlength="4000" name="draft" [ngModel]="draft()" (ngModelChange)="draft.set($event)"
+                (keydown)="onKey($event)"></textarea>
+    </mat-form-field>
+    <button mat-flat-button type="submit" [disabled]="!draft().trim() || store.sending()">Send</button>
+  </form>
+</section>
