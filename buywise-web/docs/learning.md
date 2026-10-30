@@ -42,6 +42,7 @@ _To be completed: generated code walk-through (5.2) and contract tests (5.3)._
 | Generated TypeScript lost event fields (`StatusUpdated = Envelope`) | Schema used `allOf` composition | Flattened the common fields into each event |
 | Python classes named `Payload1..12` | Generator ignored nested titles | Added payload titles + `--use-title-as-name` |
 | A bad event gave 25 Pydantic errors (one per shape tried) | `oneOf` without a discriminator: Pydantic tries all 13 shapes | Added `discriminator: {propertyName: type}` to `ChatEvent`; Pydantic picks the shape from `type` -> 1 precise error |
+| With the discriminator, `ticket.created`/`ticket.updated` were rejected by Pydantic (caught by the new examples) | Generator turned the two-value `type` enum of `TicketChanged` into `Literal["TicketChanged"]` | Split into `TicketCreated` + `TicketUpdated`, each with one `const` type, sharing `TicketPayload`; wire format unchanged |
 | Generator warning "Black/isort will become optional" on every run | The warning fires whenever black/isort are the formatters, even with extras declared | Formatters switched to ruff (`--formatters ruff-format ruff-check`, `datamodel-code-generator[ruff]`) - the lint tool the project already uses |
 
 ### Commands

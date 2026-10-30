@@ -18,7 +18,8 @@ export type ChatEvent =
   | HandoffRequested
   | HandoffAccepted
   | HandoffEnded
-  | TicketChanged
+  | TicketCreated
+  | TicketUpdated
   | OrderStatusChanged;
 /**
  * This interface was referenced by `ChatContract`'s JSON-Schema
@@ -262,24 +263,42 @@ export interface HandoffEndedPayload {
   outcome: "released" | "resolved";
 }
 /**
- * Staff console queue updates.
+ * Staff console queue update (ticket shapes share TicketPayload).
  *
  * This interface was referenced by `ChatContract`'s JSON-Schema
- * via the `definition` "TicketChanged".
+ * via the `definition` "TicketCreated".
  */
-export interface TicketChanged {
+export interface TicketCreated {
   v: ContractVersion;
   ts: string;
   conversationId: string;
   messageId?: string;
-  type: "ticket.created" | "ticket.updated";
-  payload: TicketChangedPayload;
+  type: "ticket.created";
+  payload: TicketPayload;
 }
-export interface TicketChangedPayload {
+/**
+ * This interface was referenced by `ChatContract`'s JSON-Schema
+ * via the `definition` "TicketPayload".
+ */
+export interface TicketPayload {
   ticketId: string;
   status: "open" | "assigned" | "resolved";
   category: string;
   assignee?: string;
+}
+/**
+ * Staff console queue update (ticket shapes share TicketPayload).
+ *
+ * This interface was referenced by `ChatContract`'s JSON-Schema
+ * via the `definition` "TicketUpdated".
+ */
+export interface TicketUpdated {
+  v: ContractVersion;
+  ts: string;
+  conversationId: string;
+  messageId?: string;
+  type: "ticket.updated";
+  payload: TicketPayload;
 }
 /**
  * This interface was referenced by `ChatContract`'s JSON-Schema

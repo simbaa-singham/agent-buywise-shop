@@ -83,7 +83,10 @@
           "$ref": "#/$defs/HandoffEnded"
         },
         {
-          "$ref": "#/$defs/TicketChanged"
+          "$ref": "#/$defs/TicketCreated"
+        },
+        {
+          "$ref": "#/$defs/TicketUpdated"
         },
         {
           "$ref": "#/$defs/OrderStatusChanged"
@@ -754,69 +757,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "TicketChanged": {
-      "title": "TicketChanged",
-      "description": "Staff console queue updates.",
-      "properties": {
-        "v": {
-          "$ref": "#/$defs/ContractVersion"
-        },
-        "ts": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "conversationId": {
-          "type": "string"
-        },
-        "messageId": {
-          "type": "string"
-        },
-        "type": {
-          "enum": [
-            "ticket.created",
-            "ticket.updated"
-          ]
-        },
-        "payload": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "ticketId",
-            "status",
-            "category"
-          ],
-          "properties": {
-            "ticketId": {
-              "type": "string"
-            },
-            "status": {
-              "type": "string",
-              "enum": [
-                "open",
-                "assigned",
-                "resolved"
-              ]
-            },
-            "category": {
-              "type": "string"
-            },
-            "assignee": {
-              "type": "string"
-            }
-          },
-          "title": "TicketChangedPayload"
-        }
-      },
-      "required": [
-        "v",
-        "type",
-        "ts",
-        "conversationId",
-        "payload"
-      ],
-      "additionalProperties": false,
-      "type": "object"
-    },
     "OrderStatusChanged": {
       "title": "OrderStatusChanged",
       "properties": {
@@ -863,6 +803,103 @@
             }
           },
           "title": "OrderStatusChangedPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TicketPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticketId",
+        "status",
+        "category"
+      ],
+      "properties": {
+        "ticketId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "assigned",
+            "resolved"
+          ]
+        },
+        "category": {
+          "type": "string"
+        },
+        "assignee": {
+          "type": "string"
+        }
+      },
+      "title": "TicketPayload"
+    },
+    "TicketCreated": {
+      "title": "TicketCreated",
+      "description": "Staff console queue update (ticket shapes share TicketPayload).",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "ticket.created"
+        },
+        "payload": {
+          "$ref": "#/$defs/TicketPayload"
+        }
+      },
+      "required": [
+        "v",
+        "type",
+        "ts",
+        "conversationId",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TicketUpdated": {
+      "title": "TicketUpdated",
+      "description": "Staff console queue update (ticket shapes share TicketPayload).",
+      "properties": {
+        "v": {
+          "$ref": "#/$defs/ContractVersion"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "conversationId": {
+          "type": "string"
+        },
+        "messageId": {
+          "type": "string"
+        },
+        "type": {
+          "const": "ticket.updated"
+        },
+        "payload": {
+          "$ref": "#/$defs/TicketPayload"
         }
       },
       "required": [

@@ -279,28 +279,6 @@ class HandoffEnded(BaseModel):
     payload: Annotated[HandoffEndedPayload, Field(title="HandoffEndedPayload")]
 
 
-class TicketChangedPayload(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    ticketId: str
-    status: Literal["open", "assigned", "resolved"]
-    category: str
-    assignee: str | None = None
-
-
-class TicketChanged(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    v: ContractVersion
-    ts: AwareDatetime
-    conversationId: str
-    messageId: str | None = None
-    type: Literal["TicketChanged"]
-    payload: Annotated[TicketChangedPayload, Field(title="TicketChangedPayload")]
-
-
 class OrderStatusChangedPayload(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -331,6 +309,40 @@ class OrderStatusChanged(BaseModel):
     payload: Annotated[OrderStatusChangedPayload, Field(title="OrderStatusChangedPayload")]
 
 
+class TicketPayload(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    ticketId: str
+    status: Literal["open", "assigned", "resolved"]
+    category: str
+    assignee: str | None = None
+
+
+class TicketCreated(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    v: ContractVersion
+    ts: AwareDatetime
+    conversationId: str
+    messageId: str | None = None
+    type: Literal["ticket.created"]
+    payload: TicketPayload
+
+
+class TicketUpdated(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    v: ContractVersion
+    ts: AwareDatetime
+    conversationId: str
+    messageId: str | None = None
+    type: Literal["ticket.updated"]
+    payload: TicketPayload
+
+
 class ChatEvent(
     RootModel[
         StatusUpdated
@@ -344,7 +356,8 @@ class ChatEvent(
         | HandoffRequested
         | HandoffAccepted
         | HandoffEnded
-        | TicketChanged
+        | TicketCreated
+        | TicketUpdated
         | OrderStatusChanged
     ]
 ):
@@ -360,7 +373,8 @@ class ChatEvent(
         | HandoffRequested
         | HandoffAccepted
         | HandoffEnded
-        | TicketChanged
+        | TicketCreated
+        | TicketUpdated
         | OrderStatusChanged,
         Field(
             description="Exactly one event shape, selected by its type field. discriminator lets generated code pick the shape from type directly (OpenAPI keyword; JSON Schema validators ignore it).",
