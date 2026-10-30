@@ -1,0 +1,1 @@
+{"v": 1, "type": "ticket.updated", "ts": "2026-10-28T14:09:55Z", "conversationId": "c_9f2", "payload": {"ticketId": "T-1042", "status": "assigned", "category": "stock", "assignee": "Maria"}}

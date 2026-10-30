@@ -1,0 +1,1 @@
+{"v": 1, "type": "message.metrics", "ts": "2026-10-28T14:02:13.100Z", "conversationId": "c_9f2", "messageId": "m_77a", "payload": {"model": "qwen2.5:7b", "ttftMs": 1850, "durationMs": 4120, "inputTokens": 1342, "outputTokens": 58, "tokensPerSec": 16.9, "costUsd": 0.0021, "routerTier": "rules"}}

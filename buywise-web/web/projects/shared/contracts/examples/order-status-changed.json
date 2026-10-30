@@ -1,0 +1,1 @@
+{"v": 1, "type": "order.status_changed", "ts": "2026-10-29T16:40:00Z", "conversationId": "c_9f2", "payload": {"orderId": "O-20481", "status": "ready_for_pickup"}}

@@ -1,0 +1,1 @@
+{"v": 1, "type": "message.failed", "ts": "2026-10-28T14:02:20Z", "conversationId": "c_9f2", "messageId": "m_77a", "payload": {"reason": "unavailable", "userMessage": "I couldn't check stock right now. Please try again in a minute, or I can connect you with our staff.", "offerHandoff": true}}
