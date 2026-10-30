@@ -13,3 +13,9 @@ data/inbox/*
 .venv/
 node_modules/
 *.iml
+.DS_Store
+# build output
+build/
+.gradle/
+dist/
+.angular/

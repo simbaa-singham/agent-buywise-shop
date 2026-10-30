@@ -1,0 +1,22 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: buywise-services
+  datasource:
+    url: jdbc:postgresql://localhost:5432/services
+    username: services
+    password: ${SERVICES_DB_PASSWORD:services-local}
+  flyway:
+    default-schema: flyway
+    create-schemas: true
+  jackson:
+    default-property-inclusion: non_null
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+---
+spring.mvc.problemdetails.enabled: true
+server.error.include-message: always

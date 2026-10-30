@@ -1,0 +1,12 @@
+# One version catalog for the Java deployables (ADR-041)
+[versions]
+spring-boot = "4.1.2"
+spring-dependency-management = "1.1.7"
+spring-modulith = "2.1.1"
+
+[libraries]
+spring-modulith-bom = { module = "org.springframework.modulith:spring-modulith-bom", version.ref = "spring-modulith" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
