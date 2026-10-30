@@ -27,7 +27,7 @@ export type ChatEvent =
 export type ContractVersion = 1;
 
 /**
- * Chat message contract v1 (ADR-024, ADR-027, ADR-029). Source of truth for TypeScript (web, BFF) and Pydantic (agent) types. Adding optional fields is allowed; renaming or removing fields requires bumping v. Clients ignore unknown event types. Every event carries v, type, ts, conversationId (and messageId for message-level events); the SSE id is the Redis Stream entry id (ADR-029).
+ * Chat message contract v1 (ADR-024, ADR-027, ADR-029). Source of truth for TypeScript (web, BFF) and Pydantic (agent) types. Adding optional fields is allowed; renaming or removing fields requires bumping v. Strict when writing, tolerant when reading (ADR-044): writers validate against this schema before sending; readers ignore unknown fields and unknown event types. Every event carries v, type, ts, conversationId (and messageId for message-level events); the SSE id is the Redis Stream entry id (ADR-029).
  */
 export interface ChatContract {
   event?: ChatEvent;

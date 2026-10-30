@@ -12,7 +12,8 @@ What the buywise-agent module taught us, phase by phase. Index of all phases: [d
 - **Contract tests** (`tests/contract/test_chat_contract.py`, 6 tests): the schema itself is valid; example messages pass both the JSON Schema and the Pydantic models; an invalid example is rejected by both; `SendMessageRequest` requires `clientMessageId`.
 - Dev tools live in `.venv` (`make agent-dev`): pytest, ruff (lint), jsonschema, datamodel-code-generator.
 
-_To be completed with step 5.2 / 5.3._
+- **Step 5.3 decision (ADR-044): strict when writing, tolerant when reading.** The agent is a writer: every event it builds goes through the generated Pydantic models (`extra='forbid'`), so a typo like `txt` fails before the event is sent. Readers (BFF forwarding, browser) ignore unknown fields and types, so a new optional field never breaks an old browser tab. Test: `examples/invalid-unknown-field.json` must be rejected (7 tests now).
+- **Discriminator (step 5.2 fix):** `ChatEvent` picks the class from `type`; a bad event gives 1 precise error instead of 25.
 
 ### Switching from pip to uv (ADR-042)
 - **The problem with pip here:** `pyproject.toml` listed libraries with no versions and there was no lock file, so every `pip install` took the newest versions that day. Laptop, CI and a later reinstall could each get different versions (including the ~90 indirect libraries LangGraph pulls in): "works on my machine". The Python version was whatever `python3` was on PATH.

@@ -46,7 +46,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 
 **Blocked on architect decision:** Gradle build layout - one build containing services + events vs separate builds sharing the version catalog (ADR-041 open point).
 
-**Done when:** a Playwright test asks a stock question as a guest and gets a streamed, tool-grounded answer; killing the BFF mid-reply and reconnecting completes the reply; contract tests and axe pass; one trace spans all five hops.
+**Done when:** a Playwright test asks a stock question as a guest and gets a streamed, tool-grounded answer; killing the BFF mid-reply and reconnecting completes the reply; contract tests and axe pass; reader-tolerance tests pass (an unknown field and an unknown event type are forwarded by the BFF and ignored by the browser, ADR-044); one trace spans all five hops.
 
 ### Phase 2 - Login, identity and customer data
 | Item | ADRs |

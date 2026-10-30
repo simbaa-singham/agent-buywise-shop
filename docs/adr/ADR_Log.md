@@ -45,6 +45,7 @@
 | ADR-041 | Gradle (Kotlin DSL) with a version catalog for all Java deployables (services, event publisher, event consumers) | Accepted | 2026-10-29 |
 | ADR-042 | uv for every Python project: `pyproject.toml` + committed `uv.lock` + `.python-version`; `uv sync --locked` locally and in CI | Accepted | 2026-10-29 |
 | ADR-043 | Product `availability` = sale status only (`available` / `preorder` / `discontinued`), owned by catalog, DB CHECK + contract enum; preorder ship date = `release_date`; stock only from inventory | Accepted | 2026-10-30 |
+| ADR-044 | Chat events: strict when writing, tolerant when reading - writers validate against the schema before sending; readers ignore unknown fields and unknown event types | Accepted | 2026-10-30 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -288,3 +289,9 @@
 - **Options considered:** A. Sale status only, enum owned by catalog; stock stays in `stockAtStore.quantity`. B. Combined status (`available` / `low_stock` / `out_of_stock` / `preorder`) computed from catalog + inventory - needs a low-stock threshold rule and mixes two modules' data in one field. C. Enum in the contract only, DB left as free text.
 - **Decision:** A. Values `available`, `preorder`, `discontinued`; Flyway V3 normalizes existing values and adds a CHECK constraint; contract enum + optional `shipsOn` (date). Preorder ship date is the existing `release_date` (no new column).
 - **Consequences:** Typos rejected in the DB and in generated TS/Pydantic types. "Low stock" wording, if wanted later, is a UI or inventory rule on `quantity`, not a catalog value. Adding a status value means a migration + schema change.
+
+## ADR-044 - Strict when writing, tolerant when reading
+- **Context:** The chat contract (ADR-024) uses `additionalProperties: false` everywhere (catches typos) and promises that adding optional fields is safe. A reader that validates strictly breaks that promise: a browser tab open for hours, or a BFF pod not yet upgraded, would reject events from a newer writer. Writers: agent, BFF (staff/handoff/ticket events), services (order events). Readers: BFF (forwarding to SSE), browser.
+- **Options considered:** A. Strict everywhere - simplest, but readers must always deploy before writers and old tabs fail until reload. B. Strict write, tolerant read. C. Tolerant everywhere (drop `additionalProperties: false`) - never breaks, but typos pass silently at the source.
+- **Decision:** B. Writers validate every event against the generated strict models before appending to the stream (Pydantic `extra='forbid'` in Python; a runtime check in the BFF for its own events). The BFF, when forwarding, checks only the envelope (`v`, `type`, `conversationId`) and passes the rest through unchanged. The browser ignores unknown event types and unknown fields. An event with an unsupported `v` is skipped and logged, never crashes the client.
+- **Consequences:** Adding optional fields and new event types stays safe in any deploy order. Typos are caught where they are made (contract test: an event with an unknown field is rejected by the writer models). Reader tolerance is tested in phase 1 when reader code exists (unknown field and unknown type are forwarded/ignored).

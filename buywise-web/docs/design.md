@@ -111,7 +111,7 @@ data: {"v":1,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","messageId":"m
 | Heartbeat | SSE comment line (no event) |
 
 Rules:
-1. Versioning: `v` on every event; adding fields is allowed, renaming/removing bumps `v`; clients ignore unknown event types.
+1. Versioning: `v` on every event; adding fields is allowed, renaming/removing bumps `v`; strict when writing, tolerant when reading (ADR-044): writers validate every event before sending; the BFF checks only the envelope when forwarding; the browser ignores unknown fields and event types.
 2. Rich content is data rendered by Angular components. Agent text is Markdown, sanitized, HTML stripped; LLM output is never inserted as raw HTML.
 3. Replay: the SSE `id` is the Redis Stream entry id of the conversation stream (ADR-029); reconnect replays after `Last-Event-ID`; gap too old (trimmed) -> client reloads the conversation via REST.
 4. Idempotent sends: `POST /api/chat/messages` carries a client-generated `clientMessageId`; duplicates are ignored.
