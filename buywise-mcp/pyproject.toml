@@ -1,0 +1,12 @@
+[project]
+name = "buywise-mcp"
+version = "0.1.0"
+description = "MCP tool servers wrapping the buywise-services REST APIs (ADR-015, ADR-031)."
+requires-python = ">=3.12"
+dependencies = ["mcp", "httpx", "uvicorn", "starlette"]
+
+[dependency-groups]
+dev = ["pytest", "ruff"]
+
+[tool.ruff]
+line-length = 120

@@ -46,6 +46,11 @@ class OrderController {
         return orders.place(customerId, request);
     }
 
+    @PostMapping("/quote")
+    Order quote(@RequestHeader(CUSTOMER) String customerId, @Valid @RequestBody PlaceOrder request) {
+        return orders.quote(customerId, request);
+    }
+
     @PostMapping("/{orderId}/cancel")
     Order cancel(@RequestHeader(CUSTOMER) String customerId, @PathVariable String orderId) {
         return orders.cancel(orderId.toUpperCase(), customerId);

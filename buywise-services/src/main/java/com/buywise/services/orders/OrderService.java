@@ -53,8 +53,18 @@ public class OrderService {
                 .query(Order.class).optional().map(o -> o.withItems(items(o.orderId())));
     }
 
+    /** Prices an order exactly as place() would, without saving it or touching stock. */
+    @Transactional(readOnly = true)
+    public Order quote(String customerId, PlaceOrder request) {
+        return build(customerId, request, false);
+    }
+
     @Transactional
     public Order place(String customerId, PlaceOrder request) {
+        return build(customerId, request, true);
+    }
+
+    private Order build(String customerId, PlaceOrder request, boolean save) {
         Customer customer = customers.customer(customerId)
                 .orElseThrow(() -> error(HttpStatus.NOT_FOUND, "Unknown customer"));
         Map<String, Variant> variants = catalog.variants(request.items().stream().map(PlaceOrder.Line::sku).toList());
@@ -78,7 +88,9 @@ public class OrderService {
             for (OrderItem i : items) {
                 if (!"available".equals(catalogAvailability(variants, i)))
                     throw error(HttpStatus.CONFLICT, i.model() + " cannot be picked up before release");
-                if (!inventory.reserve(store.storeId(), i.sku(), i.quantity()))
+                boolean enough = save ? inventory.reserve(store.storeId(), i.sku(), i.quantity())
+                        : inventory.stock(List.of(i.sku()), store.storeId()).stream().anyMatch(s -> s.quantity() >= i.quantity());
+                if (!enough)
                     throw error(HttpStatus.CONFLICT, "Not enough stock of " + i.sku() + " at " + store.name());
             }
             fulfilmentJson = jdbc.sql("SELECT jsonb_build_object('type','pickup','store_id',?)::text")
@@ -95,6 +107,10 @@ public class OrderService {
         BigDecimal tax = subtotal.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
         BigDecimal total = subtotal.add(tax);
 
+        if (!save) {
+            return new Order(null, customerId, LocalDateTime.now(), "quote", fulfilmentJson, subtotal, BigDecimal.ZERO,
+                    tax, total, null, null, holdUntil, items);
+        }
         String orderId = "BW-" + jdbc.sql("SELECT nextval('orders.order_number_seq')").query(Long.class).single();
         jdbc.sql("""
                         INSERT INTO orders.orders (order_id, customer_id, placed_at, status, fulfilment, subtotal,
