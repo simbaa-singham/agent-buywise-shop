@@ -13,20 +13,20 @@ MCP tool servers (Python, MCP SDK v2): one server per business domain, wrapping 
 | `tests/smoke.py` | Calls each tool once over HTTP |
 | `pyproject.toml, uv.lock, .python-version` | Dependencies, exact pinned versions, Python version (uv, ADR-042) |
 | `Makefile` | dev, run, smoke |
-| `../buywise-docs/buywise-mcp/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
+| `../buywise-docs/04-buywise-mcp/` | 01-design.md, 02-learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 `make -C buywise-mcp dev` once (creates `.venv`), then `make -C buywise-mcp run` -> http://localhost:8090/mcp/{catalog,inventory,orders} (needs buywise-services on 8081). `make -C buywise-mcp smoke` calls every tool once. `make start` runs it with everything else.
 
 ## Documents
-- [buywise-docs/buywise-mcp/design.md](../buywise-docs/buywise-mcp/design.md) - detailed design
-- [buywise-docs/buywise-mcp/learning.md](../buywise-docs/buywise-mcp/learning.md) - learning notes per phase
-- System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
+- [buywise-docs/04-buywise-mcp/01-design.md](../buywise-docs/04-buywise-mcp/01-design.md) - detailed design
+- [buywise-docs/04-buywise-mcp/02-learning.md](../buywise-docs/04-buywise-mcp/02-learning.md) - learning notes per phase
+- System overview: [buywise-docs/00-architecture-overview.md](../buywise-docs/00-architecture-overview.md); roadmap: [buywise-docs/09-implementation-roadmap.md](../buywise-docs/09-implementation-roadmap.md)
 
-## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)
+## Decisions that apply (central log: buywise-docs/10-adr/01-adr-log.md)
 | ADR | Decision |
 |---|---|
-| [ADR-015](../buywise-docs/adr/ADR_Log.md) | `buywise-mcp` as separate deployable, MCP Python SDK v2, spec 2026-07-28, wrapping REST APIs |
-| [ADR-028](../buywise-docs/adr/ADR_Log.md) | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop Node server -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-l... |
-| [ADR-031](../buywise-docs/adr/ADR_Log.md) | MCP layout: one server per domain (`/mcp/{domain}`) in one process and image; agent connects per intent; optional per-domain Deployment in production |
-| [ADR-032](../buywise-docs/adr/ADR_Log.md) | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j |
+| [ADR-015](../buywise-docs/10-adr/01-adr-log.md) | `buywise-mcp` as separate deployable, MCP Python SDK v2, spec 2026-07-28, wrapping REST APIs |
+| [ADR-028](../buywise-docs/10-adr/01-adr-log.md) | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop Node server -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-l... |
+| [ADR-031](../buywise-docs/10-adr/01-adr-log.md) | MCP layout: one server per domain (`/mcp/{domain}`) in one process and image; agent connects per intent; optional per-domain Deployment in production |
+| [ADR-032](../buywise-docs/10-adr/01-adr-log.md) | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j |

@@ -10,8 +10,8 @@
 - Each topic: options -> trade-offs -> architect's decision -> update module doc + ADR log.
 - Design before implementation. Explain each technology/technique when it is introduced.
 - Whenever a decision changes the design, list what in the project no longer matches and ask before changing it.
-- Code, Makefile and scripts live in the module they belong to; every document lives in buywise-docs/ - application-level at its top (00, 09, adr/, learning/, archive/), module docs in buywise-docs/<module>/ (ADR-048).
-- After every phase (and as its steps finish), update buywise-docs/<module>/learning.md for each module touched (concepts, what was built and why, questions asked with answers, commands, problems and fixes) and the phase index buywise-docs/learning/Phase-<N>.md. It is part of the phase's definition of done.
+- Code, Makefile and scripts live in the module they belong to; every document lives in buywise-docs/ - numbered in reading order (00 overview, 01-08 modules, 09 roadmap, 10 ADRs, 11 learning, 12 archive; files inside each folder 01, 02, ...); module docs in buywise-docs/NN-<module>/ (ADR-048).
+- After every phase (and as its steps finish), update buywise-docs/NN-<module>/0N-learning.md for each module touched (concepts, what was built and why, questions asked with answers, commands, problems and fixes) and the phase index buywise-docs/11-learning/Phase-<N>.md. It is part of the phase's definition of done.
 - After every change, explain each changed file in plain words: what it is, what it does, why it is needed, and how to see it working. ADR numbers are references only, never the explanation.
 - During implementation, before writing code in an area, remind Sachin of the decisions (ADR numbers + what they mean in code) that apply to it; flag any new decision that comes up instead of making it silently.
 
@@ -31,21 +31,21 @@ Learning and portfolio project: production-grade design and code, run locally at
 Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keycloak.
 
 ## Where things are
-- Main design: buywise-docs/00_Architecture_Overview.md
+- Main design: buywise-docs/00-architecture-overview.md
 - Editors: one Git repo, one IDE per module folder - WebStorm `buywise-web/`, PyCharm `buywise-agent/` + attached `buywise-mcp/`, IntelliJ `buywise-services/` (+ `buywise-events/`), any editor for root/buywise-deploy/data/docs.
-- Module layout: each module has README.md and Makefile; its docs are in buywise-docs/<module>/ (design.md, learning.md; agent also rag.md) - ADR-048. Root Makefile delegates to module Makefiles.
-- Implementation roadmap: buywise-docs/09_Implementation_Roadmap.md
-- Learning: per module in buywise-docs/<module>/learning.md (one section per phase); phase index in buywise-docs/learning/Phase-<N>.md
-- Decisions: buywise-docs/adr/ADR_Log.md
-- Old material: buywise-docs/archive/
+- Module layout: each module has README.md and Makefile; its docs are in buywise-docs/NN-<module>/ (01-design.md, then e.g. 02-rag.md, last NN-learning.md) - ADR-048. Root Makefile delegates to module Makefiles.
+- Implementation roadmap: buywise-docs/09-implementation-roadmap.md
+- Learning: per module in buywise-docs/NN-<module>/0N-learning.md (one section per phase); phase index in buywise-docs/11-learning/NN-phase-<N>-<name>.md.md
+- Decisions: buywise-docs/10-adr/01-adr-log.md
+- Old material: buywise-docs/12-archive/
 
 ## Current status
 - Design phase. Docs updated 2026-10-28 for: modular monolith, 6 deployables, buywise-mcp, no internal gateway, rename.
-- Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (buywise-docs/buywise-web/design.md section 6).
+- Done 2026-10-28: UI module design decisions ADR-018 to ADR-025 (app structure, component library, real-time channel, session, state, rendering, chat contract, accessibility). Browser support set (buywise-docs/01-buywise-web/01-design.md section 6).
 - Done 2026-10-28: NFR targets set as ideal production targets, local scaled by S=40 and LLM hardware factor k, with failure behavior (buywise-docs/00 section 7); LLM metering/budgets (ADR-026) and LLM observability UI (ADR-027).
-- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (buywise-docs/buywise-web/design.md section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: buywise-docs/00 section 7.4.
-- Open items raised for later modules: AI Operations chart library (buywise-docs/buywise-web/design.md).
-- Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (buywise-docs/00 #5), event schema format (buywise-docs/00 #6), event partitions/retention/DLQ (buywise-docs/buywise-events/design.md), secrets management (buywise-docs/buywise-deploy/design.md).
+- Done 2026-10-28: identity propagation via token exchange (ADR-028); agent output path via conversation Redis Streams (ADR-029); intent routing cascade (ADR-030); MCP server layout (ADR-031) and tool rate limits (ADR-032); data sources (ADR-033) and chunking (ADR-034); backup policy, design only (ADR-035); PII policy (ADR-036); UI key flows (buywise-docs/01-buywise-web/01-design.md section 5); conversation ownership (ADR-037); AI Operations charts (ADR-038); multi-format parsing (ADR-039); embedding model bge-m3 everywhere (ADR-040); policy outline approved (data/knowledge/_outline/policy_outline.md). Local vs design-only scope: buywise-docs/00 section 7.4.
+- Open items raised for later modules: AI Operations chart library (buywise-docs/01-buywise-web/01-design.md).
+- Done 2026-10-28: vector store (ADR-011), Postgres organisation (ADR-010). Kept open by architect: production LLM (buywise-docs/00 #5), event schema format (buywise-docs/00 #6), event partitions/retention/DLQ (buywise-docs/05-buywise-events/01-design.md), secrets management (buywise-docs/08-buywise-deploy/01-design.md).
 - Done 2026-10-28: data created (`make data`): catalog (50 products, 240 variants, verified 2026-10-28), seed (stores, stock, 500 customers, 2,000 orders, tickets), 103 knowledge docs in 11 formats, eval sets. Gaps: router eval 35/~95, FAQs 171/~200, parser golden snapshots in phase 3.
 - Done 2026-10-29: implementation roadmap approved (buywise-docs/09) as drafted.
 - Done 2026-10-29: phase 0 foundations (buywise-docs/09). Local k = 2.96 (buywise-deploy/local/scale.yaml; 2.82 on 2026-10-30 rerun).
@@ -55,7 +55,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-30: step 6 walkthrough - `make k` rerun: 17.8 tokens/s -> k = 2.82. ADR-045: k = single-stream hardware factor (capacity under load = separate k6 test in phase 7); `buywise-deploy/local/scale.yaml` is the single source of S and k (Helm values-local.yaml filled from it). Step 7 (Makefiles, CI, README) skipped - existing files are enough for now (priority change 2026-10-30).
 - Done 2026-10-30: **local end-to-end core assistant running on the Mac** (`make start` -> http://localhost:3000): services (catalog, inventory, customers, orders; Flyway V4), MCP servers (catalog, inventory, orders), agent (LangGraph tool loop, RAG over md/txt/html/pdf/docx, Redis Stream events, quote-then-yes ordering), Node server (session, SSE, Keycloak login) + Angular chat. Simplifications to revisit are listed in buywise-docs/09 section 4.
 - Done 2026-11-18: project structure - all database scripts + seed data in `buywise-db/` (database/, services/{01-ddl,02-dml,03-data}, agent/; ADR-046); top-level layout ADR-047: `data/` -> `buywise-data/`, local run scripts + logs in `buywise-deploy/local/`, Node server folder `buywise-web/server/`. Wipe-and-reload of all databases planned (steps in buywise-db/README.md).
-- In progress (from 2026-11-16): 1-week deep dive, 2 h/day - plan and progress in buywise-docs/learning/Deep-Dive-Week.md (resume point at the bottom).
+- In progress (from 2026-11-16): 1-week deep dive, 2 h/day - plan and progress in buywise-docs/11-learning/03-deep-dive-week.md (resume point at the bottom).
 - Next: deep dive into each built component with Sachin (services -> MCP -> agent -> web), then choose: staff console + handoff, Kafka order events, remaining document formats, budgets/guardrails, or polish.
 - Open item: 13 generated knowledge documents are not byte-deterministic (random MIME boundaries, embedded timestamps) - fix in the generators later.
 - Then: phase 1 thin slice (buywise-docs/09).

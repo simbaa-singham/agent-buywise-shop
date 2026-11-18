@@ -1,4 +1,4 @@
-# Local-dev stack (buywise-docs/buywise-deploy/design.md local-dev; phase 0). Run only what a task needs (same file, 4b).
+# Local-dev stack (buywise-docs/08-buywise-deploy/01-design.md local-dev; phase 0). Run only what a task needs (same file, 4b).
 # Ollama runs on the host (not in Docker) and is reached only through LiteLLM (ADR-026).
 # Run via make: `make up` (start + wait until healthy), `make ps`, `make logs`, `make down` (stop, data kept), `make migrate`.
 # ${NAME} values come from buywise-deploy/compose/.env (git-ignored; template: .env.example).
