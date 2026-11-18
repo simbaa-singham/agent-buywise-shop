@@ -1,6 +1,6 @@
 # Business Services (`buywise-services`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](../../buywise-docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 One Spring Boot application (modular monolith) that owns all business data and rules and exposes REST APIs to the Node server, `buywise-mcp` and event consumers.
@@ -50,8 +50,8 @@ buywise-services/
 
 ## 5. Interfaces
 - REST APIs per module (OpenAPI) - TBD.
-- Consumed as tools via `buywise-mcp` - see [buywise-mcp/docs/design.md](../../buywise-mcp/docs/design.md).
-- Events - see [buywise-events/docs/design.md](../../buywise-events/docs/design.md).
+- Consumed as tools via `buywise-mcp` - see [buywise-docs/buywise-mcp/design.md](../buywise-mcp/design.md).
+- Events - see [buywise-docs/buywise-events/design.md](../buywise-events/design.md).
 
 ## 6. Key flows
 - Checkout: cart -> price from catalog -> stock reservation -> order -> payment link -> paid -> reservation confirmed. TBD in detail.

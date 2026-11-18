@@ -12,10 +12,10 @@ agent --XADD conv:{id}--> Redis Stream <--XREAD-- Node server --SSE /api/chat/st
 
 | Module | What was built | Notes |
 |---|---|---|
-| buywise-services | Catalog, inventory, customers, orders REST; quote + place + cancel; Flyway V4 | [learning](../../buywise-services/docs/learning.md) |
-| buywise-mcp | 3 MCP servers in one process (`/mcp/catalog`, `/mcp/inventory`, `/mcp/orders`) | [learning](../../buywise-mcp/docs/learning.md) |
-| buywise-agent | Tool loop, streaming events, RAG ingest/search, quote-then-yes ordering | [learning](../../buywise-agent/docs/learning.md) |
-| buywise-web | Node server (session, SSE, Keycloak login) + Angular chat page | [learning](../../buywise-web/docs/learning.md) |
+| buywise-services | Catalog, inventory, customers, orders REST; quote + place + cancel; Flyway V4 | [learning](../buywise-services/learning.md) |
+| buywise-mcp | 3 MCP servers in one process (`/mcp/catalog`, `/mcp/inventory`, `/mcp/orders`) | [learning](../buywise-mcp/learning.md) |
+| buywise-agent | Tool loop, streaming events, RAG ingest/search, quote-then-yes ordering | [learning](../buywise-agent/learning.md) |
+| buywise-web | Node server (session, SSE, Keycloak login) + Angular chat page | [learning](../buywise-web/learning.md) |
 
 ## Problems hit and fixes
 | Problem | Fix |

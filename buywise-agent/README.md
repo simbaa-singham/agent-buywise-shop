@@ -12,15 +12,15 @@ The AI agent (Python, LangGraph): routes each message, calls tools through MCP, 
 | `pyproject.toml, uv.lock, .python-version` | Dependencies, exact pinned versions, Python version (uv, ADR-042) |
 | `.env.example` | Local settings |
 | `Makefile` | dev, test, lint, ingest |
-| `docs/` | design.md, rag.md, learning.md |
+| `../buywise-docs/buywise-agent/` | design.md, rag.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 Needs uv (`brew install uv`). `make agent-dev` (create .venv from uv.lock), `make test` (tests + lint). After editing dependencies in pyproject.toml: `make -C buywise-agent lock`.
 
 ## Documents
-- [docs/design.md](docs/design.md) - detailed design
-- [docs/rag.md](docs/rag.md) - RAG design
-- [docs/learning.md](docs/learning.md) - learning notes per phase
+- [buywise-docs/buywise-agent/design.md](../buywise-docs/buywise-agent/design.md) - detailed design
+- [buywise-docs/buywise-agent/rag.md](../buywise-docs/buywise-agent/rag.md) - RAG design
+- [buywise-docs/buywise-agent/learning.md](../buywise-docs/buywise-agent/learning.md) - learning notes per phase
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)

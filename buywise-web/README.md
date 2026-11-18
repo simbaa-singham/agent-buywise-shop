@@ -12,14 +12,14 @@ Customer web app and staff console (Angular 22) plus the Node server (NestJS 11 
 | `web/projects/shared/contracts/` | Chat contract: JSON Schema, examples, generated TypeScript (ADR-024) |
 | `server/` | Node server (NestJS) (built from phase 1) |
 | `Makefile` | contracts, contracts-check |
-| `docs/` | design.md, learning.md |
+| `../buywise-docs/buywise-web/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 `make contracts` (regenerate TypeScript + Python contract types), `make contracts-check` (CI drift check).
 
 ## Documents
-- [docs/design.md](docs/design.md) - detailed design
-- [docs/learning.md](docs/learning.md) - learning notes per phase
+- [buywise-docs/buywise-web/design.md](../buywise-docs/buywise-web/design.md) - detailed design
+- [buywise-docs/buywise-web/learning.md](../buywise-docs/buywise-web/learning.md) - learning notes per phase
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)

@@ -4,17 +4,17 @@ An AI shopping assistant that helps customers choose, order and track electronic
 
 Start here: [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), then [buywise-docs/00_Architecture_Overview.md](buywise-docs/00_Architecture_Overview.md)
 
-Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `docs/design.md`, `docs/learning.md`.
+Each module holds its code, `README.md` and `Makefile`. All documentation lives in `buywise-docs/`: application-level docs at its top, module docs in `buywise-docs/<module>/` (`design.md`, `learning.md`) - ADR-048.
 
 | Module | Deployable | Stack | Module README | Design |
 |---|---|---|---|---|
-| `buywise-web/` | buywise-web | Angular 22 + NestJS 12 (Fastify), Node.js 24 | [buywise-web](buywise-web/README.md) | [design](buywise-web/docs/design.md) |
-| `buywise-services/` | buywise-services | Java 25, Spring Boot 4.1, Spring Modulith | [buywise-services](buywise-services/README.md) | [design](buywise-services/docs/design.md) |
-| `buywise-agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [buywise-agent](buywise-agent/README.md) | [design](buywise-agent/docs/design.md), [RAG](buywise-agent/docs/rag.md) |
-| `buywise-mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [buywise-mcp](buywise-mcp/README.md) | [design](buywise-mcp/docs/design.md) |
-| `buywise-events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [buywise-events](buywise-events/README.md) | [design](buywise-events/docs/design.md) |
-| `buywise-data/` | - | Knowledge documents, eval sets, generators (seed JSON goes to buywise-db) | [buywise-data](buywise-data/README.md) | [design](buywise-data/docs/design.md) |
-| `buywise-deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [buywise-deploy](buywise-deploy/README.md) | [design](buywise-deploy/docs/design.md) |
+| `buywise-web/` | buywise-web | Angular 22 + NestJS 12 (Fastify), Node.js 24 | [buywise-web](buywise-web/README.md) | [design](buywise-docs/buywise-web/design.md) |
+| `buywise-services/` | buywise-services | Java 25, Spring Boot 4.1, Spring Modulith | [buywise-services](buywise-services/README.md) | [design](buywise-docs/buywise-services/design.md) |
+| `buywise-agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [buywise-agent](buywise-agent/README.md) | [design](buywise-docs/buywise-agent/design.md), [RAG](buywise-docs/buywise-agent/rag.md) |
+| `buywise-mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [buywise-mcp](buywise-mcp/README.md) | [design](buywise-docs/buywise-mcp/design.md) |
+| `buywise-events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [buywise-events](buywise-events/README.md) | [design](buywise-docs/buywise-events/design.md) |
+| `buywise-data/` | - | Knowledge documents, eval sets, generators (seed JSON goes to buywise-db) | [buywise-data](buywise-data/README.md) | [design](buywise-docs/buywise-data/design.md) |
+| `buywise-deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [buywise-deploy](buywise-deploy/README.md) | [design](buywise-docs/buywise-deploy/design.md) |
 
 **One repo, one editor per module.** All IDEs share this Git repo; each opens only its module folder:
 

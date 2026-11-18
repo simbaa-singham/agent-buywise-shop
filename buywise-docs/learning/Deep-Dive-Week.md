@@ -2,7 +2,7 @@
 
 Goal: understand the whole project from scratch - why each part exists, how it is built, and how to run and change it.
 Each day: 30 min concepts -> 60 min code walkthrough -> 30 min hands-on (run, break, fix) + questions.
-Notes from each day go into that module's docs/learning.md.
+Notes from each day go into that module's buywise-docs/<module>/learning.md.
 
 | Day | Date | Area | Concepts | Code / docs | Hands-on |
 |---|---|---|---|---|---|

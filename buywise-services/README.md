@@ -9,14 +9,14 @@ Business services: one Spring Boot 4.1 modular monolith (Spring Modulith) with m
 |---|---|
 | `../buywise-db/services/01-ddl/` | Flyway migrations V1-V4 - live in buywise-db (ADR-046); Gradle packs them into the app at `db/migration` |
 | `Makefile` | migrate, flyway-info |
-| `docs/` | design.md, learning.md |
+| `../buywise-docs/buywise-services/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 `make migrate` (create/update tables), `make flyway-info` (applied / pending). Java code arrives in phase 1.
 
 ## Documents
-- [docs/design.md](docs/design.md) - detailed design
-- [docs/learning.md](docs/learning.md) - learning notes per phase
+- [buywise-docs/buywise-services/design.md](../buywise-docs/buywise-services/design.md) - detailed design
+- [buywise-docs/buywise-services/learning.md](../buywise-docs/buywise-services/learning.md) - learning notes per phase
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)

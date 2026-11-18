@@ -1,6 +1,6 @@
 # buywise-deploy - Learning Notes
 
-What the buywise-deploy module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../../buywise-docs/learning/Phase-0.md).
+What the buywise-deploy module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../learning/Phase-0.md).
 
 ---
 

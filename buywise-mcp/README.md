@@ -7,13 +7,13 @@ MCP tool servers (Python, MCP SDK v2): one server per business domain, wrapping 
 ## Contents
 | Path | Purpose |
 |---|---|
-| `docs/` | design.md |
+| `../buywise-docs/buywise-mcp/` | design.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 Built from phase 1.
 
 ## Documents
-- [docs/design.md](docs/design.md) - detailed design
+- [buywise-docs/buywise-mcp/design.md](../buywise-docs/buywise-mcp/design.md) - detailed design
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)

@@ -6,16 +6,16 @@ The detailed notes live **inside each module**; this page is the map. Status: st
 ## Steps and where to read them
 | Step | What | Learning notes |
 |---|---|---|
-| 1 | Supporting programs in Docker (Postgres, Redis, Keycloak, LiteLLM), compose.yaml, .env, health checks, make | [buywise-deploy/docs/learning.md](../../buywise-deploy/docs/learning.md) |
-| 2 | Separate databases and users | [buywise-deploy/docs/learning.md](../../buywise-deploy/docs/learning.md#separate-databases-step-2) |
-| 3 | Tables with Flyway, schemas | [buywise-services/docs/learning.md](../../buywise-services/docs/learning.md) |
-| 4 | Loading data by hand (SQL from JSON, transactions, UI tools) | [buywise-data/docs/learning.md](../../buywise-data/docs/learning.md) |
-| 5 | Chat message contract (JSON Schema, generated code, tests) | [buywise-web/docs/learning.md](../../buywise-web/docs/learning.md), [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md) |
-| 6 | Measuring AI speed: k = 2.82 (rerun 2026-10-30), single-stream; capacity tested separately (ADR-045) | [buywise-deploy/docs/learning.md](../../buywise-deploy/docs/learning.md#measuring-ai-speed---k-step-6) |
+| 1 | Supporting programs in Docker (Postgres, Redis, Keycloak, LiteLLM), compose.yaml, .env, health checks, make | [buywise-docs/buywise-deploy/learning.md](../buywise-deploy/learning.md) |
+| 2 | Separate databases and users | [buywise-docs/buywise-deploy/learning.md](../buywise-deploy/learning.md#separate-databases-step-2) |
+| 3 | Tables with Flyway, schemas | [buywise-docs/buywise-services/learning.md](../buywise-services/learning.md) |
+| 4 | Loading data by hand (SQL from JSON, transactions, UI tools) | [buywise-docs/buywise-data/learning.md](../buywise-data/learning.md) |
+| 5 | Chat message contract (JSON Schema, generated code, tests) | [buywise-docs/buywise-web/learning.md](../buywise-web/learning.md), [buywise-docs/buywise-agent/learning.md](../buywise-agent/learning.md) |
+| 6 | Measuring AI speed: k = 2.82 (rerun 2026-10-30), single-stream; capacity tested separately (ADR-045) | [buywise-docs/buywise-deploy/learning.md](../buywise-deploy/learning.md#measuring-ai-speed---k-step-6) |
 | 7 | Glue: Makefiles, CI, README - to be completed | this page |
-| - | Build tools decided mid-phase: Gradle Kotlin DSL for Java (ADR-041), uv for Python (ADR-042) | [buywise-agent/docs/learning.md](../../buywise-agent/docs/learning.md#switching-from-pip-to-uv-adr-042) |
+| - | Build tools decided mid-phase: Gradle Kotlin DSL for Java (ADR-041), uv for Python (ADR-042) | [buywise-docs/buywise-agent/learning.md](../buywise-agent/learning.md#switching-from-pip-to-uv-adr-042) |
 
-Data created before phase 0 (catalog, synthetic people, 103 documents, eval sets): [buywise-data/docs/learning.md](../../buywise-data/docs/learning.md).
+Data created before phase 0 (catalog, synthetic people, 103 documents, eval sets): [buywise-docs/buywise-data/learning.md](../buywise-data/learning.md).
 
 ## Cross-module concepts
 
@@ -26,10 +26,11 @@ Data created before phase 0 (catalog, synthetic people, 103 documents, eval sets
 <module>/
   README.md        what the module is, how to run it, which ADRs apply
   Makefile         the module's own commands
-  docs/design.md   detailed design
-  docs/learning.md learning notes per phase
+buywise-docs/<module>/
+  design.md        detailed design
+  learning.md      learning notes per phase
 ```
-Cross-module documents stay in `docs/`: architecture overview, ADR log, roadmap, this learning index. The root `Makefile` keeps short commands (`make up`, `make test`) that delegate to module Makefiles.
+(Module docs moved from `<module>/docs/` to `buywise-docs/<module>/` on 2026-11-18, ADR-048.) Cross-module documents stay at the top of `buywise-docs/`: architecture overview, ADR log, roadmap, this learning index. The root `Makefile` keeps short commands (`make up`, `make test`) that delegate to module Makefiles.
 
 ## Step 7 - Glue (to be completed)
 - Root and module Makefiles (see layout above).

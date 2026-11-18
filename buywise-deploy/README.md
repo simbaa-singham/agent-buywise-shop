@@ -17,14 +17,14 @@ Everything needed to run the system: Docker Compose stack (Postgres, Redis, Keyc
 | `local/run-local.sh`, `local/stop-local.sh` | Start / stop the apps on the Mac (`make start`, `make stop`; moved from root `scripts/`, ADR-047) |
 | `local/logs/` | App logs written by run-local.sh (git-ignored) |
 | `Makefile` | env, up, down, ps, logs, k, demo-user |
-| `docs/` | design.md, learning.md |
+| `../buywise-docs/buywise-deploy/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 `make up`, `make down`, `make ps`, `make logs`, `make k` (from the repo root or this folder).
 
 ## Documents
-- [docs/design.md](docs/design.md) - detailed design
-- [docs/learning.md](docs/learning.md) - learning notes per phase
+- [buywise-docs/buywise-deploy/design.md](../buywise-docs/buywise-deploy/design.md) - detailed design
+- [buywise-docs/buywise-deploy/learning.md](../buywise-docs/buywise-deploy/learning.md) - learning notes per phase
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)

@@ -49,6 +49,7 @@
 | ADR-045 | Hardware factor k = single-stream LLM speed factor; capacity under load is a separate test; `buywise-deploy/local/scale.yaml` holds S and k | Accepted | 2026-10-30 |
 | ADR-046 | All database scripts in one module, `buywise-db` (cluster init, migrations and seed per database); apps read their migrations from there | Accepted | 2026-11-18 |
 | ADR-047 | Top-level layout: every top-level folder is `buywise-*` (data, deploy, docs -> `buywise-data`, `buywise-deploy`, `buywise-docs`); local run scripts + logs in `buywise-deploy/local/`; Node server folder `buywise-web/server/` | Accepted | 2026-11-18 |
+| ADR-048 | All documentation in `buywise-docs/`: application-level at its top, module docs in `buywise-docs/<module>/`; modules keep only README.md (+ code, Makefile) | Accepted | 2026-11-18 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -101,7 +102,7 @@
   - B. Tokens in the Angular app (public client) - no server sessions; tokens exposed to XSS, refresh token in browser, awkward with SSE.
   - C. Encrypted tokens in the cookie - no store; 4 KB cookie limit, hard server-side revocation.
 - **Decision:** A. Authorization Code + PKCE in the Node server; Redis session store; `__Host-` `HttpOnly` `Secure` `SameSite=Lax` cookie; guest sessions upgraded on login with session id rotation; separate staff client and cookie scoped to `/staff`, `/api/staff`, shorter idle timeout, MFA; CSRF via SameSite + custom header.
-- **Consequences:** Tokens never reach the browser; SSE works with the cookie. Node server owns refresh and logout. Redis becomes critical for login state (already used for pub/sub). Identity propagation to agent/MCP is an open item in buywise-agent/docs/design.md and buywise-mcp/docs/design.md.
+- **Consequences:** Tokens never reach the browser; SSE works with the cookie. Node server owns refresh and logout. Redis becomes critical for login state (already used for pub/sub). Identity propagation to agent/MCP is an open item in buywise-docs/buywise-agent/design.md and buywise-docs/buywise-mcp/design.md.
 
 ## ADR-022 - UI state management
 - **Context:** Angular 22 is signal-first. State includes a live chat conversation (shared by both apps), session, cart, a live staff ticket queue, and read-only page data.
@@ -155,7 +156,7 @@
   - B2. staff-console AI Operations only - in-app, per-conversation drill-down; must build charts, no alerting.
   - B3. Both, plus a developer overlay in customer-web.
 - **Decision:** B3. Grafana for trends, NFR percentiles, spend and alerts. staff-console AI Operations (role `ops-admin`): live summary, conversation explorer with per-stage breakdown, read-only budget/pricing view. customer-web dev overlay from `message.metrics`, off by default. Contract additions (backward compatible, `v` stays 1): `status.updated`, `message.metrics`.
-- **Consequences:** New Node server `ops` module and staff-console area; new Keycloak role; agent usage tables (`turns`, `llm_calls`). Open: chart library for AI Operations (buywise-web/docs/design.md).
+- **Consequences:** New Node server `ops` module and staff-console area; new Keycloak role; agent usage tables (`turns`, `llm_calls`). Open: chart library for AI Operations (buywise-docs/buywise-web/design.md).
 
 ## ADR-011 - Vector store
 - **Context:** Hybrid retrieval (dense + keyword, RRF, rerank) over product pages, specs, policies and FAQs: ~5k-50k chunks, small even at 10x. Checkout availability target is 99.99% (buywise-docs/00 section 7).
@@ -163,7 +164,7 @@
   - A. Postgres + pgvector (HNSW) + Postgres full-text - no new stateful system, metadata and vectors in one SQL query, transactional; keyword ranking is not BM25, shares Postgres with orders.
   - B. Qdrant - strong filtered and hybrid search, quantization, horizontal scale; extra system to run, sync from Postgres, strengths unused at our size.
   - C. OpenSearch / Elasticsearch - best BM25 and analyzers; heavy JVM footprint on the local machine, most operations work.
-- **Decision:** A. Retrieval behind one retriever interface in `buywise-agent`. If Ragas shows weak exact-term retrieval, add ParadeDB `pg_search` (BM25 in Postgres). In production, RAG reads run on a read replica (or separate database), never on the primary serving checkout - detailed with ADR-010 / buywise-data/docs/design.md.
+- **Decision:** A. Retrieval behind one retriever interface in `buywise-agent`. If Ragas shows weak exact-term retrieval, add ParadeDB `pg_search` (BM25 in Postgres). In production, RAG reads run on a read replica (or separate database), never on the primary serving checkout - detailed with ADR-010 / buywise-docs/buywise-data/design.md.
 - **Consequences:** One database to operate; text and vectors always consistent. Moving to Qdrant later only replaces the retriever implementation and indexing job.
 
 ## ADR-010 - PostgreSQL organisation
@@ -177,7 +178,7 @@
   - Production: business cluster (`services`, `keycloak`) with synchronous replica (RPO 0); AI cluster (`agent`, `litellm`, `langfuse`) with read replica for RAG.
   - Local: one CloudNativePG cluster hosting all databases with the same names and users; production split is connection-string config only (ADR-013).
   - Inside `services`: one app user; no cross-schema joins or foreign keys, enforced by Spring Modulith verification and tests.
-- **Consequences:** AI load cannot affect checkout. More databases and credentials to manage (ties to secrets decision, buywise-deploy/docs/design.md). Other deployables read business data only via REST or events.
+- **Consequences:** AI load cannot affect checkout. More databases and credentials to manage (ties to secrets decision, buywise-docs/buywise-deploy/design.md). Other deployables read business data only via REST or events.
 
 ## ADR-028 - Identity propagation
 - **Context:** User identity must reach `buywise-services` through Node server -> agent -> `buywise-mcp`. The LLM chooses tools and arguments and can be steered by prompt injection. The MCP spec forbids token passthrough. Draft tools took `customer_id` as an argument.
@@ -250,7 +251,7 @@
 - **Consequences:** LLM never sees raw PII; dumps/backups don't expose contact fields. ~10-30 ms per turn for detection; detection is imperfect, so log/trace masking stays as a second layer. Encrypted fields can't be searched or sorted in SQL except via the blind index. Key rotation procedure required.
 
 ## ADR-037 - Conversation ownership
-- **Context:** On every customer message the Node server must know whether the bot or staff owns the conversation. buywise-agent/docs/design.md had `owner` in agent state, but ADR-028 says staff actions never go through the agent.
+- **Context:** On every customer message the Node server must know whether the bot or staff owns the conversation. buywise-docs/buywise-agent/design.md had `owner` in agent state, but ADR-028 says staff actions never go through the agent.
 - **Options considered:** A. Helpdesk module owns it (business rule with business data, audited), Node server caches in Redis. B. Agent owns it - forces staff actions through the agent, agent becomes a system of record. C. Node server owns it in Redis only - not durable, not audited.
 - **Decision:** A. Accept -> owner staff; release/resolve -> owner bot; changes audited in `conversation_ownership`. Node server caches `conv:{id}:owner`, updated on accept/release and refreshed from helpdesk events. Node server pauses/resumes the agent; agent refuses turns while paused.
 - **Consequences:** Single source of truth with audit. Cache must stay consistent with services (update on write + event refresh; on cache miss read from services).
@@ -265,11 +266,11 @@
 - **Context:** Main learning goal: real parsing techniques across formats, not "chunk the PDF". Knowledge docs are created in DOCX, digital PDF, scanned PDF/PNG, HTML, XLSX/CSV, PPTX, EML with attachments, Markdown/TXT and generated JSON. Amends ADR-033 (formats).
 - **Options considered:** A. Docling for everything - least code; hides techniques, no email, weak boilerplate removal. B. Own parser per format from low-level libraries - most learning; rebuilds hard problems (PDF tables, OCR) badly. C. Own plugin system with a common Document model and best-fit library per format.
 - **Decision:** C. Pipeline detect (magic bytes) -> parse (plugin per format) -> normalize -> validate (OCR retry, confidence) -> clean (prices) -> chunk (ADR-034 on the Document model) -> embed/index. Elements carry provenance (page+bbox, sheet!row, slide, DOM path, attachment). Quarantine for failures; golden snapshot tests per sample file; content-hash idempotency with parser version. Entry via `buywise-data/inbox/` and ops-admin upload. Runs as an ingestion worker process inside `buywise-agent`.
-- **Why not DoclingDocument as the common model:** page-based provenance and no first-class records; own model acts as an anti-corruption layer and lets us add/route other engines (managed document AI, VLM) via adapters. Details in buywise-agent/docs/rag.md section 3d.
+- **Why not DoclingDocument as the common model:** page-based provenance and no first-class records; own model acts as an anti-corruption layer and lets us add/route other engines (managed document AI, VLM) via adapters. Details in buywise-docs/buywise-agent/rag.md section 3d.
 - **Consequences:** New format = one plugin. Precise citations. More libraries to maintain (Docling, OCR engine, python-docx, openpyxl/pandas, python-pptx, trafilatura, markdown-it-py). OCR is CPU-heavy, isolated in the worker.
 
 ## ADR-040 - Embedding model
-- **Context:** buywise-agent/docs/rag.md planned nomic-embed-text locally and bge-m3 in production - different dimensions, prefixes and quality, breaking the "same system, scaled down" rule. Query and document vectors must come from the same model and version.
+- **Context:** buywise-docs/buywise-agent/rag.md planned nomic-embed-text locally and bge-m3 in production - different dimensions, prefixes and quality, breaking the "same system, scaled down" rule. Query and document vectors must come from the same model and version.
 - **Options considered:** nomic-embed-text v1.5 (small, fast, prefixes, English); bge-m3 (proven, multilingual, dense+sparse+multi-vector, no prefixes); mxbai-embed-large (strong English, 512 max input); snowflake-arctic-embed2 (strong, less adopted); Qwen3-Embedding-0.6B (top 2025 benchmarks, newer); hosted-only APIs (cannot run locally).
 - **Decision:** bge-m3 (1024 dims) everywhere from phase 0, called through LiteLLM; `model_version` stored per vector; queries PII-masked before embedding (ADR-036). Phase-3 bake-off vs Qwen3-Embedding-0.6B and nomic-embed-text v1.5 on our eval set decides the final model.
 - **Consequences:** Local retrieval evals predict production. Changing model is a blue/green migration: new vector column, background re-embed, eval, switch by flag, drop old. bge-m3 sparse output available as a future hybrid-search option.
@@ -316,3 +317,9 @@
 - **Options considered:** A. Leave as is and document it. B. Move knowledge and eval sets into `buywise-agent` (but the generators also feed `buywise-db`). C. One naming rule: every top-level folder is `buywise-*`, including the project-wide ones.
 - **Decision:** C. `data/` -> `buywise-data/` (knowledge, eval, inbox, tools; shared content and test data), `deploy/` -> `buywise-deploy/`, `docs/` -> `buywise-docs/`. `scripts/run-local.sh`, `scripts/stop-local.sh` -> `buywise-deploy/local/`; logs -> `buywise-deploy/local/logs/` (git-ignored). `buywise-web/bff/` -> `buywise-web/server/` (npm package `buywise-server`). `ui/` removed. `.gitkeep` kept only in folders meant to be empty (`buywise-data/inbox`, `buywise-events/*`).
 - **Consequences:** The root reads as one list of `buywise-*` folders, plus tool folders whose names the tools fix (`.github` for GitHub Actions). `make` targets unchanged. Agent `knowledge_dir` default is `../buywise-data/knowledge`. Not to be confused with `PG_DATA_DIR` (`../buywise-data/postgres`, Postgres files outside the repo). Older notes and ADR-046 keep the paths of their time.
+
+## ADR-048 - All documentation in buywise-docs
+- **Context:** Each module had its own `docs/` folder (design.md, learning.md, rag.md, walkthroughs) while application-level docs lived in `buywise-docs/`. Reading the design meant hopping between nine folders.
+- **Options considered:** A. Keep docs per module (earlier rule, 2026-10-30). B. Everything in `buywise-docs/`, including module READMEs. C. Everything in `buywise-docs/` except each module's README.md.
+- **Decision:** C. `buywise-docs/` top: 00 overview, 09 roadmap, `adr/`, `learning/` (phase index, deep dive), `archive/`. Module docs: `buywise-docs/<module>/` (same file names as before: design.md, learning.md, rag.md, walkthroughs/). Each module keeps its README.md - the page GitHub and the IDE open for the folder (what it is, how to run it, ADRs, links to its docs).
+- **Consequences:** One place to read and search all design and learning notes; the docs tree mirrors the module names. Module folders hold code, README, Makefile and scripts only. Supersedes the "docs inside the module" rule of 2026-10-30.

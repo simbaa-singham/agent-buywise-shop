@@ -10,16 +10,16 @@ Shared content and test data (ADR-047): 103 knowledge documents in 11 formats, e
 | `knowledge/` | Knowledge documents (DOCX, PDF, scans, HTML, XLSX, CSV, PPTX, EML, Markdown, TXT) |
 | `eval/` | RAG, router, prompt-injection, price-leak eval sets |
 | `tools/` | Generators (catalog, seed, documents, evals); catalog + seed JSON is written to `buywise-db/services/03-data/` (ADR-046) |
-| `docs/walkthroughs/` | Seed-data load explained step by step (scripts in `buywise-db/services/02-dml/`) |
+| `../buywise-docs/buywise-data/walkthroughs/` | Seed-data load explained step by step (scripts in `buywise-db/services/02-dml/`) |
 | `Makefile` | tools, generate |
-| `docs/` | design.md, learning.md |
+| `../buywise-docs/buywise-data/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
 Needs uv (`brew install uv`). `make data-tools` once, then `make data` to regenerate. Loading into Postgres: `make seed` (SQL in buywise-db/services/02-dml, JSON in buywise-db/services/03-data; explained in docs/walkthroughs/load-seed-data.md).
 
 ## Documents
-- [docs/design.md](docs/design.md) - detailed design
-- [docs/learning.md](docs/learning.md) - learning notes per phase
+- [buywise-docs/buywise-data/design.md](../buywise-docs/buywise-data/design.md) - detailed design
+- [buywise-docs/buywise-data/learning.md](../buywise-docs/buywise-data/learning.md) - learning notes per phase
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)
