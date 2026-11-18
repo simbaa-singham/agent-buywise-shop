@@ -1,5 +1,5 @@
 -- Load customers, orders and sales tax seed data into the services database (after Flyway V4).
--- Before running: docker cp data/seed buywise-postgres-1:/tmp/seed
+-- Before running: docker cp data/seed buywise-postgres-1:/tmp/seed (make db-seed does this for you)
 -- Run as user postgres on database "services": one transaction, all or nothing.
 BEGIN;
 

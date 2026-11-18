@@ -68,7 +68,7 @@ Principle (Twelve-Factor App): keep config and secrets out of code. Anything com
 Without a health check, Docker reports a container as ready as soon as the process starts (Keycloak needs ~20-30 s more).
 
 ### Separate databases (step 2)
-- `compose/postgres/init/01-databases.sh` runs once, on the first start with an empty data folder: one database + one user per part (`services`, `agent`, `keycloak`, `litellm`), `REVOKE ALL ... FROM PUBLIC`, pgvector only in `agent`.
+- `buywise-db/cluster/01-databases.sh` (was `compose/postgres/init/`; moved 2026-11-18, ADR-046) runs once, on the first start with an empty data folder: one database + one user per part (`services`, `agent`, `keycloak`, `litellm`), `REVOKE ALL ... FROM PUBLIC`, pgvector only in `agent`.
 - Isolation test: user `agent` connecting to `services` -> `permission denied ... does not have CONNECT privilege`.
 - Why: a bug or attack in one part cannot touch another's data; production splits them across a business and an AI cluster by connection string only (ADR-010).
 

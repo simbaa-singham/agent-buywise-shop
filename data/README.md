@@ -16,7 +16,7 @@ All project data: the product catalog, synthetic stores/customers/orders/tickets
 | `docs/` | design.md, learning.md |
 
 ## Run
-Needs uv (`brew install uv`). `make data-tools` once, then `make data` to regenerate. Loading into Postgres is manual: docs/walkthroughs/load-seed-data.md.
+Needs uv (`brew install uv`). `make data-tools` once, then `make data` to regenerate. Loading into Postgres: `make seed` (scripts in buywise-db/services/seed; explained in docs/walkthroughs/load-seed-data.md).
 
 ## Documents
 - [docs/design.md](docs/design.md) - detailed design

@@ -1,7 +1,7 @@
 # agent-buywise-shop - root entry points. Each command is defined in its module's Makefile;
 # these short names just delegate (run `make -C <module> help` for a module's own commands).
 
-.PHONY: help start stop demo-user up down ps logs migrate flyway-info k data-tools data agent-dev test ingest contracts contracts-check
+.PHONY: help start stop demo-user up down ps logs migrate flyway-info seed k data-tools data agent-dev test ingest contracts contracts-check
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -20,10 +20,12 @@ ps: ## [deploy] Show stack status
 	@$(MAKE) --no-print-directory -C deploy ps
 logs: ## [deploy] Follow stack logs
 	@$(MAKE) --no-print-directory -C deploy logs
-migrate: ## [buywise-services] Apply schema migrations (Flyway)
-	@$(MAKE) --no-print-directory -C buywise-services migrate
-flyway-info: ## [buywise-services] Show applied / pending migrations
-	@$(MAKE) --no-print-directory -C buywise-services flyway-info
+migrate: ## [buywise-db] Apply schema migrations to services + agent databases (Flyway)
+	@$(MAKE) --no-print-directory -C buywise-db migrate
+flyway-info: ## [buywise-db] Show applied / pending migrations
+	@$(MAKE) --no-print-directory -C buywise-db flyway-info
+seed: ## [buywise-db] REPLACE services seed data from data/seed
+	@$(MAKE) --no-print-directory -C buywise-db seed
 k: ## [deploy] Measure the LLM hardware factor k
 	@$(MAKE) --no-print-directory -C deploy k
 data-tools: ## [data] Create the data-generation virtualenv

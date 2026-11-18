@@ -33,3 +33,9 @@ dependencies {
 }
 
 tasks.test { useJUnitPlatform() }
+
+// Flyway migrations live in the buywise-db module (ADR-046); packed into the app at db/migration,
+// where Spring Boot's Flyway looks by default.
+tasks.processResources {
+    from("../buywise-db/services/migrations") { into("db/migration") }
+}

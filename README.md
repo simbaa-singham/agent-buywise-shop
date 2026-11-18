@@ -23,7 +23,7 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 | WebStorm | `buywise-web/` | Angular app (`web/`) + Node server (NestJS) (`bff/`), each its own npm project; chat contract |
 | PyCharm | `buywise-agent/` + attach `buywise-mcp/` | Each with its own `.venv` interpreter, created by uv (ADR-042) |
 | IntelliJ IDEA | `buywise-services/` (+ `buywise-events/` in phase 4) | Spring Boot / Java |
-| Any (IntelliJ or VS Code) | repo root, `deploy/`, `data/`, `docs/` | Compose, data, cross-module docs |
+| Any (IntelliJ or VS Code) | repo root, `deploy/`, `buywise-db/`, `data/`, `docs/` | Compose, database scripts (all databases, ADR-046), data, cross-module docs |
 
 Cross-module documents (`docs/`): [architecture overview](docs/00_Architecture_Overview.md), [decisions (ADR log)](docs/adr/ADR_Log.md), [roadmap](docs/09_Implementation_Roadmap.md), learning index: [Phase 0](docs/learning/Phase-0.md), [Local end-to-end build](docs/learning/Phase-1.md).
 
@@ -34,9 +34,8 @@ Prerequisites: Docker Desktop, Java 25, Node 24, uv (`brew install uv`), Ollama 
 **First time only**
 ```bash
 make up                       # Postgres (+pgvector), Redis, Keycloak, LiteLLM in Docker
-make migrate                  # create the tables (Flyway V1-V4)
-# load seed data: data/docs/walkthroughs/load-seed-data.md (catalog, stores, stock)
-#   then: docker exec -i buywise-postgres-1 psql -U postgres -d services < data/docs/walkthroughs/load-seed-customers-orders.sql
+make migrate                  # create the tables in services + agent (Flyway; scripts in buywise-db/)
+make seed                     # load seed data: catalog, stores, stock, customers, orders, tax
 make demo-user                # local login: username demo, password in deploy/compose/.env
 make agent-dev                # Python env for the agent
 make -C buywise-mcp dev       # Python env for the MCP servers

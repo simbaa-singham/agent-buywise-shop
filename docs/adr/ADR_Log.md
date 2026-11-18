@@ -46,6 +46,8 @@
 | ADR-042 | uv for every Python project: `pyproject.toml` + committed `uv.lock` + `.python-version`; `uv sync --locked` locally and in CI | Accepted | 2026-10-29 |
 | ADR-043 | Product `availability` = sale status only (`available` / `preorder` / `discontinued`), owned by catalog, DB CHECK + contract enum; preorder ship date = `release_date`; stock only from inventory | Accepted | 2026-10-30 |
 | ADR-044 | Chat events: strict when writing, tolerant when reading - writers validate against the schema before sending; readers ignore unknown fields and unknown event types | Accepted | 2026-10-30 |
+| ADR-045 | Hardware factor k = single-stream LLM speed factor; capacity under load is a separate test; `deploy/local/scale.yaml` holds S and k | Accepted | 2026-10-30 |
+| ADR-046 | All database scripts in one module, `buywise-db` (cluster init, migrations and seed per database); apps read their migrations from there | Accepted | 2026-11-18 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -301,3 +303,9 @@
 - **Options considered:** Measurement - A. single stream (pure hardware speed); B. at local concurrency (one number mixing hardware speed and capacity). Location - A. `deploy/local/scale.yaml` as the only source, Helm values filled from it; B. move to `values-local.yaml` now; C. keep both by hand.
 - **Decision:** Measurement A: `k` is the single-stream hardware factor (warm-up run + median of 5 runs through LiteLLM). Capacity - how many replies can generate at once before each drops below 50/k tokens/s - is a separate test with k6 in phase 7 and sets the agent admission limit. Location A: `deploy/local/scale.yaml` is the single source of `S` and `k`; phase 7 Helm `values-local.yaml` reads from it, never a hand-typed copy.
 - **Consequences:** A slower reply under load shows up as a capacity problem, not hidden inside `k`. `make k` is rerun when the machine or local model changes. Real-turn TTFT (long prompts with retrieved context) is checked in phase 1, not by this benchmark.
+
+## ADR-046 - All database scripts in one module
+- **Context:** Database scripts were spread over four places: cluster init in `deploy/compose/postgres/init`, services migrations in `buywise-services/src/main/resources/db/migration`, seed SQL in `data/docs/walkthroughs`, and the `rag.chunks` table as a SQL string inside `buywise-agent` Python code. Hard to see what runs, when and against which database; the project rule was "scripts live in their own module".
+- **Options considered:** A. Keep files in place, add one map document and `make` targets. B. Same folder shape (`db/migrations`, `db/seed`) inside each owner module. C. One module `buywise-db` with a folder per database.
+- **Decision:** C. `buywise-db/cluster/` (databases, users, pgvector), `buywise-db/services/{migrations,seed}/`, `buywise-db/agent/migrations/`. Flyway runs per database (`make migrate`: containers `flyway` and `flyway-agent`); buywise-services packs `services/migrations` into its jar at `db/migration` (Gradle `processResources`); buywise-agent no longer creates tables; `make seed` loads the seed SQL. Exception to the module-owned-scripts rule, for database scripts only.
+- **Consequences:** One place and one run order for every database object. Ownership per database is still clear from the folder (ADR-010 unchanged: database per deployable, own user). The services and agent builds depend on a sibling folder: production images must copy `buywise-db/<database>/migrations` in their build. The agent database now has Flyway history (`flyway.flyway_schema_history`).

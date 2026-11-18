@@ -34,7 +34,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Load seed data | One-time manual load by the architect with psql, following data/docs/walkthroughs/load-seed-data.md (no seed script) | ADR-010, ADR-033 |
 | Benchmark `k` | Script measuring local tokens/s; writes `k` to local config | docs/00 section 7.1 |
 
-**Done when:** `make up && make migrate` plus the manual seed load (data/docs/walkthroughs/load-seed-data.md) gives a running stack with seeded data; CI green on an empty-but-wired repo.
+**Done when:** `make up && make migrate && make seed` (scripts in buywise-db, ADR-046) gives a running stack with seeded data; CI green on an empty-but-wired repo.
 
 ### Phase 1 - Thin slice: "Is the iPhone 18 Pro in stock at my store?" (guest)
 | Layer | Build | ADRs |

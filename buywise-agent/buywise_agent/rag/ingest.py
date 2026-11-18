@@ -21,22 +21,7 @@ from .embed import EMBED_VERSION, embed
 
 FORMATS = {".md", ".txt", ".html", ".pdf", ".docx"}
 CHUNK_CHARS = 1000
-
-SCHEMA = """
-CREATE EXTENSION IF NOT EXISTS vector;
-CREATE SCHEMA IF NOT EXISTS rag;
-CREATE TABLE IF NOT EXISTS rag.chunks (
-    id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    document_id   text   NOT NULL,
-    title         text   NOT NULL,
-    doc_type      text,
-    location      text,
-    content       text   NOT NULL,
-    embedding     vector(1024) NOT NULL,
-    model_version text   NOT NULL
-);
-CREATE INDEX IF NOT EXISTS chunks_embedding_idx ON rag.chunks USING hnsw (embedding vector_cosine_ops);
-"""
+# rag.chunks is created by buywise-db/agent/migrations (make migrate), not here (ADR-046).
 
 
 def metadata(path: Path) -> tuple[dict, str | None]:
@@ -156,7 +141,6 @@ def main():
         vectors += embed([r[4] for r in rows[i:i + 32]])
 
     with psycopg.connect(settings.database_url) as conn:
-        conn.execute(SCHEMA)
         register_vector(conn)
         with conn.transaction():
             conn.execute("TRUNCATE rag.chunks")

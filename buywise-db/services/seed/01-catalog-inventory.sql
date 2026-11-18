@@ -1,6 +1,6 @@
 -- One-time manual load of catalog + inventory seed data into the services database.
--- Explained step by step in data/docs/walkthroughs/load-seed-data.md.
--- Before running: docker cp data/seed buywise-postgres-1:/tmp/seed
+-- Explained step by step in data/docs/walkthroughs/load-seed-data.md. Run with: make db-seed (from the repo root).
+-- Before running: docker cp data/seed buywise-postgres-1:/tmp/seed (make db-seed does this for you)
 -- Run in pgAdmin Query Tool on the "services" database as user postgres (F5 runs the whole file).
 -- Everything runs in one transaction: if any statement fails, nothing is saved (then run ROLLBACK;).
 BEGIN;

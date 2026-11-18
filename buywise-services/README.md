@@ -7,7 +7,7 @@ Business services: one Spring Boot 4.1 modular monolith (Spring Modulith) with m
 ## Contents
 | Path | Purpose |
 |---|---|
-| `src/main/resources/db/migration/` | Flyway migrations (V1 catalog, V2 inventory, V3 catalog availability check) |
+| `../buywise-db/services/migrations/` | Flyway migrations V1-V4 - live in buywise-db (ADR-046); Gradle packs them into the app at `db/migration` |
 | `Makefile` | migrate, flyway-info |
 | `docs/` | design.md, learning.md |
 

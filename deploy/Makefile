@@ -1,7 +1,7 @@
 # deploy module: local stack (Docker Compose) and runtime tooling. Run from repo root via `make <target>` or here.
 COMPOSE := docker compose -f compose/compose.yaml --env-file compose/.env
 
-.PHONY: help env up down ps logs migrate flyway-info k demo-user
+.PHONY: help env up down ps logs k demo-user
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -20,12 +20,6 @@ ps: ## Show stack status
 
 logs: ## Follow stack logs
 	$(COMPOSE) logs -f
-
-migrate: env ## Apply buywise-services schema migrations with Flyway
-	$(COMPOSE) run --rm flyway
-
-flyway-info: env ## Show which migrations are applied / pending (changes nothing)
-	$(COMPOSE) run --rm flyway info
 
 k: ## Measure the LLM hardware factor k and write local/scale.yaml
 	python3 scripts/benchmark_k.py

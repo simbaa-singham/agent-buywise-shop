@@ -9,7 +9,7 @@ Everything needed to run the system: Docker Compose stack (Postgres, Redis, Keyc
 |---|---|
 | `compose/compose.yaml` | The local stack |
 | `compose/.env.example` | Settings template (copy to .env) |
-| `compose/postgres/init/` | Creates the 4 databases and users |
+| `../buywise-db/cluster/` | Creates the 4 databases and users (moved to buywise-db, ADR-046; compose mounts it) |
 | `compose/keycloak/` | Realm as code |
 | `compose/litellm/` | Model aliases and placeholder shadow prices |
 | `scripts/benchmark_k.py` | Measures k |

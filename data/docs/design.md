@@ -46,7 +46,7 @@ Each module of `buywise-services` owns its schema; no cross-module joins; other 
 | Customers, orders, tickets | Faker, fixed random seed | Synthetic only; designed edge cases (delayed order, pickup ready, multi-order customer) |
 | Eval sets | Built from the docs, reviewed | RAG (expected source chunks), router (ADR-030), prompt injection |
 
-Loading: one-time manual load with psql (data/docs/walkthroughs/load-seed-data.md; no seed script), `make ingest` (RAG pipeline, phase 3). Same data on every machine and CI run.
+Loading: `make seed` runs buywise-db/services/seed/*.sql (ADR-046; explained in data/docs/walkthroughs/load-seed-data.md), `make ingest` (RAG pipeline, phase 3). Same data on every machine and CI run.
 
 ## 4b. Backup policy (ADR-035) - design only, not run locally
 | Data | Production design | Rationale |

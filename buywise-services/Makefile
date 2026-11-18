@@ -1,14 +1,14 @@
-# services module: buywise-services (Spring Boot modular monolith). Migrations live in src/main/resources/db/migration.
+# services module: buywise-services (Spring Boot modular monolith). Migrations live in buywise-db/services/migrations (ADR-046).
 .PHONY: help migrate flyway-info build run
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
 
-migrate: ## Apply this module's migrations (runs Flyway from the deploy stack)
-	$(MAKE) -C ../deploy migrate
+migrate: ## Apply migrations (runs Flyway via buywise-db)
+	$(MAKE) -C ../buywise-db migrate
 
 flyway-info: ## Show applied / pending migrations
-	$(MAKE) -C ../deploy flyway-info
+	$(MAKE) -C ../buywise-db flyway-info
 
 build: ## Compile, run tests (incl. module boundary check)
 	./gradlew build

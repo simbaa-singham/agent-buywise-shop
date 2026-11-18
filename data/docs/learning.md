@@ -18,7 +18,7 @@ What the data module taught us, phase by phase. Index of all phases: [docs/learn
 ## Phase 0
 
 ### Loading data by hand (step 4)
-- No loading script: a one-time manual load, explained in [walkthroughs/load-seed-data.md](walkthroughs/load-seed-data.md) and run as one file, [walkthroughs/load-seed-data.sql](walkthroughs/load-seed-data.sql), in pgAdmin's Query Tool as `postgres`.
+- No loading script: a one-time manual load, explained in [walkthroughs/load-seed-data.md](walkthroughs/load-seed-data.md) and run as one file, [buywise-db/services/seed/01-catalog-inventory.sql](../../buywise-db/services/seed/01-catalog-inventory.sql) (moved there 2026-11-18, ADR-046; now also `make seed`), in pgAdmin's Query Tool as `postgres`.
 - First copy the files into the container: `docker cp data/seed buywise-postgres-1:/tmp/seed` (Postgres can only read files inside its container; `/tmp` is wiped when the container is recreated).
 - Reading files needs admin rights, so the load runs as `postgres`; applications use their restricted users.
 
