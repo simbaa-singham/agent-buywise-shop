@@ -92,7 +92,7 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 | 5 | `buywise-event-publisher` | Kafka producers for committed business events | Java (Spring Kafka) - design deferred | [06](buywise-events/design.md) |
 | 6 | `buywise-event-consumers` | Kafka consumers for async reactions | Java (Spring Kafka) - design deferred | [06](buywise-events/design.md) |
 
-Data stores are covered in [07](buywise-data/design.md); environments and deployment in [08](buywise-deploy/design.md).
+Data stores and databases are covered in [07](buywise-db/design.md); content and test data in [buywise-data](buywise-data/design.md); environments and deployment in [08](buywise-deploy/design.md).
 
 ## 6. Repository layout
 

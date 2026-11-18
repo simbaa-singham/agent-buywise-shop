@@ -164,7 +164,7 @@
   - A. Postgres + pgvector (HNSW) + Postgres full-text - no new stateful system, metadata and vectors in one SQL query, transactional; keyword ranking is not BM25, shares Postgres with orders.
   - B. Qdrant - strong filtered and hybrid search, quantization, horizontal scale; extra system to run, sync from Postgres, strengths unused at our size.
   - C. OpenSearch / Elasticsearch - best BM25 and analyzers; heavy JVM footprint on the local machine, most operations work.
-- **Decision:** A. Retrieval behind one retriever interface in `buywise-agent`. If Ragas shows weak exact-term retrieval, add ParadeDB `pg_search` (BM25 in Postgres). In production, RAG reads run on a read replica (or separate database), never on the primary serving checkout - detailed with ADR-010 / buywise-docs/buywise-data/design.md.
+- **Decision:** A. Retrieval behind one retriever interface in `buywise-agent`. If Ragas shows weak exact-term retrieval, add ParadeDB `pg_search` (BM25 in Postgres). In production, RAG reads run on a read replica (or separate database), never on the primary serving checkout - detailed with ADR-010 / buywise-docs/buywise-db/design.md.
 - **Consequences:** One database to operate; text and vectors always consistent. Moving to Qdrant later only replaces the retriever implementation and indexing job.
 
 ## ADR-010 - PostgreSQL organisation

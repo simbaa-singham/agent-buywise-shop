@@ -14,7 +14,7 @@ Each module holds its code, `README.md` and `Makefile`. All documentation lives 
 | `buywise-mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [buywise-mcp](buywise-mcp/README.md) | [design](buywise-docs/buywise-mcp/design.md) |
 | `buywise-events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [buywise-events](buywise-events/README.md) | [design](buywise-docs/buywise-events/design.md) |
 | `buywise-data/` | - | Knowledge documents, eval sets, generators (seed JSON goes to buywise-db) | [buywise-data](buywise-data/README.md) | [design](buywise-docs/buywise-data/design.md) |
-| `buywise-db/` | - | Every database script + seed data: `database/`, `services/{01-ddl,02-dml,03-data}`, `agent/` (ADR-046) | [buywise-db](buywise-db/README.md) | - |
+| `buywise-db/` | - | Every database script + seed data: `database/`, `services/{01-ddl,02-dml,03-data}`, `agent/` (ADR-046) | [buywise-db](buywise-db/README.md) | [design](buywise-docs/buywise-db/design.md) |
 | `buywise-deploy/` | - | Docker Compose, kind, Helm, GitHub Actions; `local/` run scripts + logs | [buywise-deploy](buywise-deploy/README.md) | [design](buywise-docs/buywise-deploy/design.md) |
 | `buywise-docs/` | - | All documentation: application level at the top, module docs in `buywise-docs/<module>/` (ADR-048) | [index](buywise-docs/README.md) | - |
 

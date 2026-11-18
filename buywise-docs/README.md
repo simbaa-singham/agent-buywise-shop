@@ -21,6 +21,6 @@ Every document of the project lives here (ADR-048).
 | buywise-events | [design](buywise-events/design.md) |
 | buywise-data | [design](buywise-data/design.md), [learning](buywise-data/learning.md), [seed-data load walkthrough](buywise-data/walkthroughs/load-seed-data.md) |
 | buywise-deploy | [design](buywise-deploy/design.md), [learning](buywise-deploy/learning.md) |
-| buywise-db | no separate docs yet - see [buywise-db/README.md](../buywise-db/README.md) |
+| buywise-db | [design](buywise-db/design.md) (databases, data model, backups, PII), scripts: [buywise-db/README.md](../buywise-db/README.md) |
 
 Each module folder keeps its own README.md (what it is, how to run it, which ADRs apply).
