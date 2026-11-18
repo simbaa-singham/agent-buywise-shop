@@ -1,6 +1,6 @@
 # Business Services (`buywise-services`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../buywise-docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 One Spring Boot application (modular monolith) that owns all business data and rules and exposes REST APIs to the Node server, `buywise-mcp` and event consumers.

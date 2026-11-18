@@ -5,11 +5,10 @@ __pycache__/
 .idea/
 .vscode/
 # runtime files written by the scripts (folders kept via .gitkeep)
-logs/*
-!logs/.gitkeep
+buywise-deploy/local/logs/
 # ingestion drop folder (runtime)
-data/inbox/*
-!data/inbox/.gitkeep
+buywise-data/inbox/*
+!buywise-data/inbox/.gitkeep
 .venv/
 node_modules/
 *.iml

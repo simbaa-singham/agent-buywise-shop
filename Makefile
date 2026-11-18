@@ -7,31 +7,31 @@ help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
 
 start: ## Start everything on the Mac (stack, services, MCP, agent, web) -> http://localhost:3000
-	@./scripts/run-local.sh
+	@./buywise-deploy/local/run-local.sh
 stop: ## Stop the app processes (the Docker stack keeps running)
-	@./scripts/stop-local.sh
-demo-user: ## [deploy] Local demo customer login (username demo, password in deploy/compose/.env)
-	@$(MAKE) --no-print-directory -C deploy demo-user
-up: ## [deploy] Start Postgres, Redis, Keycloak, LiteLLM
-	@$(MAKE) --no-print-directory -C deploy up
-down: ## [deploy] Stop the stack (data is kept)
-	@$(MAKE) --no-print-directory -C deploy down
-ps: ## [deploy] Show stack status
-	@$(MAKE) --no-print-directory -C deploy ps
-logs: ## [deploy] Follow stack logs
-	@$(MAKE) --no-print-directory -C deploy logs
+	@./buywise-deploy/local/stop-local.sh
+demo-user: ## [buywise-deploy] Local demo customer login (username demo, password in buywise-deploy/compose/.env)
+	@$(MAKE) --no-print-directory -C buywise-deploy demo-user
+up: ## [buywise-deploy] Start Postgres, Redis, Keycloak, LiteLLM
+	@$(MAKE) --no-print-directory -C buywise-deploy up
+down: ## [buywise-deploy] Stop the stack (data is kept)
+	@$(MAKE) --no-print-directory -C buywise-deploy down
+ps: ## [buywise-deploy] Show stack status
+	@$(MAKE) --no-print-directory -C buywise-deploy ps
+logs: ## [buywise-deploy] Follow stack logs
+	@$(MAKE) --no-print-directory -C buywise-deploy logs
 migrate: ## [buywise-db] Apply schema migrations to services + agent databases (Flyway)
 	@$(MAKE) --no-print-directory -C buywise-db migrate
 flyway-info: ## [buywise-db] Show applied / pending migrations
 	@$(MAKE) --no-print-directory -C buywise-db flyway-info
-seed: ## [buywise-db] REPLACE services seed data from data/seed
+seed: ## [buywise-db] REPLACE services seed data from buywise-db/services/03-data
 	@$(MAKE) --no-print-directory -C buywise-db seed
-k: ## [deploy] Measure the LLM hardware factor k
-	@$(MAKE) --no-print-directory -C deploy k
-data-tools: ## [data] Create the data-generation virtualenv
-	@$(MAKE) --no-print-directory -C data tools
-data: ## [data] Regenerate catalog, seed data, knowledge docs, eval sets
-	@$(MAKE) --no-print-directory -C data generate
+k: ## [buywise-deploy] Measure the LLM hardware factor k
+	@$(MAKE) --no-print-directory -C buywise-deploy k
+data-tools: ## [buywise-data] Create the data-generation virtualenv
+	@$(MAKE) --no-print-directory -C buywise-data tools
+data: ## [buywise-data] Regenerate catalog, seed data, knowledge docs, eval sets
+	@$(MAKE) --no-print-directory -C buywise-data generate
 agent-dev: ## [buywise-agent] Create buywise-agent/.venv with dev tools
 	@$(MAKE) --no-print-directory -C buywise-agent dev
 test: ## [buywise-agent] Run tests and lint

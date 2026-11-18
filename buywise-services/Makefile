@@ -1,4 +1,4 @@
-# services module: buywise-services (Spring Boot modular monolith). Migrations live in buywise-db/services/migrations (ADR-046).
+# services module: buywise-services (Spring Boot modular monolith). Migrations live in buywise-db/services/01-ddl (ADR-046).
 .PHONY: help migrate flyway-info build run
 
 help:

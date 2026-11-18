@@ -1,13 +1,13 @@
 # buywise-services - Learning Notes
 
-What the buywise-services module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
+What the buywise-services module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../../buywise-docs/learning/Phase-0.md).
 
 ---
 
 ## Phase 0
 
 ### Flyway - creating tables in a controlled way (step 3)
-- **Flyway** (Redgate; open-source Community edition) applies numbered SQL files ("migrations") in order: `buywise-db/services/migrations/V1__catalog.sql` (moved from `src/main/resources/db/migration/` on 2026-11-18, ADR-046), `V2__inventory.sql`. Name format: `V<version>__<description>.sql` (two underscores).
+- **Flyway** (Redgate; open-source Community edition) applies numbered SQL files ("migrations") in order: `buywise-db/services/01-ddl/V1__catalog.sql` (moved from `src/main/resources/db/migration/` on 2026-11-18, ADR-046), `V2__inventory.sql`. Name format: `V<version>__<description>.sql` (two underscores).
 - It records applied files in `flyway.flyway_schema_history` with a **checksum** (fingerprint); re-running applies only new files ("Schema is up to date").
 - **Never edit an applied migration** - Flyway refuses on checksum mismatch. Changes go in a new file (V3, V4, ...). "Undo" migrations are a paid feature; fixes are always new forward migrations.
 - `flyway info` = report only (Pending / Success); `flyway migrate` = apply.

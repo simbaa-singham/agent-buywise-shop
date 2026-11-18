@@ -1,4 +1,4 @@
-# ui module: buywise-web. Owns the chat contract (ADR-024) used by the web app, the BFF and the agent.
+# ui module: buywise-web. Owns the chat contract (ADR-024) used by the web app, the Node server and the agent.
 CONTRACTS := web/projects/shared/contracts
 AGENT := ../buywise-agent
 
@@ -19,13 +19,13 @@ contracts-check: contracts ## Fail if generated contract types are out of date (
 	git diff --exit-code -- $(CONTRACTS)/generated $(AGENT)/buywise_agent/contracts/chat_contract.py
 
 .PHONY: install build run
-install: ## Install web app and BFF packages
+install: ## Install web app and Node server packages
 	cd web && npm install --no-audit --no-fund
-	cd bff && npm install --no-audit --no-fund
+	cd server && npm install --no-audit --no-fund
 
-build: ## Build the Angular app and the BFF
+build: ## Build the Angular app and the Node server
 	cd web && npx ng build customer-web
-	cd bff && npx tsc -p tsconfig.json
+	cd server && npx tsc -p tsconfig.json
 
-run: build ## Serve the app + BFF on http://localhost:3000 (needs agent, Redis, Keycloak)
-	cd bff && node dist/main.js
+run: build ## Serve the app + Node server on http://localhost:3000 (needs agent, Redis, Keycloak)
+	cd server && node dist/main.js

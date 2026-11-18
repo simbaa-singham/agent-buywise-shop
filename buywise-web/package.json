@@ -1,7 +1,7 @@
 {
   "name": "buywise-web",
   "private": true,
-  "description": "buywise-web (ADR-018): Angular workspace (web), NestJS BFF (bff) and the chat contract. Open this folder in WebStorm.",
+  "description": "buywise-web (ADR-018): Angular workspace (web), NestJS Node server (server) and the chat contract. Open this folder in WebStorm.",
   "workspaces": [
     "web/projects/shared/contracts"
   ],

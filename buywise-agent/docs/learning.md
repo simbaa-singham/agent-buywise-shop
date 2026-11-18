@@ -1,6 +1,6 @@
 # buywise-agent - Learning Notes
 
-What the buywise-agent module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
+What the buywise-agent module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../../buywise-docs/learning/Phase-0.md).
 
 ---
 
@@ -37,4 +37,4 @@ What the buywise-agent module taught us, phase by phase. Index of all phases: [d
 - **LangGraph loop:** `llm` node streams text (each piece = `message.delta`) and may ask for tools -> `tools` node runs them (MCP or knowledge search), emits `status.updated` and `block.product_card` -> back to `llm` until it answers (max 5 rounds).
 - **Ordering safety:** `place_order` from the model only produces a quote (stored as pending for 15 min); the order is placed by code when the customer replies "yes".
 - **RAG:** `make -C buywise-agent ingest` parses md/txt/html/pdf/docx into sections -> ~1,000-char chunks -> bge-m3 vectors via LiteLLM -> `rag.chunks` (pgvector, HNSW cosine). Search returns the 4 nearest chunks under a distance cut-off; they become the answer's citations.
-- **Try:** `make -C buywise-agent turn Q="How long will the store hold my pickup order?"`; tool calls are logged in `logs/agent.log`.
+- **Try:** `make -C buywise-agent turn Q="How long will the store hold my pickup order?"`; tool calls are logged in `buywise-deploy/local/logs/agent.log`.

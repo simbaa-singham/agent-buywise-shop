@@ -1,6 +1,6 @@
 # buywise-web - Learning Notes
 
-What the buywise-web module taught us, phase by phase. Index of all phases: [docs/learning/Phase-0.md](../../docs/learning/Phase-0.md).
+What the buywise-web module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../../buywise-docs/learning/Phase-0.md).
 
 ---
 
@@ -32,7 +32,7 @@ What the buywise-web module taught us, phase by phase. Index of all phases: [doc
 - `block.product_card.availability`: was free text, now `available | preorder | discontinued` (sale status from the catalog, ADR-043) + optional `shipsOn` date. Stock is only `stockAtStore.quantity`.
 - One schema edit -> `make contracts` -> both generated files change (Python `str | None` became `Literal[...]`; TypeScript `storeId?: string` became `storeId: string`) -> contract tests re-run.
 
-**Q: What are NFR and ADR?** NFR = non-functional requirement: *how well* the system works (speed, availability, cost, security), docs/00 section 7.2. ADR = Architecture Decision Record: one decision with context, options, decision, consequences (docs/adr/ADR_Log.md).
+**Q: What are NFR and ADR?** NFR = non-functional requirement: *how well* the system works (speed, availability, cost, security), buywise-docs/00 section 7.2. ADR = Architecture Decision Record: one decision with context, options, decision, consequences (buywise-docs/adr/ADR_Log.md).
 
 _To be completed: generated code walk-through (5.2) and contract tests (5.3)._
 

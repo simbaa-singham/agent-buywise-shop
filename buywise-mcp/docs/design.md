@@ -1,6 +1,6 @@
 # MCP (`buywise-mcp`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../buywise-docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose
 Expose business capabilities to agents as versioned, scoped, secure tools. A separate deployable so any agent can reuse the tools (production practice: MCP as a thin layer over existing APIs).
@@ -66,7 +66,7 @@ Per-user MCP limits (production):
 | `create_ticket` | 3 / hour per conversation |
 | search and read tools | 60 / min per user |
 
-- Local: per-user limits unchanged; global Envoy limits / S (docs/00 section 7.1).
+- Local: per-user limits unchanged; global Envoy limits / S (buywise-docs/00 section 7.1).
 - On limit: structured tool error with `retryAfter`; the agent explains it in plain words and never retries in a loop.
 
 ## 5. Design rules

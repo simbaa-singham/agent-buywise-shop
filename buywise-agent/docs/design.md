@@ -1,6 +1,6 @@
 # Agent (`buywise-agent`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../buywise-docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 Understand customer messages, route to the right handler, call tools and knowledge, and respond safely.
@@ -78,13 +78,13 @@ llm:
     per_conversation_tokens: 20000
     per_customer_daily_tokens: 100000
     global_daily_usd: TBD             # enforced in LiteLLM; alert 80%, fallback 90%, stop 100%.
-                                      # Set when the production LLM is decided (docs/00 #5); rough estimate
+                                      # Set when the production LLM is decided (buywise-docs/00 #5); rough estimate
                                       # ~$2,000-3,000/day production, local = production / S
 ```
 
 Tool-call limits (ADR-032): max 8 tool calls per turn, max 3 identical consecutive calls; on a rate-limit error the agent explains `retryAfter` to the customer and does not retry in a loop.
 
-Admission control and deadlines (docs/00 section 7.3): per-pod cap on concurrent generations with a bounded queue (`status.updated` shows queue position); per-stage deadlines scaled by `k` locally; circuit breaker on the LiteLLM client.
+Admission control and deadlines (buywise-docs/00 section 7.3): per-pod cap on concurrent generations with a bounded queue (`status.updated` shows queue position); per-stage deadlines scaled by `k` locally; circuit breaker on the LiteLLM client.
 
 Degradation ladder (never a bare error):
 1. Global spend >= 80% -> alert (Grafana).

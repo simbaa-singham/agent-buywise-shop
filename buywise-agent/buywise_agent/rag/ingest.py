@@ -21,7 +21,7 @@ from .embed import EMBED_VERSION, embed
 
 FORMATS = {".md", ".txt", ".html", ".pdf", ".docx"}
 CHUNK_CHARS = 1000
-# rag.chunks is created by buywise-db/agent/migrations (make migrate), not here (ADR-046).
+# rag.chunks is created by buywise-db/agent (make migrate), not here (ADR-046).
 
 
 def metadata(path: Path) -> tuple[dict, str | None]:

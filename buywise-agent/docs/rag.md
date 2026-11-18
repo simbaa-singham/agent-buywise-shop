@@ -1,6 +1,6 @@
 # RAG - Detailed Design
 
-Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../buywise-docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose
 Answer product and store questions from trusted documents, with citations. Live data (price, stock, status) never comes from RAG.
@@ -30,8 +30,8 @@ file / upload / email
   failures -> quarantine with reason (visible in AI Operations)
 ```
 - Idempotent: content hash per file; unchanged files skipped; parser version recorded so a parser upgrade can trigger re-parse.
-- Entry points: drop folder `data/inbox/` and `POST /ingest` (ops-admin upload in AI Operations); both call the same pipeline. Re-indexing also triggered by `catalog-events` and Git changes to `data/knowledge/`.
-- Runs in an ingestion worker process inside the `buywise-agent` deployable, separate from the chat API process, so OCR cannot slow chat turns (final location of re-indexing still deferred, docs/00 #3).
+- Entry points: drop folder `buywise-data/inbox/` and `POST /ingest` (ops-admin upload in AI Operations); both call the same pipeline. Re-indexing also triggered by `catalog-events` and Git changes to `buywise-data/knowledge/`.
+- Runs in an ingestion worker process inside the `buywise-agent` deployable, separate from the chat API process, so OCR cannot slow chat turns (final location of re-indexing still deferred, buywise-docs/00 #3).
 
 **Cleaning rule:** prices, stock and availability text are removed before chunking (NFR 8: live data only from tools); an eval check confirms no answer takes a price from a chunk.
 
@@ -42,7 +42,7 @@ file / upload / email
 | Product overviews | Generated from catalog seed data; factual, our own wording | Markdown |
 | Store info | Generated from stores seed data | Markdown |
 | Compatibility notes | Catalog `compatibility` table + short written notes | Markdown / TXT |
-| Policies | Written from the approved outline (`data/knowledge/_outline/policy_outline.md`) | DOCX (shipping v1/v2, privacy), digital PDF (warranty, payment), Markdown |
+| Policies | Written from the approved outline (`buywise-data/knowledge/_outline/policy_outline.md`) | DOCX (shipping v1/v2, privacy), digital PDF (warranty, payment), Markdown |
 | Policy update notice | Written | Email (.eml) with DOCX attachment |
 | Shipping rates by state, order limits, store hours + holidays | Written / generated | XLSX, CSV |
 | Holiday hours notice, printed rate card | Rendered then degraded (skew, noise) | Scanned PDF, PNG |

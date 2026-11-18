@@ -2,7 +2,7 @@
 
 An AI shopping assistant that helps customers choose, order and track electronic devices.
 
-Start here: [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), then [docs/00_Architecture_Overview.md](docs/00_Architecture_Overview.md)
+Start here: [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md), then [buywise-docs/00_Architecture_Overview.md](buywise-docs/00_Architecture_Overview.md)
 
 Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `docs/design.md`, `docs/learning.md`.
 
@@ -13,19 +13,19 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 | `buywise-agent/` | buywise-agent | Python 3.12, LangGraph 1.2, RAG | [buywise-agent](buywise-agent/README.md) | [design](buywise-agent/docs/design.md), [RAG](buywise-agent/docs/rag.md) |
 | `buywise-mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [buywise-mcp](buywise-mcp/README.md) | [design](buywise-mcp/docs/design.md) |
 | `buywise-events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [buywise-events](buywise-events/README.md) | [design](buywise-events/docs/design.md) |
-| `data/` | - | Seed data, knowledge documents, eval sets | [data](data/README.md) | [design](data/docs/design.md) |
-| `deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [deploy](deploy/README.md) | [design](deploy/docs/design.md) |
+| `buywise-data/` | - | Knowledge documents, eval sets, generators (seed JSON goes to buywise-db) | [buywise-data](buywise-data/README.md) | [design](buywise-data/docs/design.md) |
+| `buywise-deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [buywise-deploy](buywise-deploy/README.md) | [design](buywise-deploy/docs/design.md) |
 
 **One repo, one editor per module.** All IDEs share this Git repo; each opens only its module folder:
 
 | Editor | Open folder | Notes |
 |---|---|---|
-| WebStorm | `buywise-web/` | Angular app (`web/`) + Node server (NestJS) (`bff/`), each its own npm project; chat contract |
+| WebStorm | `buywise-web/` | Angular app (`web/`) + Node server (NestJS) (`server/`), each its own npm project; chat contract |
 | PyCharm | `buywise-agent/` + attach `buywise-mcp/` | Each with its own `.venv` interpreter, created by uv (ADR-042) |
 | IntelliJ IDEA | `buywise-services/` (+ `buywise-events/` in phase 4) | Spring Boot / Java |
-| Any (IntelliJ or VS Code) | repo root, `deploy/`, `buywise-db/`, `data/`, `docs/` | Compose, database scripts (all databases, ADR-046), data, cross-module docs |
+| Any (IntelliJ or VS Code) | repo root, `buywise-deploy/`, `buywise-db/`, `buywise-data/`, `buywise-docs/` | Compose, database scripts (all databases, ADR-046), data, cross-module docs |
 
-Cross-module documents (`docs/`): [architecture overview](docs/00_Architecture_Overview.md), [decisions (ADR log)](docs/adr/ADR_Log.md), [roadmap](docs/09_Implementation_Roadmap.md), learning index: [Phase 0](docs/learning/Phase-0.md), [Local end-to-end build](docs/learning/Phase-1.md).
+Cross-module documents (`buywise-docs/`): [architecture overview](buywise-docs/00_Architecture_Overview.md), [decisions (ADR log)](buywise-docs/adr/ADR_Log.md), [roadmap](buywise-docs/09_Implementation_Roadmap.md), learning index: [Phase 0](buywise-docs/learning/Phase-0.md), [Local end-to-end build](buywise-docs/learning/Phase-1.md).
 
 ## Run it on the Mac
 Prerequisites: Docker Desktop, Java 25, Node 24, uv (`brew install uv`), Ollama running (`ollama serve`) with
@@ -36,7 +36,7 @@ Prerequisites: Docker Desktop, Java 25, Node 24, uv (`brew install uv`), Ollama 
 make up                       # Postgres (+pgvector), Redis, Keycloak, LiteLLM in Docker
 make migrate                  # create the tables in services + agent (Flyway; scripts in buywise-db/)
 make seed                     # load seed data: catalog, stores, stock, customers, orders, tax
-make demo-user                # local login: username demo, password in deploy/compose/.env
+make demo-user                # local login: username demo, password in buywise-deploy/compose/.env
 make agent-dev                # Python env for the agent
 make -C buywise-mcp dev       # Python env for the MCP servers
 make -C buywise-web install   # npm packages for the web app and Node server
@@ -45,7 +45,7 @@ make -C buywise-agent ingest  # load help articles and policies into pgvector
 
 **Every day**
 ```bash
-make start    # everything -> http://localhost:3000   (logs in logs/)
+make start    # everything -> http://localhost:3000   (logs in buywise-deploy/local/logs/)
 make stop     # stop the app processes (make down also stops Docker)
 ```
 

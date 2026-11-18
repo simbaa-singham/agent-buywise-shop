@@ -17,7 +17,7 @@ _running: set[asyncio.Task] = set()
 class TurnRequest(BaseModel):
     conversationId: str
     text: str = Field(min_length=1, max_length=4000)
-    customerId: str | None = None  # set by the BFF from the logged-in session, never by the browser
+    customerId: str | None = None  # set by the Node server from the logged-in session, never by the browser
     customerName: str | None = None
 
 

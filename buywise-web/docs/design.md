@@ -1,6 +1,6 @@
 # UI + Node server (`buywise-web`) - Detailed Design
 
-Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
+Part of [00_Architecture_Overview.md](../../buywise-docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 - **Angular web app:** customer chat widget, product/cart/order views; staff console (ticket queue, take over chat).
@@ -53,7 +53,7 @@ buywise-web/
 │   │   ├── customer-web/   # served at /       - chat widget, products, cart, orders
 │   │   ├── staff-console/  # served at /staff  - ticket queue, conversation takeover, AI Operations (ops-admin)
 │   │   └── shared/         # library: chat components, message models, API clients, UI primitives
-└── bff/                    # NestJS 11 (auth, chat, customer, staff, ops, health, common)
+└── server/                    # NestJS 11 (auth, chat, customer, staff, ops, health, common)
 ```
 - Each app has its own Keycloak client: staff can get stricter login rules (MFA, shorter sessions) than customers.
 - Customers never download staff code; Envoy can restrict `/staff/**` (and `/api/staff/**`) separately.
@@ -180,7 +180,7 @@ sequenceDiagram
 ```
 - Stop button: `POST /api/chat/turns/{id}/cancel` -> agent cancels -> `message.completed` (partial) or `message.failed`.
 - Reconnect: browser auto-reconnects with `Last-Event-ID`; any Node server pod reads `conv:{id}` from that id; if trimmed -> `GET /api/chat/conversations/{id}` (REST reload).
-- Overload / budget / failure behavior: docs/00 section 7.3 (queue position via `status.updated`, fallback model, FAQ + handoff).
+- Overload / budget / failure behavior: buywise-docs/00 section 7.3 (queue position via `status.updated`, fallback model, FAQ + handoff).
 
 ### 5.3 Staff takeover (handoff)
 ```mermaid
@@ -225,7 +225,7 @@ sequenceDiagram
   3. Budget and pricing: read-only view of caps, shadow prices and degradation thresholds (config is changed in Git, not in the UI).
   4. Ingestion (ADR-039): upload documents (any supported format), see parse status, parse metrics, per-element preview with provenance, and quarantined files with reasons; re-parse action.
 - **customer-web developer overlay:** TTFT, tokens and cost under each agent message, from `message.metrics`. Enabled by config (`devOverlay: true`), off by default; never on in production.
-- Data source: Node server `ops` module reads the agent's usage tables (data/docs/design.md) via the agent API; Grafana remains the place for alerts and long-range trends.
+- Data source: Node server `ops` module reads the agent's usage tables (buywise-data/docs/design.md) via the agent API; Grafana remains the place for alerts and long-range trends.
 
 ## 6. Non-functional
 - 2 replicas locally: any pod can serve any SSE connection by reading the conversation's Redis Stream (ADR-029); no sticky sessions.

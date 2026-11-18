@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     mcp_url: str = "http://localhost:8090/mcp"
     services_url: str = "http://localhost:8081"
-    knowledge_dir: str = "../data/knowledge"
+    knowledge_dir: str = "../buywise-data/knowledge"
 
 
 settings = Settings()

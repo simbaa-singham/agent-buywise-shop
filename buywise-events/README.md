@@ -15,10 +15,10 @@ Built in phase 4.
 
 ## Documents
 - [docs/design.md](docs/design.md) - detailed design
-- System overview: [docs/00_Architecture_Overview.md](../docs/00_Architecture_Overview.md); roadmap: [docs/09_Implementation_Roadmap.md](../docs/09_Implementation_Roadmap.md)
+- System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
-## Decisions that apply (central log: docs/adr/ADR_Log.md)
+## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)
 | ADR | Decision |
 |---|---|
-| [ADR-009](../docs/adr/ADR_Log.md) |  |
-| [ADR-016](../docs/adr/ADR_Log.md) | Six deployables: web, services, agent, mcp, event-publisher, event-consumers |
+| [ADR-009](../buywise-docs/adr/ADR_Log.md) |  |
+| [ADR-016](../buywise-docs/adr/ADR_Log.md) | Six deployables: web, services, agent, mcp, event-publisher, event-consumers |
