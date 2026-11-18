@@ -30,8 +30,8 @@ Needs uv (`brew install uv`). `make agent-dev` (create .venv from uv.lock), `mak
 | [ADR-011](../docs/adr/ADR_Log.md) | Postgres + pgvector + full-text for RAG (hybrid, RRF, rerank); retriever interface; `pg_search` BM25 upgrade path; RAG reads off the primary in pro... |
 | [ADR-026](../docs/adr/ADR_Log.md) | LLM metering and budgets: LiteLLM model gateway (pricing, spend, global budget, rate limits) + agent LLM client (per-turn/conversation/customer cap... |
 | [ADR-027](../docs/adr/ADR_Log.md) | LLM observability in the UI: Grafana for trends/alerts + staff-console AI Operations (ops-admin) + customer-web dev overlay; `status.updated` and `... |
-| [ADR-028](../docs/adr/ADR_Log.md) | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-l... |
-| [ADR-029](../docs/adr/ADR_Log.md) | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; BFF pods read and forward; ... |
+| [ADR-028](../docs/adr/ADR_Log.md) | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop Node server -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-l... |
+| [ADR-029](../docs/adr/ADR_Log.md) | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; Node server pods read and forward; ... |
 | [ADR-030](../docs/adr/ADR_Log.md) | Intent routing: cascade of rules -> fast in-process classifier -> economy-tier LLM classifier; clarify then handoff on low confidence; flow stickin... |
 | [ADR-034](../docs/adr/ADR_Log.md) | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas; applied to the ADR-0... |
 | [ADR-036](../docs/adr/ADR_Log.md) | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; m... |

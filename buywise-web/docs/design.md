@@ -1,20 +1,20 @@
-# UI + BFF (`buywise-web`) - Detailed Design
+# UI + Node server (`buywise-web`) - Detailed Design
 
 Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
 - **Angular web app:** customer chat widget, product/cart/order views; staff console (ticket queue, take over chat).
-- **NestJS BFF:** login/session, SSE streaming of agent replies and live events, screen aggregation. No business logic.
-- **One deployable:** the BFF serves the built Angular files (`/`), its API (`/api/**`) and the chat event stream (`/api/chat/stream`, SSE) from one origin.
+- **Node server (NestJS):** login/session, SSE streaming of agent replies and live events, screen aggregation. No business logic.
+- **One deployable:** the Node server serves the built Angular files (`/`), its API (`/api/**`) and the chat event stream (`/api/chat/stream`, SSE) from one origin.
 
 ## 2. Technology and versions
 | Part | Choice | Why |
 |---|---|---|
 | Web | Angular 22 (signals, Signal Forms, zoneless, Vitest), TypeScript 6 | Stable signal-first APIs, long support window |
-| BFF | Node.js 24 LTS, NestJS 11 + Fastify adapter | Structure (modules, DI, guards), SSE support, fast HTTP engine |
+| Node server | Node.js 24 LTS, NestJS 11 + Fastify adapter | Structure (modules, DI, guards), SSE support, fast HTTP engine |
 | Component library | Angular Material (Material 3) + Angular CDK, custom theme (ADR-019) | Released with Angular, strongest built-in accessibility, data table for staff console, token-based theming |
 | Styling | SCSS with Material 3 design tokens; no Tailwind | One styling system; tokens shared by both apps |
-| Rendering | Hybrid per route: prerender + client; no per-request SSR (ADR-023) | Fast indexable product pages; BFF stays a file server |
+| Rendering | Hybrid per route: prerender + client; no per-request SSR (ADR-023) | Fast indexable product pages; Node server stays a file server |
 | Charts (AI Operations only) | Apache ECharts, modular imports, own signal-based wrapper component; "view as table" toggle (ADR-038) | Richest chart set, canvas performance, built-in aria descriptions; no third-party Angular wrapper to lag behind upgrades |
 | State management | NgRx SignalStore + signals + `httpResource` (ADR-022) | Consistent store structure where state is shared or live; plain signals elsewhere |
 
@@ -24,7 +24,7 @@ Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - 
 | customer-web: product and category pages | Prerender (build time) | Price and stock fetched live in the browser after load |
 | customer-web: chat, cart, checkout, account | Client | Personal, interactive, SSE is browser-only |
 | staff-console: all routes | Client | Behind login, no SEO need |
-- No per-request SSR: the BFF serves files only and runs no Angular rendering engine.
+- No per-request SSR: the Node server serves files only and runs no Angular rendering engine.
 - Code that runs during prerender must guard browser-only APIs (`EventSource`, `window`, `localStorage`), e.g. `afterNextRender` / platform checks.
 - Catalog content changes need a rebuild; switch product routes to Server mode later if the catalog grows or changes often.
 
@@ -58,33 +58,33 @@ buywise-web/
 - Each app has its own Keycloak client: staff can get stricter login rules (MFA, shorter sessions) than customers.
 - Customers never download staff code; Envoy can restrict `/staff/**` (and `/api/staff/**`) separately.
 - `shared` holds only code used by both apps; app-specific code stays in its app. Neither app imports from the other.
-- Still one deployable: the BFF serves both builds from one origin.
+- Still one deployable: the Node server serves both builds from one origin.
 
-Packaging: multi-stage Docker build -> both `ng build` outputs copied into the BFF image.
+Packaging: multi-stage Docker build -> both `ng build` outputs copied into the Node server image.
 
 ## 4. Interfaces
-- Browser <-> BFF: REST (screens) + SSE (live events), same origin, httpOnly session cookie.
+- Browser <-> Node server: REST (screens) + SSE (live events), same origin, httpOnly session cookie.
 
-**Session pattern (ADR-021): BFF session (token handler).**
-- BFF is the OIDC client: Authorization Code + PKCE with Keycloak; tokens stored server-side in Redis, never sent to the browser.
+**Session pattern (ADR-021): Node server session (token handler).**
+- Node server is the OIDC client: Authorization Code + PKCE with Keycloak; tokens stored server-side in Redis, never sent to the browser.
 - Browser holds only an opaque session cookie: `__Host-` prefix, `HttpOnly`, `Secure`, `SameSite=Lax`.
 - Guest sessions: browse and chat without login; login required for checkout and order history; guest order status via OTP.
 - On login the session id is rotated (prevents session fixation); the guest conversation carries over.
 - Staff: own Keycloak client and own cookie scoped to `/staff` and `/api/staff`; shorter idle timeout; MFA required.
 - Session limits: idle and absolute timeouts in Redis (values set with NFR targets).
 - CSRF: `SameSite` cookie + required custom header on every state-changing request.
-- BFF calls `buywise-services` (screens, staff actions) with the user's or staff member's token, and refreshes it when it expires.
+- Node server calls `buywise-services` (screens, staff actions) with the user's or staff member's token, and refreshes it when it expires.
 - Calls to `buywise-agent` use a token exchanged for `aud: buywise-agent` (ADR-028); staff takeover actions never go through the agent.
 
 **Real-time channel (ADR-020): SSE down, HTTP POST up.**
 | Direction | Mechanism | Example |
 |---|---|---|
-| Browser -> BFF | `POST /api/chat/messages` (any pod) | Customer or staff sends a message |
-| BFF -> browser | `GET /api/chat/stream` (SSE, `EventSource`) | Agent reply tokens, staff messages, ticket queue updates, order status |
+| Browser -> Node server | `POST /api/chat/messages` (any pod) | Customer or staff sends a message |
+| Node server -> browser | `GET /api/chat/stream` (SSE, `EventSource`) | Agent reply tokens, staff messages, ticket queue updates, order status |
 
-- Event delivery and replay (ADR-029): every conversation has a Redis Stream (`conv:{id}`), capped by count and time. The agent appends reply events; the BFF appends staff messages, handoff and ticket events. The BFF pod holding the SSE connection reads the stream (one shared reader per pod, multiplexed over its SSE connections) and forwards events. No sticky sessions, no pub/sub.
-- SSE `id` = Redis Stream entry id; on reconnect the browser sends `Last-Event-ID` and the BFF reads the stream from that point. Staff console streams that span several Redis Streams (queue + taken-over conversations) use a composite cursor - detail at implementation.
-- Sending a turn: BFF calls agent `POST /turns` (202 Accepted); stop button -> `POST /api/chat/turns/{id}/cancel` -> agent cancel.
+- Event delivery and replay (ADR-029): every conversation has a Redis Stream (`conv:{id}`), capped by count and time. The agent appends reply events; the Node server appends staff messages, handoff and ticket events. The Node server pod holding the SSE connection reads the stream (one shared reader per pod, multiplexed over its SSE connections) and forwards events. No sticky sessions, no pub/sub.
+- SSE `id` = Redis Stream entry id; on reconnect the browser sends `Last-Event-ID` and the Node server reads the stream from that point. Staff console streams that span several Redis Streams (queue + taken-over conversations) use a composite cursor - detail at implementation.
+- Sending a turn: Node server calls agent `POST /turns` (202 Accepted); stop button -> `POST /api/chat/turns/{id}/cancel` -> agent cancel.
 - Heartbeat comment every ~15 s keeps idle streams open through Envoy and proxies.
 - Envoy serves HTTP/2 to browsers, so open streams don't hit the HTTP/1.1 per-site connection limit.
 - Planned upgrade: WebSocket for the staff takeover conversation only, if typing indicators / read receipts are needed (see ADR-020).
@@ -111,13 +111,13 @@ data: {"v":1,"ts":"2026-10-28T14:02:11Z","conversationId":"c_9f2","messageId":"m
 | Heartbeat | SSE comment line (no event) |
 
 Rules:
-1. Versioning: `v` on every event; adding fields is allowed, renaming/removing bumps `v`; strict when writing, tolerant when reading (ADR-044): writers validate every event before sending; the BFF checks only the envelope when forwarding; the browser ignores unknown fields and event types.
+1. Versioning: `v` on every event; adding fields is allowed, renaming/removing bumps `v`; strict when writing, tolerant when reading (ADR-044): writers validate every event before sending; the Node server checks only the envelope when forwarding; the browser ignores unknown fields and event types.
 2. Rich content is data rendered by Angular components. Agent text is Markdown, sanitized, HTML stripped; LLM output is never inserted as raw HTML.
 3. Replay: the SSE `id` is the Redis Stream entry id of the conversation stream (ADR-029); reconnect replays after `Last-Event-ID`; gap too old (trimmed) -> client reloads the conversation via REST.
 4. Idempotent sends: `POST /api/chat/messages` carries a client-generated `clientMessageId`; duplicates are ignored.
-5. Source of truth: JSON Schema in `shared/contracts/`; TypeScript (web, BFF) and Pydantic (agent) types generated from it; CI fails if generated types drift.
-- BFF -> `buywise-agent`: chat requests, streamed responses.
-- BFF -> `buywise-services`: order history, staff console data (JWT from the session; no internal gateway).
+5. Source of truth: JSON Schema in `shared/contracts/`; TypeScript (web, Node server) and Pydantic (agent) types generated from it; CI fails if generated types drift.
+- Node server -> `buywise-agent`: chat requests, streamed responses.
+- Node server -> `buywise-services`: order history, staff console data (JWT from the session; no internal gateway).
 
 ## 5. Key flows
 Sequence diagrams (Mermaid, rendered by GitHub). Each step names the decision it comes from.
@@ -126,7 +126,7 @@ Sequence diagrams (Mermaid, rendered by GitHub). Each step names the decision it
 ```mermaid
 sequenceDiagram
     participant B as Browser
-    participant W as BFF
+    participant W as Node server
     participant R as Redis
     participant K as Keycloak
     B->>W: GET / (no cookie)
@@ -144,14 +144,14 @@ sequenceDiagram
     W-->>B: Set-Cookie new __Host-sid, 302 returnTo
     Note over W: Next agent turn carries a token with sub=customer; agent links the guest conversation to the customer only if it belongs to this session
 ```
-- Logout: `POST /api/auth/logout` (CSRF header) -> delete Redis session -> Keycloak RP-initiated logout. Keycloak back-channel logout also deletes the BFF session (e.g. account disabled).
-- Session timeout warning (ADR-025): BFF exposes remaining idle time; UI warns 2 min before and offers "stay signed in".
+- Logout: `POST /api/auth/logout` (CSRF header) -> delete Redis session -> Keycloak RP-initiated logout. Keycloak back-channel logout also deletes the Node server session (e.g. account disabled).
+- Session timeout warning (ADR-025): Node server exposes remaining idle time; UI warns 2 min before and offers "stay signed in".
 
 ### 5.2 Chat turn with streaming reply (ADR-020, ADR-024, ADR-028, ADR-029, ADR-030, ADR-036)
 ```mermaid
 sequenceDiagram
     participant B as Browser
-    participant W as BFF
+    participant W as Node server
     participant K as Keycloak
     participant A as Agent
     participant M as buywise-mcp
@@ -179,14 +179,14 @@ sequenceDiagram
     W-->>B: SSE events (id = stream entry id)
 ```
 - Stop button: `POST /api/chat/turns/{id}/cancel` -> agent cancels -> `message.completed` (partial) or `message.failed`.
-- Reconnect: browser auto-reconnects with `Last-Event-ID`; any BFF pod reads `conv:{id}` from that id; if trimmed -> `GET /api/chat/conversations/{id}` (REST reload).
+- Reconnect: browser auto-reconnects with `Last-Event-ID`; any Node server pod reads `conv:{id}` from that id; if trimmed -> `GET /api/chat/conversations/{id}` (REST reload).
 - Overload / budget / failure behavior: docs/00 section 7.3 (queue position via `status.updated`, fallback model, FAQ + handoff).
 
 ### 5.3 Staff takeover (handoff)
 ```mermaid
 sequenceDiagram
     participant C as Customer browser
-    participant W as BFF
+    participant W as Node server
     participant A as Agent
     participant H as buywise-services (helpdesk)
     participant R as Redis Streams
@@ -213,7 +213,7 @@ sequenceDiagram
     W->>A: POST /conversations/{id}/resume
     W->>R: XADD conv:{id} handoff.ended
 ```
-- Ownership (ADR-037): helpdesk module in `buywise-services` is the source of truth; BFF caches it in Redis (`conv:{id}:owner`), updated on accept/release and refreshed from helpdesk events; agent is paused/resumed as a second check.
+- Ownership (ADR-037): helpdesk module in `buywise-services` is the source of truth; Node server caches it in Redis (`conv:{id}:owner`), updated on accept/release and refreshed from helpdesk events; agent is paused/resumed as a second check.
 - Staff actions never go through the agent (ADR-028); staff messages use the staff member's own token.
 - Staff sees masked contact details; "Reveal" is audited (ADR-036).
 - Planned upgrade: WebSocket for typing indicators in takeover (ADR-020).
@@ -225,7 +225,7 @@ sequenceDiagram
   3. Budget and pricing: read-only view of caps, shadow prices and degradation thresholds (config is changed in Git, not in the UI).
   4. Ingestion (ADR-039): upload documents (any supported format), see parse status, parse metrics, per-element preview with provenance, and quarantined files with reasons; re-parse action.
 - **customer-web developer overlay:** TTFT, tokens and cost under each agent message, from `message.metrics`. Enabled by config (`devOverlay: true`), off by default; never on in production.
-- Data source: BFF `ops` module reads the agent's usage tables (data/docs/design.md) via the agent API; Grafana remains the place for alerts and long-range trends.
+- Data source: Node server `ops` module reads the agent's usage tables (data/docs/design.md) via the agent API; Grafana remains the place for alerts and long-range trends.
 
 ## 6. Non-functional
 - 2 replicas locally: any pod can serve any SSE connection by reading the conversation's Redis Stream (ADR-029); no sticky sessions.
@@ -245,7 +245,7 @@ sequenceDiagram
   8. Rich blocks (`block.*`): semantic HTML (real tables, headings, lists).
 
 ## 7. Testing
-- Vitest (web), Jest (BFF), Playwright end-to-end - TBD.
+- Vitest (web), Jest (Node server), Playwright end-to-end - TBD.
 - Accessibility: axe-core checks in Playwright; manual checklist per release (ADR-025).
 
 ## 8. Open decisions
@@ -253,10 +253,10 @@ sequenceDiagram
    - ~~App structure~~ - decided: two apps + shared library (ADR-018)
    - ~~Component library~~ - decided: Angular Material + CDK, custom theme (ADR-019)
    - ~~Real-time channel~~ - decided: SSE + HTTP POST (ADR-020)
-   - ~~Session pattern~~ - decided: BFF session / token handler (ADR-021)
+   - ~~Session pattern~~ - decided: Node server session / token handler (ADR-021)
    - ~~State management~~ - decided: NgRx SignalStore + signals + httpResource (ADR-022)
    - ~~Rendering~~ - decided: hybrid per route, prerender + client (ADR-023)
    - ~~Chat message contract~~ - decided: own typed contract, AG-UI-shaped reply events (ADR-024)
    - ~~Accessibility~~ - decided: WCAG 2.2 AA, automated + manual (ADR-025)
-2. Future option: serve Angular files from a CDN, BFF only as a service.
+2. Future option: serve Angular files from a CDN, Node server only as a service.
 3. ~~Chart library for AI Operations~~ - decided: Apache ECharts with own wrapper (ADR-038).

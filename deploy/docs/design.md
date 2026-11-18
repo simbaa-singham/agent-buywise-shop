@@ -54,7 +54,7 @@ Production-grade design and configuration, run locally at small scale. Scale cha
 | GitHub Actions deploy to local-k8s (self-hosted runner) | Runner on the local machine costs memory and adds risk | CI builds/tests in GitHub; deploy to kind is a local script |
 
 ## 4b. Local usage model
-- Not everything runs at once. Run only the subset needed for the task, e.g. UI work: `buywise-web` (Angular + BFF) plus what it calls; agent work: agent + MCP + LiteLLM + Ollama + Postgres.
+- Not everything runs at once. Run only the subset needed for the task, e.g. UI work: `buywise-web` (Angular + Node server) plus what it calls; agent work: agent + MCP + LiteLLM + Ollama + Postgres.
 - local-dev (Docker Compose, or apps run directly) and local-k8s (kind) are used at different times, never together.
 - local-k8s is used for deployment, scaling and failure-scenario work; it runs the components that scenario needs.
 - Local model stays `qwen2.5:7b` on Ollama.

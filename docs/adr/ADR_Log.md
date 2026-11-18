@@ -3,9 +3,9 @@
 | ADR | Decision | Status | Date |
 |---|---|---|---|
 | ADR-001 | One monorepo with modules | Accepted | 2026-10-28 |
-| ADR-002 | Java for business services, Python for AI and MCP, TypeScript for UI/BFF | Accepted | 2026-10-28 |
+| ADR-002 | Java for business services, Python for AI and MCP, TypeScript for UI/Node server | Accepted | 2026-10-28 |
 | ADR-003 | Angular 22 for the web UI (chosen over 21: stable signal APIs, longer support) | Accepted | 2026-10-28 |
-| ADR-004 | NestJS 11 + Fastify BFF on Node.js 24 LTS; serves the Angular build (one deployable) | Accepted | 2026-10-28 |
+| ADR-004 | NestJS 11 + Fastify Node server on Node.js 24 LTS; serves the Angular build (one deployable) | Accepted | 2026-10-28 |
 | ADR-005 | Spring Cloud Gateway as internal gateway | Superseded by ADR-017 | 2026-10-28 |
 | ADR-006 | Java 25 + Spring Boot 4.1 as six microservices | Superseded by ADR-014 | 2026-10-28 |
 | ADR-007 | MCP servers inside Java services (Spring AI 2.0) | Superseded by ADR-015 | 2026-10-28 |
@@ -22,15 +22,15 @@
 | ADR-018 | UI app structure: one Angular workspace with two apps (customer-web, staff-console) + shared library; one deployable | Accepted | 2026-10-28 |
 | ADR-019 | Angular Material (Material 3) + CDK with custom theme; SCSS + design tokens, no Tailwind; custom chat UI on CDK | Accepted | 2026-10-28 |
 | ADR-020 | Browser real-time channel: SSE (server -> browser) + HTTP POST (browser -> server); Redis pub/sub across pods (amended by ADR-029: Redis Streams), no sticky sessions; WebSocket as planned upgrade for staff takeover | Accepted | 2026-10-28 |
-| ADR-021 | Session pattern: BFF session (token handler), tokens in Redis, opaque `__Host-` cookie; guest sessions; separate staff session with MFA | Accepted | 2026-10-28 |
+| ADR-021 | Session pattern: Node server session (token handler), tokens in Redis, opaque `__Host-` cookie; guest sessions; separate staff session with MFA | Accepted | 2026-10-28 |
 | ADR-022 | UI state: NgRx SignalStore for shared/live state, plain signals for local state, `httpResource` for read-only server data | Accepted | 2026-10-28 |
 | ADR-023 | UI rendering: hybrid per route - prerender product/category pages, client rendering elsewhere; no per-request SSR | Accepted | 2026-10-28 |
 | ADR-024 | Chat message contract: own versioned JSON Schema envelope, AG-UI-shaped reply events, structured blocks, Redis Stream replay (amended by ADR-029: SSE id = stream entry id, `seq` removed), idempotent sends | Accepted | 2026-10-28 |
 | ADR-025 | Accessibility: WCAG 2.2 AA enforced by angular-eslint + axe-core in CI plus a manual per-release checklist; chat-specific rules | Accepted | 2026-10-28 |
 | ADR-026 | LLM metering and budgets: LiteLLM model gateway (pricing, spend, global budget, rate limits) + agent LLM client (per-turn/conversation/customer caps, degradation); shadow pricing locally | Accepted | 2026-10-28 |
 | ADR-027 | LLM observability in the UI: Grafana for trends/alerts + staff-console AI Operations (ops-admin) + customer-web dev overlay; `status.updated` and `message.metrics` events | Accepted | 2026-10-28 |
-| ADR-028 | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop BFF -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-lived JWTs with `act` chain; identity never a tool argument | Accepted | 2026-10-28 |
-| ADR-029 | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; BFF pods read and forward; replaces pub/sub and separate replay buffer | Accepted | 2026-10-28 |
+| ADR-028 | Identity propagation: OAuth 2.0 token exchange (RFC 8693) at each hop Node server -> agent -> MCP -> services; audience-restricted, scope-narrowed, short-lived JWTs with `act` chain; identity never a tool argument | Accepted | 2026-10-28 |
+| ADR-029 | Agent output path: background turns (`POST /turns` 202); agent appends ADR-024 events to per-conversation Redis Stream; Node server pods read and forward; replaces pub/sub and separate replay buffer | Accepted | 2026-10-28 |
 | ADR-030 | Intent routing: cascade of rules -> fast in-process classifier -> economy-tier LLM classifier; clarify then handoff on low confidence; flow stickiness; decisions logged | Accepted | 2026-10-28 |
 | ADR-031 | MCP layout: one server per domain (`/mcp/{domain}`) in one process and image; agent connects per intent; optional per-domain Deployment in production | Accepted | 2026-10-28 |
 | ADR-032 | Tool rate limits in four layers: agent per-turn caps, Envoy global per tool, MCP per user per tool (Redis), services Bucket4j | Accepted | 2026-10-28 |
@@ -38,7 +38,7 @@
 | ADR-034 | RAG chunking: structure-aware per doc type, parent-child retrieval, context headers, metadata filters; sizes tuned with Ragas; applied to the ADR-039 Document model | Accepted | 2026-10-28 |
 | ADR-035 | Backup policy (design only): Postgres WAL archiving + daily base backups, PITR 30/14 days, immutable off-site weekly copy, monthly restore drill; Redis/Kafka not backed up; config in Git; no local backups | Accepted | 2026-10-28 |
 | ADR-036 | PII policy: 4-tier classification; Presidio placeholders before LLM calls; field-level envelope encryption + blind index for email/phone/address; masked logs/traces; audited staff reveal; retention and privacy-rights jobs | Accepted | 2026-10-28 |
-| ADR-037 | Conversation ownership owned by the helpdesk module in `buywise-services`; BFF caches in Redis; agent paused/resumed as second check | Accepted | 2026-10-28 |
+| ADR-037 | Conversation ownership owned by the helpdesk module in `buywise-services`; Node server caches in Redis; agent paused/resumed as second check | Accepted | 2026-10-28 |
 | ADR-038 | AI Operations charts: Apache ECharts (modular imports) with own thin signal-based wrapper; "view as table" accessibility toggle | Accepted | 2026-10-28 |
 | ADR-039 | Multi-format ingestion: detect by magic bytes -> parser plugin per format -> common Document model with provenance -> normalize, validate, clean, chunk; quarantine; golden tests; worker inside agent deployable | Accepted | 2026-10-28 |
 | ADR-040 | Embeddings: bge-m3 in every environment via LiteLLM; `model_version` per vector; PII-masked queries; phase-3 bake-off; model change via blue/green re-index | Accepted | 2026-10-28 |
@@ -81,7 +81,7 @@
 - **Consequences:** Low upgrade effort and good accessibility baseline. Effort needed to make customer-web not look like default Material. Custom chat components need their own accessibility testing.
 
 ## ADR-020 - Browser real-time channel
-- **Context:** Browser needs streamed agent replies, live staff-takeover messages, ticket queue updates and order status pushes. Traffic is mostly server -> browser; customers send occasional messages. Two BFF pods behind Envoy.
+- **Context:** Browser needs streamed agent replies, live staff-takeover messages, ticket queue updates and order status pushes. Traffic is mostly server -> browser; customers send occasional messages. Two Node server pods behind Envoy.
 - **Options considered:**
   - A. WebSocket - one bidirectional channel, best for high-frequency two-way traffic; custom heartbeat/reconnect/replay, sticky sessions in the draft.
   - B. SSE + HTTP POST - plain HTTP, built-in reconnect with `Last-Event-ID` replay, same pattern as LLM APIs (OpenAI, Anthropic, Gemini); one-way, so sends are POSTs.
@@ -94,11 +94,11 @@
 ## ADR-021 - Session pattern
 - **Context:** Browser must stay logged in with Keycloak; tokens must be protected from XSS; SSE (`EventSource`) cannot set auth headers; customers can shop as guests; staff need stricter controls.
 - **Options considered:**
-  - A. BFF session / token handler - tokens server-side in Redis, opaque httpOnly cookie; recommended by IETF "OAuth 2.0 for Browser-Based Applications"; needs session store and CSRF protection.
+  - A. Node server session / token handler - tokens server-side in Redis, opaque httpOnly cookie; recommended by IETF "OAuth 2.0 for Browser-Based Applications"; needs session store and CSRF protection.
   - B. Tokens in the Angular app (public client) - no server sessions; tokens exposed to XSS, refresh token in browser, awkward with SSE.
   - C. Encrypted tokens in the cookie - no store; 4 KB cookie limit, hard server-side revocation.
-- **Decision:** A. Authorization Code + PKCE in the BFF; Redis session store; `__Host-` `HttpOnly` `Secure` `SameSite=Lax` cookie; guest sessions upgraded on login with session id rotation; separate staff client and cookie scoped to `/staff`, `/api/staff`, shorter idle timeout, MFA; CSRF via SameSite + custom header.
-- **Consequences:** Tokens never reach the browser; SSE works with the cookie. BFF owns refresh and logout. Redis becomes critical for login state (already used for pub/sub). Identity propagation to agent/MCP is an open item in buywise-agent/docs/design.md and buywise-mcp/docs/design.md.
+- **Decision:** A. Authorization Code + PKCE in the Node server; Redis session store; `__Host-` `HttpOnly` `Secure` `SameSite=Lax` cookie; guest sessions upgraded on login with session id rotation; separate staff client and cookie scoped to `/staff`, `/api/staff`, shorter idle timeout, MFA; CSRF via SameSite + custom header.
+- **Consequences:** Tokens never reach the browser; SSE works with the cookie. Node server owns refresh and logout. Redis becomes critical for login state (already used for pub/sub). Identity propagation to agent/MCP is an open item in buywise-agent/docs/design.md and buywise-mcp/docs/design.md.
 
 ## ADR-022 - UI state management
 - **Context:** Angular 22 is signal-first. State includes a live chat conversation (shared by both apps), session, cart, a live staff ticket queue, and read-only page data.
@@ -113,19 +113,19 @@
 - **Context:** Product/category pages benefit from fast first load and SEO; chat, cart, checkout and account are personal and use browser-only SSE; staff-console is behind login. Small, mostly static sample catalog.
 - **Options considered:**
   - A. CSR everywhere - simplest; slower first load, weak SEO and link previews.
-  - B. SSR for customer-web - fast and indexable everywhere; BFF renders every request, all shared code must be server-safe, no gain on personal pages.
+  - B. SSR for customer-web - fast and indexable everywhere; Node server renders every request, all shared code must be server-safe, no gain on personal pages.
   - C. Hybrid per route - prerender product/category pages, client rendering for the rest.
 - **Decision:** C. Angular per-route render modes: Prerender for product/category, Client for chat/cart/checkout/account and all of staff-console. No per-request SSR.
-- **Consequences:** BFF stays a file server; prerendered output suits the future CDN option. Price/stock must be fetched live on product pages. Catalog content changes need a rebuild. Prerendered code must guard browser-only APIs. Upgrade path: Server render mode for product routes.
+- **Consequences:** Node server stays a file server; prerendered output suits the future CDN option. Price/stock must be fetched live on product pages. Catalog content changes need a rebuild. Prerendered code must guard browser-only APIs. Upgrade path: Server render mode for product routes.
 
 ## ADR-024 - Chat message contract
-- **Context:** The SSE stream and message POSTs are the central UI interface, used by the agent, BFF and both apps. It carries agent and non-agent events (staff messages, tickets, order status).
+- **Context:** The SSE stream and message POSTs are the central UI interface, used by the agent, Node server and both apps. It carries agent and non-agent events (staff messages, tickets, order status).
 - **Options considered:**
   - A. Own typed contract - covers all event kinds, explicit versioning; we maintain it.
   - B. AG-UI protocol - published standard with TS/Python SDKs; agent events only, community Angular support, still evolving.
   - C. Forward raw LangGraph events - no mapping; leaks internals, UI breaks on graph refactors.
 - **Decision:** A, with agent-reply events shaped like AG-UI start/content/end. Versioned envelope (`v`, `type`, `ts`, `conversationId`, `messageId`, `payload`); structured `block.*` content rendered by components; sanitized Markdown for text; Redis Stream replay keyed by the SSE `id` / `Last-Event-ID`, where the SSE `id` is the Redis Stream entry id (amended by ADR-029: the original `seq` envelope field was removed); `clientMessageId` for idempotent sends; JSON Schema in `shared/contracts/` generating TS and Pydantic types, drift checked in CI.
-- **Consequences:** One contract across Python and TypeScript; adoption of AG-UI remains possible. We own schema evolution. The open item "agent emits contract events directly or the BFF maps them" was resolved by ADR-029: the agent emits ADR-024 events directly to the conversation's Redis Stream.
+- **Consequences:** One contract across Python and TypeScript; adoption of AG-UI remains possible. We own schema evolution. The open item "agent emits contract events directly or the Node server maps them" was resolved by ADR-029: the agent emits ADR-024 events directly to the conversation's Redis Stream.
 
 ## ADR-025 - Accessibility
 - **Context:** US online store (WCAG 2.x AA is the de facto ADA benchmark). Custom chat UI with streaming text, overlays, OTP and session timeouts.
@@ -152,7 +152,7 @@
   - B2. staff-console AI Operations only - in-app, per-conversation drill-down; must build charts, no alerting.
   - B3. Both, plus a developer overlay in customer-web.
 - **Decision:** B3. Grafana for trends, NFR percentiles, spend and alerts. staff-console AI Operations (role `ops-admin`): live summary, conversation explorer with per-stage breakdown, read-only budget/pricing view. customer-web dev overlay from `message.metrics`, off by default. Contract additions (backward compatible, `v` stays 1): `status.updated`, `message.metrics`.
-- **Consequences:** New BFF `ops` module and staff-console area; new Keycloak role; agent usage tables (`turns`, `llm_calls`). Open: chart library for AI Operations (buywise-web/docs/design.md).
+- **Consequences:** New Node server `ops` module and staff-console area; new Keycloak role; agent usage tables (`turns`, `llm_calls`). Open: chart library for AI Operations (buywise-web/docs/design.md).
 
 ## ADR-011 - Vector store
 - **Context:** Hybrid retrieval (dense + keyword, RRF, rerank) over product pages, specs, policies and FAQs: ~5k-50k chunks, small even at 10x. Checkout availability target is 99.99% (docs/00 section 7).
@@ -177,22 +177,22 @@
 - **Consequences:** AI load cannot affect checkout. More databases and credentials to manage (ties to secrets decision, deploy/docs/design.md). Other deployables read business data only via REST or events.
 
 ## ADR-028 - Identity propagation
-- **Context:** User identity must reach `buywise-services` through BFF -> agent -> `buywise-mcp`. The LLM chooses tools and arguments and can be steered by prompt injection. The MCP spec forbids token passthrough. Draft tools took `customer_id` as an argument.
+- **Context:** User identity must reach `buywise-services` through Node server -> agent -> `buywise-mcp`. The LLM chooses tools and arguments and can be steered by prompt injection. The MCP spec forbids token passthrough. Draft tools took `customer_id` as an argument.
 - **Options considered:**
   - A. Pass the user token through - simplest; one token valid everywhere; MCP token passthrough anti-pattern.
   - B. Service accounts + user id header - simple; services trust any claimed user (confused deputy).
   - C. Token exchange per hop (RFC 8693, "on-behalf-of") - audience-restricted, scope-narrowed, short-lived JWTs with `act` delegation chain; extra Keycloak calls (cached), more config.
-  - D. Own internal signed token minted by the BFF (Passport-style) - fast; custom protocol and key management, does not fit MCP OAuth.
-- **Decision:** C. Rules: identity never a tool argument (`customer_id` removed from tools, taken from `sub`); scopes narrowed per hop and per intent; exchanged tokens ~5 min, cached in memory only, never in checkpoints/logs/traces; guests get public scopes + own cart, OTP gives a short-lived grant for that contact's orders; staff actions go BFF -> services directly; services log `sub` + `act` chain on writes. Services verify JWTs locally via JWKS.
+  - D. Own internal signed token minted by the Node server (Passport-style) - fast; custom protocol and key management, does not fit MCP OAuth.
+- **Decision:** C. Rules: identity never a tool argument (`customer_id` removed from tools, taken from `sub`); scopes narrowed per hop and per intent; exchanged tokens ~5 min, cached in memory only, never in checkpoints/logs/traces; guests get public scopes + own cart, OTP gives a short-lived grant for that contact's orders; staff actions go Node server -> services directly; services log `sub` + `act` chain on writes. Services verify JWTs locally via JWKS.
 - **Consequences:** A leaked token is useless outside its audience and few minutes; full delegation audit trail. More Keycloak configuration. Verify Keycloak's support for the `act` claim in standard token exchange before implementation; if partial, add the actor chain via a Keycloak protocol mapper. In production, mTLS (service mesh, future) would add workload identity; locally JWTs carry it.
 
 ## ADR-029 - Agent output path to the browser
-- **Context:** NFR 7.2 #6: if a BFF pod dies mid-reply, the reply must complete after reconnect. Any design where the agent streams through a specific BFF pod loses the rest of the reply.
+- **Context:** NFR 7.2 #6: if a Node server pod dies mid-reply, the reply must complete after reconnect. Any design where the agent streams through a specific Node server pod loses the rest of the reply.
 - **Options considered:**
-  - A. Agent emits ADR-024 events over a streaming HTTP response to the BFF - simple; reply dies with the BFF pod.
-  - B. Agent emits its own format, BFF maps it - agent independent of UI contract; same pod-death problem plus a mapping layer.
-  - C. Agent appends ADR-024 events to the conversation's Redis Stream; BFF only reads - reply independent of BFF pods.
-- **Decision:** C. `POST /turns` returns 202 and the turn runs in the background; events go to `conv:{id}` (capped by count and time); BFF also appends its own events (staff messages, handoff, tickets) there; one shared stream reader per BFF pod; SSE `id` = stream entry id; cancel via `POST /turns/{id}/cancel`.
+  - A. Agent emits ADR-024 events over a streaming HTTP response to the Node server - simple; reply dies with the Node server pod.
+  - B. Agent emits its own format, Node server maps it - agent independent of UI contract; same pod-death problem plus a mapping layer.
+  - C. Agent appends ADR-024 events to the conversation's Redis Stream; Node server only reads - reply independent of Node server pods.
+- **Decision:** C. `POST /turns` returns 202 and the turn runs in the background; events go to `conv:{id}` (capped by count and time); Node server also appends its own events (staff messages, handoff, tickets) there; one shared stream reader per Node server pod; SSE `id` = stream entry id; cancel via `POST /turns/{id}/cancel`.
 - **Consequences:** NFR #6 met by design; one mechanism for delivery and replay (replaces pub/sub + replay buffer). Agent depends on Redis (already used for budgets). Amends ADR-020 (cross-pod mechanism) and ADR-024 rule 3 (`seq` removed from the envelope; SSE id is the stream entry id). Staff console composite cursor detailed at implementation. Same pattern as LangGraph Server's background runs with a joinable stream.
 
 ## ADR-030 - Intent routing
@@ -247,9 +247,9 @@
 - **Consequences:** LLM never sees raw PII; dumps/backups don't expose contact fields. ~10-30 ms per turn for detection; detection is imperfect, so log/trace masking stays as a second layer. Encrypted fields can't be searched or sorted in SQL except via the blind index. Key rotation procedure required.
 
 ## ADR-037 - Conversation ownership
-- **Context:** On every customer message the BFF must know whether the bot or staff owns the conversation. buywise-agent/docs/design.md had `owner` in agent state, but ADR-028 says staff actions never go through the agent.
-- **Options considered:** A. Helpdesk module owns it (business rule with business data, audited), BFF caches in Redis. B. Agent owns it - forces staff actions through the agent, agent becomes a system of record. C. BFF owns it in Redis only - not durable, not audited.
-- **Decision:** A. Accept -> owner staff; release/resolve -> owner bot; changes audited in `conversation_ownership`. BFF caches `conv:{id}:owner`, updated on accept/release and refreshed from helpdesk events. BFF pauses/resumes the agent; agent refuses turns while paused.
+- **Context:** On every customer message the Node server must know whether the bot or staff owns the conversation. buywise-agent/docs/design.md had `owner` in agent state, but ADR-028 says staff actions never go through the agent.
+- **Options considered:** A. Helpdesk module owns it (business rule with business data, audited), Node server caches in Redis. B. Agent owns it - forces staff actions through the agent, agent becomes a system of record. C. Node server owns it in Redis only - not durable, not audited.
+- **Decision:** A. Accept -> owner staff; release/resolve -> owner bot; changes audited in `conversation_ownership`. Node server caches `conv:{id}:owner`, updated on accept/release and refreshed from helpdesk events. Node server pauses/resumes the agent; agent refuses turns while paused.
 - **Consequences:** Single source of truth with audit. Cache must stay consistent with services (update on write + event refresh; on cache miss read from services).
 
 ## ADR-038 - AI Operations chart library
@@ -291,9 +291,9 @@
 - **Consequences:** Typos rejected in the DB and in generated TS/Pydantic types. "Low stock" wording, if wanted later, is a UI or inventory rule on `quantity`, not a catalog value. Adding a status value means a migration + schema change.
 
 ## ADR-044 - Strict when writing, tolerant when reading
-- **Context:** The chat contract (ADR-024) uses `additionalProperties: false` everywhere (catches typos) and promises that adding optional fields is safe. A reader that validates strictly breaks that promise: a browser tab open for hours, or a BFF pod not yet upgraded, would reject events from a newer writer. Writers: agent, BFF (staff/handoff/ticket events), services (order events). Readers: BFF (forwarding to SSE), browser.
+- **Context:** The chat contract (ADR-024) uses `additionalProperties: false` everywhere (catches typos) and promises that adding optional fields is safe. A reader that validates strictly breaks that promise: a browser tab open for hours, or a Node server pod not yet upgraded, would reject events from a newer writer. Writers: agent, Node server (staff/handoff/ticket events), services (order events). Readers: Node server (forwarding to SSE), browser.
 - **Options considered:** A. Strict everywhere - simplest, but readers must always deploy before writers and old tabs fail until reload. B. Strict write, tolerant read. C. Tolerant everywhere (drop `additionalProperties: false`) - never breaks, but typos pass silently at the source.
-- **Decision:** B. Writers validate every event against the generated strict models before appending to the stream (Pydantic `extra='forbid'` in Python; a runtime check in the BFF for its own events). The BFF, when forwarding, checks only the envelope (`v`, `type`, `conversationId`) and passes the rest through unchanged. The browser ignores unknown event types and unknown fields. An event with an unsupported `v` is skipped and logged, never crashes the client.
+- **Decision:** B. Writers validate every event against the generated strict models before appending to the stream (Pydantic `extra='forbid'` in Python; a runtime check in the Node server for its own events). The Node server, when forwarding, checks only the envelope (`v`, `type`, `conversationId`) and passes the rest through unchanged. The browser ignores unknown event types and unknown fields. An event with an unsupported `v` is skipped and logged, never crashes the client.
 - **Consequences:** Adding optional fields and new event types stays safe in any deploy order. Typos are caught where they are made (contract test: an event with an unknown field is rejected by the writer models). Reader tolerance is tested in phase 1 when reader code exists (unknown field and unknown type are forwarded/ignored).
 
 ## ADR-045 - Hardware factor k: what it measures and where it lives

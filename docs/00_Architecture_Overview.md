@@ -29,9 +29,9 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 | Area | Decision | ADR |
 |---|---|---|
 | Repository | One monorepo with modules | ADR-001 |
-| Language split | Java for business services; Python for AI and MCP; TypeScript for UI/BFF | ADR-002 |
+| Language split | Java for business services; Python for AI and MCP; TypeScript for UI/Node server | ADR-002 |
 | UI | Angular 22 | ADR-003 |
-| BFF | Node.js 24 LTS, NestJS 11 + Fastify; serves the Angular build | ADR-004 |
+| Node server | Node.js 24 LTS, NestJS 11 + Fastify; serves the Angular build | ADR-004 |
 | Business services | One Spring Boot 4.1 modular monolith (Spring Modulith) | ADR-014 |
 | MCP | Separate `buywise-mcp` deployable, MCP Python SDK v2, spec 2026-07-28 | ADR-015 |
 | Deployables | 6 deployables (see section 5) | ADR-016 |
@@ -57,7 +57,7 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 
 **Layers**
 1. **Edge** - Envoy Gateway: TLS, routing, rate limits for browser traffic.
-2. **Experience** - `buywise-web`: Angular 22 app + NestJS BFF (session, SSE streaming, screen aggregation).
+2. **Experience** - `buywise-web`: Angular 22 app + Node server (NestJS) (session, SSE streaming, screen aggregation).
 3. **AI** - `buywise-agent`: LangGraph agent + RAG pipeline.
 4. **Tools** - `buywise-mcp`: MCP servers wrapping the business REST APIs.
 5. **Business** - `buywise-services`: Spring Boot modular monolith (catalog, inventory, order, customer, payment mock, helpdesk).
@@ -66,14 +66,14 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 
 **Request path (chat message)**
 1. Browser -> Envoy Gateway -> `buywise-web` (HTTP POST to send; SSE stream to receive).
-2. BFF -> `buywise-agent` `POST /turns` (202 Accepted; turn runs in the background). Agent appends contract events to the conversation's Redis Stream; the BFF pod holding the SSE connection reads and forwards them (ADR-029).
+2. Node server -> `buywise-agent` `POST /turns` (202 Accepted; turn runs in the background). Agent appends contract events to the conversation's Redis Stream; the Node server pod holding the SSE connection reads and forwards them (ADR-029).
 3. Agent: load state -> sentiment -> intent router -> intent handler.
 4. Handler -> `buywise-mcp` (MCP, stateless) -> `buywise-services` REST.
 5. Handler -> RAG retrieval for knowledge questions.
-6. Agent -> guardrails -> streamed response -> BFF -> browser.
+6. Agent -> guardrails -> streamed response -> Node server -> browser.
 
 **Screen path (e.g. order history)**
-1. Browser -> `buywise-web` BFF -> `buywise-services` REST (JWT from the session).
+1. Browser -> `buywise-web` Node server -> `buywise-services` REST (JWT from the session).
 
 **Event path**
 1. `buywise-services` commits state + event record in one DB transaction.
@@ -85,7 +85,7 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 
 | # | Deployable | Contains | Stack | Detailed design |
 |---|---|---|---|---|
-| 1 | `buywise-web` | Angular app + NestJS BFF (BFF serves the Angular build) | Angular 22, Node.js 24, NestJS 11 + Fastify | [01](../buywise-web/docs/design.md) |
+| 1 | `buywise-web` | Angular app + Node server (NestJS) (Node server serves the Angular build) | Angular 22, Node.js 24, NestJS 11 + Fastify | [01](../buywise-web/docs/design.md) |
 | 2 | `buywise-services` | Modular monolith: catalog, inventory, order, customer, payment (mock), helpdesk | Java 25, Spring Boot 4.1, Spring Modulith | [02](../buywise-services/docs/design.md) |
 | 3 | `buywise-agent` | LangGraph agent, RAG pipeline, evals | Python 3.12, LangGraph 1.2 | [03](../buywise-agent/docs/design.md), [04](../buywise-agent/docs/rag.md) |
 | 4 | `buywise-mcp` | MCP servers wrapping `buywise-services` REST APIs | Python 3.12, MCP Python SDK v2 (spec 2026-07-28) | [05](../buywise-mcp/docs/design.md) |
@@ -98,7 +98,7 @@ Data stores are covered in [07](../data/docs/design.md); environments and deploy
 
 ```
 agent-buywise-shop/
-├── buywise-web/                  # buywise-web: Angular 22 app + NestJS BFF
+├── buywise-web/                  # buywise-web: Angular 22 app + Node server (NestJS)
 │   ├── web/             # Angular workspace (customer-web, staff-console, shared)
 │   └── bff/             # NestJS 11 + Fastify
 ├── buywise-services/            # buywise-services: one Spring Boot app (modules as packages)
@@ -137,9 +137,9 @@ Production targets are ideal production-grade targets (SLOs with error budgets).
 | 1 | Scale | 200k customers; 50k chats/day; 2,000 concurrent chats (~300 generating at once); 100 chat msgs/s; 1,000 API req/s steady | 5k customers; 1,250 chats/day; 50 concurrent chats (~8 generating); 2.5 msgs/s; 25 req/s (k6) |
 | 2 | Spikes | 10x browsing, 3x chats absorbed by autoscaling; beyond that admission control (7.3) | Same multipliers on local base: 250 req/s browsing, 150 concurrent chats; beyond LLM capacity -> queue |
 | 3 | Web performance | Core Web Vitals p75: LCP < 2.5 s, INP < 200 ms, CLS < 0.1 | Same (Lighthouse CI on prerendered and client routes) |
-| 4 | API latency | BFF and services REST p95 < 200 ms, p99 < 500 ms; MCP tool call p95 < 200 ms, p99 < 500 ms | Same |
+| 4 | API latency | Node server and services REST p95 < 200 ms, p99 < 500 ms; MCP tool call p95 < 200 ms, p99 < 500 ms | Same |
 | 5 | Chat latency | First visible feedback (`status.updated`) p95 < 500 ms. First reply token p95 < 1 s (no tool) / < 2 s (tool turns), p99 < 3 s. Full answer p95 < 5 s. Output >= 50 tokens/s per stream. System overhead (everything except model inference) <= 300 ms no-tool / 800 ms tool turns | First visible feedback and system overhead: same as production. Model-dependent parts: production target x k; output >= 50/k tokens/s |
-| 6 | Availability | Chat 99.95% (~22 min/month); checkout 99.99% (~4 min/month); multi-zone | Zero failed requests in each failure scenario: kill any pod of a 2-replica deployable; kill BFF pod mid-reply (reply completes after reconnect); restart Redis; stop LiteLLM; stop Ollama |
+| 6 | Availability | Chat 99.95% (~22 min/month); checkout 99.99% (~4 min/month); multi-zone | Zero failed requests in each failure scenario: kill any pod of a 2-replica deployable; kill Node server pod mid-reply (reply completes after reconnect); restart Redis; stop LiteLLM; stop Ollama |
 | 7 | Error rate | Server errors < 0.1% of requests; chat turns with neither an answer nor a fallback < 0.1% | Same, during the k6 run |
 | 8 | Correctness | Intent routing accuracy >= 95%; prices/stock/status not from a tool result = 0; knowledge answers with a citation >= 95% | Same (scenario eval suite in CI) |
 | 9 | Security | OAuth2/JWT; least-privilege tools; PII masked; no card data in any system (PCI DSS out of scope, mock payment links); ADR-021 session rules; prompt-injection test set in evals | Same |
@@ -159,7 +159,7 @@ Same mechanisms locally and in production; only the limits differ (derived from 
 | LLM/LiteLLM down | Circuit breaker (open at 50% failures over 20 calls, half-open after 30 s) | FAQ answers from RAG retrieval (no generation) + staff handoff |
 | Tool/service errors | Retries only for idempotent calls (2, exponential backoff + jitter); circuit breakers (Resilience4j in services, policies in LangGraph nodes) | "I couldn't check stock right now" + retry or handoff; never invented data |
 | Budget limits hit | Degradation ladder (ADR-026, buywise-agent/docs/design.md section 7a) | Cheaper model, then FAQ + handoff; per-turn cap -> "Want me to continue?" |
-| SSE stream drops / BFF pod dies mid-reply | Agent keeps writing to the Redis Stream (ADR-029); browser reconnects to any pod and replays from `Last-Event-ID`; REST reload if gap too old | Reply continues where it stopped |
+| SSE stream drops / Node server pod dies mid-reply | Agent keeps writing to the Redis Stream (ADR-029); browser reconnects to any pod and replays from `Last-Event-ID`; REST reload if gap too old | Reply continues where it stopped |
 | Redis down | Sessions unavailable -> login prompt; replay/budget counters fail closed for budgets, open for replay (REST reload) | Re-login; chat history reloads |
 | Duplicate sends (retries) | `clientMessageId` idempotency (ADR-024) | Message appears once |
 
@@ -169,7 +169,7 @@ Production-grade design throughout. Production-scale operations are **design onl
 | Design only (production) | Implemented locally |
 |---|---|
 | Database backups, WAL archiving, point-in-time recovery, restore drills, immutable off-site copies (ADR-035) | All application code and contracts |
-| Disaster recovery environment, multi-zone / multi-region | Auth: BFF sessions, token exchange, scopes (ADR-021, ADR-028) |
+| Disaster recovery environment, multi-zone / multi-region | Auth: Node server sessions, token exchange, scopes (ADR-021, ADR-028) |
 | Postgres synchronous replica and read replicas; separate business/AI clusters (ADR-010); PgBouncer connection pooling | Rate limits, admission control, degradation ladders (ADR-026, ADR-032, section 7.3) |
 | Kafka 3-broker replication | PII masking, field encryption, audit logging (ADR-036) |
 | Service mesh (mTLS) | Observability: OTel, Prometheus, Grafana, Tempo, Loki, AI Operations |
@@ -179,8 +179,8 @@ Production-grade design throughout. Production-scale operations are **design onl
 
 ## 8. Cross-cutting concerns
 
-- **Security:** Keycloak for customers, staff and service accounts; BFF session pattern; Spring Security JWT checks in `buywise-services`; OAuth for `buywise-mcp`; OTP for order status. User identity flows by token exchange per hop (RFC 8693): each JWT is audience-restricted, scope-narrowed, ~5 min, with an `act` delegation chain; identity is never a tool argument (ADR-028). Service mesh (mTLS) is the future path for service-to-service security.
-- **Observability:** OpenTelemetry end to end (browser -> BFF -> agent -> MCP -> services); Langfuse for LLM traces; Prometheus/Grafana; structured logs. LLM latency, speed, tokens and cost per call (OTel GenAI conventions) on Grafana and in the staff-console AI Operations area (ADR-027).
+- **Security:** Keycloak for customers, staff and service accounts; Node server session pattern; Spring Security JWT checks in `buywise-services`; OAuth for `buywise-mcp`; OTP for order status. User identity flows by token exchange per hop (RFC 8693): each JWT is audience-restricted, scope-narrowed, ~5 min, with an `act` delegation chain; identity is never a tool argument (ADR-028). Service mesh (mTLS) is the future path for service-to-service security.
+- **Observability:** OpenTelemetry end to end (browser -> Node server -> agent -> MCP -> services); Langfuse for LLM traces; Prometheus/Grafana; structured logs. LLM latency, speed, tokens and cost per call (OTel GenAI conventions) on Grafana and in the staff-console AI Operations area (ADR-027).
 - **Resilience:** timeouts, retries, circuit breakers (Resilience4j, LangGraph node policies); fallback to human handoff.
 - **Evaluation:** RAG and agent scenario suites in CI (Ragas, DeepEval); contract tests for MCP tools and REST APIs.
 - **Governance:** versioned tool schemas and APIs; ADRs for every major decision.

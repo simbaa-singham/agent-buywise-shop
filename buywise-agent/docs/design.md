@@ -19,8 +19,8 @@ Understand customer messages, route to the right handler, call tools and knowled
 - `buywise-agent`: Agent API + LangGraph graph + RAG pipeline; tools only via `buywise-mcp`.
 - Two processes in the deployable: chat API (turns) and ingestion worker (multi-format parsing, OCR, embedding - ADR-039), so heavy parsing never slows chat turns.
 - Stateless instances (state in Postgres checkpointer); 2 replicas locally.
-- Agent API (ADR-029): `POST /turns` -> 202 Accepted with `turnId`; turn runs in the background and appends ADR-024 contract events (Pydantic types generated from the JSON Schema) to the conversation's Redis Stream `conv:{id}`. `POST /turns/{id}/cancel` stops a running turn. A turn is never tied to the BFF pod that started it.
-- `POST /conversations/{id}/pause` and `/resume` (called by the BFF on staff accept/release, ADR-037); the agent refuses new turns while paused as a second safety check.
+- Agent API (ADR-029): `POST /turns` -> 202 Accepted with `turnId`; turn runs in the background and appends ADR-024 contract events (Pydantic types generated from the JSON Schema) to the conversation's Redis Stream `conv:{id}`. `POST /turns/{id}/cancel` stops a running turn. A turn is never tied to the Node server pod that started it.
+- `POST /conversations/{id}/pause` and `/resume` (called by the Node server on staff accept/release, ADR-037); the agent refuses new turns while paused as a second safety check.
 
 ## 4. Graph design
 - **State:** conversation_id, customer_id (from the token `sub`, read-only, never from the LLM), messages, intent, confidence, sentiment, tool_results, paused (read-only mirror of conversation ownership; helpdesk module owns it, ADR-037).
@@ -100,4 +100,4 @@ Degradation ladder (never a bare error):
 1. ~~Router~~ - decided: rules -> fast classifier -> LLM classifier cascade (ADR-030).
 2. Production LLM choice.
 3. ~~User identity propagation~~ - decided: token exchange per hop (ADR-028).
-4. ~~Agent -> BFF stream format~~ - decided: agent writes ADR-024 events to the conversation Redis Stream (ADR-029).
+4. ~~Agent -> Node server stream format~~ - decided: agent writes ADR-024 events to the conversation Redis Stream (ADR-029).

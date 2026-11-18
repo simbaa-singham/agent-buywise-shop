@@ -20,7 +20,7 @@ Everything about a module lives inside it: `<module>/README.md`, `Makefile`, `do
 
 | Editor | Open folder | Notes |
 |---|---|---|
-| WebStorm | `buywise-web/` | Angular app (`web/`) + NestJS BFF (`bff/`), each its own npm project; chat contract |
+| WebStorm | `buywise-web/` | Angular app (`web/`) + Node server (NestJS) (`bff/`), each its own npm project; chat contract |
 | PyCharm | `buywise-agent/` + attach `buywise-mcp/` | Each with its own `.venv` interpreter, created by uv (ADR-042) |
 | IntelliJ IDEA | `buywise-services/` (+ `buywise-events/` in phase 4) | Spring Boot / Java |
 | Any (IntelliJ or VS Code) | repo root, `deploy/`, `data/`, `docs/` | Compose, data, cross-module docs |
@@ -40,7 +40,7 @@ make migrate                  # create the tables (Flyway V1-V4)
 make demo-user                # local login: username demo, password in deploy/compose/.env
 make agent-dev                # Python env for the agent
 make -C buywise-mcp dev       # Python env for the MCP servers
-make -C buywise-web install   # npm packages for the web app and BFF
+make -C buywise-web install   # npm packages for the web app and Node server
 make -C buywise-agent ingest  # load help articles and policies into pgvector
 ```
 
@@ -55,7 +55,7 @@ Try: "Is the iPhone 18 Pro in stock at the Austin store?", "How long will the st
 
 | Part | Address | Started by |
 |---|---|---|
-| Web app + BFF | http://localhost:3000 | `make -C buywise-web run` |
+| Web app + Node server | http://localhost:3000 | `make -C buywise-web run` |
 | Agent API | http://localhost:8000 | `make -C buywise-agent run` |
 | MCP servers | http://localhost:8090/mcp/{catalog,inventory,orders} | `make -C buywise-mcp run` |
 | Services REST | http://localhost:8081/api | `make -C buywise-services run` |

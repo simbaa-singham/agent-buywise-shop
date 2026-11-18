@@ -22,7 +22,7 @@ Website chat first. Returns/exchanges out of scope.
 Learning and portfolio project: production-grade design and code, run locally at small scale (not hosted).
 
 ## Deployables (decided)
-1. buywise-web - Angular 22 + NestJS 11 (Fastify) BFF, Node.js 24 LTS
+1. buywise-web - Angular 22 + NestJS 11 (Fastify) Node server, Node.js 24 LTS
 2. buywise-services - Java 25, Spring Boot 4.1 modular monolith (Spring Modulith)
 3. buywise-agent - Python 3.12, LangGraph 1.2, RAG
 4. buywise-mcp - Python, MCP Python SDK v2, spec 2026-07-28
@@ -53,7 +53,7 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-10-29 (during the walkthrough): Java build tool Gradle Kotlin DSL + version catalog (ADR-041; build layout one-build vs separate decided in phase 1); Python switched to uv with committed uv.lock + .python-version (ADR-042) for buywise-agent and data/tools, CI uses setup-uv.
 - Done 2026-10-30 (during 5.1): contract tightened - product card `stockAtStore` fields required; `availability` = sale status enum + `shipsOn` (ADR-043), Flyway V3 applied (CHECK constraint), catalog generator emits `preorder`. docs/09 fixed (manual seed load; Gradle layout + deterministic docs as open items). Steps 5.1 and 5.2 done (discriminator + ruff formatter added); 5.3: ADR-044 strict write / tolerant read decided, 7 contract tests. 5.3 gaps filled 2026-10-30: valid examples for all 13 shapes (16 files) + 5 invalid examples; TypeScript check of examples deferred to phase 1. TicketChanged split into TicketCreated/TicketUpdated (discriminator bug caught by examples); 23 contract tests green. Resume at step 6 (k benchmark walkthrough), then step 7.
 - Done 2026-10-30: step 6 walkthrough - `make k` rerun: 17.8 tokens/s -> k = 2.82. ADR-045: k = single-stream hardware factor (capacity under load = separate k6 test in phase 7); `deploy/local/scale.yaml` is the single source of S and k (Helm values-local.yaml filled from it). Step 7 (Makefiles, CI, README) skipped - existing files are enough for now (priority change 2026-10-30).
-- Done 2026-10-30: **local end-to-end core assistant running on the Mac** (`make start` -> http://localhost:3000): services (catalog, inventory, customers, orders; Flyway V4), MCP servers (catalog, inventory, orders), agent (LangGraph tool loop, RAG over md/txt/html/pdf/docx, Redis Stream events, quote-then-yes ordering), BFF (session, SSE, Keycloak login) + Angular chat. Simplifications to revisit are listed in docs/09 section 4.
+- Done 2026-10-30: **local end-to-end core assistant running on the Mac** (`make start` -> http://localhost:3000): services (catalog, inventory, customers, orders; Flyway V4), MCP servers (catalog, inventory, orders), agent (LangGraph tool loop, RAG over md/txt/html/pdf/docx, Redis Stream events, quote-then-yes ordering), Node server (session, SSE, Keycloak login) + Angular chat. Simplifications to revisit are listed in docs/09 section 4.
 - In progress (from 2026-11-16): 1-week deep dive, 2 h/day - plan and progress in docs/learning/Deep-Dive-Week.md (resume point at the bottom).
 - Next: deep dive into each built component with Sachin (services -> MCP -> agent -> web), then choose: staff console + handoff, Kafka order events, remaining document formats, budgets/guardrails, or polish.
 - Open item: 13 generated knowledge documents are not byte-deterministic (random MIME boundaries, embedded timestamps) - fix in the generators later.

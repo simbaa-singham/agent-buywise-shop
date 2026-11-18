@@ -3,8 +3,8 @@
 Part of [00_Architecture_Overview.md](00_Architecture_Overview.md). Status: Approved by architect 2026-10-29. Observability stack stays in phase 7 and prerendered product pages stay in phase 4 (architect decision).
 
 ## 1. Approach
-- **Priority (architect, 2026-10-30): finish the whole project end to end on the Mac first.** In every phase, build what makes the feature work locally. Deferred until the end: phase 7 (Kubernetes, k6, failure scenarios, observability stack, Lighthouse), phase 8 hardening, and the production extras inside phases 0-6 (CI beyond basic tests, tracing across hops, failure tests like killing the BFF mid-reply, scaling with S and k).
-- **Thin vertical slice first:** one real chat turn end to end (browser -> BFF -> agent -> MCP -> services -> back) before widening any layer. Every later phase adds features to a system that already works end to end.
+- **Priority (architect, 2026-10-30): finish the whole project end to end on the Mac first.** In every phase, build what makes the feature work locally. Deferred until the end: phase 7 (Kubernetes, k6, failure scenarios, observability stack, Lighthouse), phase 8 hardening, and the production extras inside phases 0-6 (CI beyond basic tests, tracing across hops, failure tests like killing the Node server mid-reply, scaling with S and k).
+- **Thin vertical slice first:** one real chat turn end to end (browser -> Node server -> agent -> MCP -> services -> back) before widening any layer. Every later phase adds features to a system that already works end to end.
 - **Production practices from day one:** contracts, tests, CI, tracing, accessibility checks and PII-safe logging start in phase 0/1, not at the end.
 - **Scope rule (docs/00 section 7.4):** only "implemented locally" items are built; "design only" items stay documented.
 - **Before each phase:** recap the listed ADRs and what they mean in code; any new decision is raised to the architect, never made silently.
@@ -42,17 +42,17 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | `buywise-services` | Gradle Kotlin DSL build + version catalog + wrapper; Spring Modulith app; catalog + inventory modules; Flyway; REST + OpenAPI; JWT resource server; Modulith verification test | ADR-014, ADR-010, ADR-041 |
 | `buywise-mcp` | `/mcp/catalog`, `/mcp/inventory` servers: `search_products`, `get_product`, `check_stock`; inbound token check, outbound token exchange | ADR-015, ADR-028, ADR-031 |
 | `buywise-agent` | FastAPI `POST /turns` (202) + background run; LangGraph: load_context -> route (rules + LLM classifier, phase 1) -> stock_check handler -> respond; events to `conv:{id}` Redis Stream; LLM client via LiteLLM | ADR-008, ADR-026, ADR-029, ADR-030 |
-| `buywise-web` BFF | Guest session (Redis), `POST /api/chat/messages` (idempotent), `GET /api/chat/stream` SSE with `Last-Event-ID` replay, token exchange to agent | ADR-004, ADR-020, ADR-021, ADR-024, ADR-029 |
+| `buywise-web` Node server | Guest session (Redis), `POST /api/chat/messages` (idempotent), `GET /api/chat/stream` SSE with `Last-Event-ID` replay, token exchange to agent | ADR-004, ADR-020, ADR-021, ADR-024, ADR-029 |
 | `customer-web` | Chat widget: CDK-based message list, streaming text, `status.updated`, `block.product_card` (placeholder image); chat SignalStore + SSE adapter | ADR-018, ADR-019, ADR-022, ADR-024, ADR-025 |
 
 **Blocked on architect decision:** Gradle build layout - one build containing services + events vs separate builds sharing the version catalog (ADR-041 open point).
 
-**Done when:** a Playwright test asks a stock question as a guest and gets a streamed, tool-grounded answer; killing the BFF mid-reply and reconnecting completes the reply; contract tests and axe pass; reader-tolerance tests pass (an unknown field and an unknown event type are forwarded by the BFF and ignored by the browser, ADR-044); one trace spans all five hops.
+**Done when:** a Playwright test asks a stock question as a guest and gets a streamed, tool-grounded answer; killing the Node server mid-reply and reconnecting completes the reply; contract tests and axe pass; reader-tolerance tests pass (an unknown field and an unknown event type are forwarded by the Node server and ignored by the browser, ADR-044); one trace spans all five hops.
 
 ### Phase 2 - Login, identity and customer data
 | Item | ADRs |
 |---|---|
-| Keycloak clients (customer, staff, ops-admin roles), BFF login/logout/callback, session rotation, CSRF, timeout warning | ADR-021, ADR-025 |
+| Keycloak clients (customer, staff, ops-admin roles), Node server login/logout/callback, session rotation, CSRF, timeout warning | ADR-021, ADR-025 |
 | Full token exchange with per-intent scopes and `act` chain; verify Keycloak `act` support | ADR-028 |
 | Customer module: profiles, field-level envelope encryption + blind index, OTP (`verify_customer`) with lockout | ADR-036, ADR-032 |
 | Guest -> customer conversation linking | buywise-web/docs/design.md section 5.1 |
@@ -88,7 +88,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Item | ADRs |
 |---|---|
 | `staff-console` app: ticket queue (Material table), live updates via SSE composite cursor | ADR-018, ADR-019, ADR-020 |
-| Helpdesk module: tickets, assignment, conversation ownership + audit; BFF owner cache | ADR-037 |
+| Helpdesk module: tickets, assignment, conversation ownership + audit; Node server owner cache | ADR-037 |
 | Takeover flow: accept, pause agent, customer <-> staff messages, release/resume | buywise-web/docs/design.md section 5.3 |
 | Masked contact details with audited reveal; staff MFA | ADR-036, ADR-021 |
 
@@ -145,7 +145,7 @@ Built in one pass to get the whole core assistant running on the Mac (architect 
 
 | Area | Decided | Built locally now | Revisit when |
 |---|---|---|---|
-| Identity between hops | Token exchange per hop (ADR-028) | BFF puts the logged-in customer id in the agent request; agent sends it to MCP as `X-Customer-Id`; MCP to services the same. Never a tool argument. No JWT checks on agent/MCP/services. | Production hardening |
+| Identity between hops | Token exchange per hop (ADR-028) | Node server puts the logged-in customer id in the agent request; agent sends it to MCP as `X-Customer-Id`; MCP to services the same. Never a tool argument. No JWT checks on agent/MCP/services. | Production hardening |
 | Intent routing | Rules -> classifier -> LLM cascade (ADR-030) | The model picks tools itself (one LLM loop) | Router eval work |
 | Order confirmation | Explicit confirmation | `place_order` becomes a quote; the order is placed only on the customer's "yes" (deterministic, not by the model) | - (keep) |
 | Document parsing | Plugin pipeline, 11 formats (ADR-039) | md, txt, html, digital pdf, docx; staff-only / superseded / not-yet-effective docs skipped | Phase 3 |
@@ -154,4 +154,6 @@ Built in one pass to get the whole core assistant running on the Mac (architect 
 | Chat UI state | SignalStore (ADR-022) | SignalStore fed only by the SSE stream; replay rebuilds history | - |
 | Metrics, budgets, tracing | ADR-026/027 | Not built (no `message.metrics`, no budget ladder, no OTel) | Phase 6 / 7 |
 | Staff console, handoff, Kafka events | Phases 4-5 | Not built | Next phases |
-| Versions | NestJS 11 | NestJS 12 (current), TypeScript 7 in the BFF | - |
+| Versions | NestJS 11 | NestJS 12 (current), TypeScript 7 in the Node server | - |
+| RAG search | Hybrid: pgvector + full-text, RRF, rerank, filters (ADR-011); schema `knowledge` in `agent` (ADR-010) | Vector-only (cosine, HNSW, top 5); table `rag.chunks` | Phase 3 |
+| Services request checks | Clear 4xx for bad input | Validation 400 does not name the failing field; negative `limit` gives 500 (should clamp to 1-20) | Phase 1 |

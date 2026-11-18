@@ -3,7 +3,7 @@
 Part of [00_Architecture_Overview.md](../../docs/00_Architecture_Overview.md) - agent-buywise-shop. Status: Draft.
 
 ## 1. Purpose and responsibilities
-One Spring Boot application (modular monolith) that owns all business data and rules and exposes REST APIs to the BFF, `buywise-mcp` and event consumers.
+One Spring Boot application (modular monolith) that owns all business data and rules and exposes REST APIs to the Node server, `buywise-mcp` and event consumers.
 
 | Module | Owns |
 |---|---|
@@ -22,7 +22,7 @@ One Spring Boot application (modular monolith) that owns all business data and r
 | Modularity | Spring Modulith 2.x: boundary verification, module events, Event Publication Registry, per-module Flyway |
 | API | Spring Web (REST), controllers per use case, OpenAPI (springdoc) |
 | Data | Spring Data JPA + Flyway on Postgres (schema per module) |
-| Security | Spring Security OAuth2 resource server (JWT, verified locally via Keycloak JWKS). User calls: `aud: buywise-services`, scopes (`catalog:read`, `cart:write`, `orders:read`, `orders:write`, `tickets:write`, staff scopes) + ownership check on `sub`; `act` chain logged on writes (ADR-028). Staff: staff token via BFF. Event consumers: client-credentials service token (`events-service`), no user |
+| Security | Spring Security OAuth2 resource server (JWT, verified locally via Keycloak JWKS). User calls: `aud: buywise-services`, scopes (`catalog:read`, `cart:write`, `orders:read`, `orders:write`, `tickets:write`, staff scopes) + ownership check on `sub`; `act` chain logged on writes (ADR-028). Staff: staff token via Node server. Event consumers: client-credentials service token (`events-service`), no user |
 | PII protection | Field-level envelope encryption for email, phone, address (KMS master key in production, Kubernetes secret locally); blind index (HMAC) for lookups; audited "reveal" for staff (ADR-036) |
 | Resilience | Resilience4j; Bucket4j for per-caller rate limits |
 | Jobs | Scheduled jobs guarded by ShedLock (run once across replicas) |
