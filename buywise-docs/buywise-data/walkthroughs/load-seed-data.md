@@ -1,13 +1,14 @@
 # Walkthrough: load the seed data by hand (one-time)
 
-Loads the catalog and inventory data from `buywise-db/services/03-data/` into the `services` database using plain SQL in `psql`. No script. Customers, orders and tickets are loaded in later phases, once their tables exist.
+Loads the catalog and inventory data from `buywise-db/services/03-data/` into the `services` database using plain SQL in `psql`, step by step, to learn how it works. Day to day, `make seed` does all of it (both scripts in `buywise-db/services/02-dml/`, including customers, orders and sales tax; ADR-046).
 
 **Before you start:** the stack is running (`make up`) and the tables exist (`make migrate`).
 
 ## Step 1 - Copy the seed files into the Postgres container
 Postgres can only read files that are inside its own container.
 ```bash
-docker cp buywise-db/services/03-data buywise-postgres-1:/tmp/seed   # or just: make seed
+docker exec buywise-postgres-1 rm -rf /tmp/seed                      # an existing /tmp/seed would make docker cp copy one level too deep
+docker cp buywise-db/services/03-data buywise-postgres-1:/tmp/seed
 ```
 
 ## Step 2 - Open psql on the `services` database

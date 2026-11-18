@@ -2,18 +2,25 @@
 
 MCP tool servers (Python, MCP SDK v2): one server per business domain, wrapping the buywise-services REST APIs as tools for the agent.
 
-**Open in:** PyCharm -> attached to the `buywise-agent/` window (File > Open > Attach), with its own interpreter `buywise-mcp/.venv` (created in phase 1 by uv: `pyproject.toml` + `uv.lock`, ADR-042).
+**Open in:** PyCharm -> attached to the `buywise-agent/` window (File > Open > Attach), with its own interpreter `buywise-mcp/.venv` (created by uv from `pyproject.toml` + `uv.lock`, ADR-042).
 
 ## Contents
 | Path | Purpose |
 |---|---|
-| `../buywise-docs/buywise-mcp/` | design.md (docs live in buywise-docs, ADR-048) |
+| `buywise_mcp/app.py` | Starlette app hosting the three servers at `/mcp/catalog`, `/mcp/inventory`, `/mcp/orders` (ADR-031) |
+| `buywise_mcp/servers.py` | Tools per domain - catalog: search_products, get_product; inventory: list_stores, check_stock; orders: list_my_orders, get_order, quote_order, place_order, cancel_order (customer id from the request, never a tool argument) |
+| `buywise_mcp/services.py` | HTTP client for the buywise-services REST APIs (`SERVICES_URL`, default http://localhost:8081) |
+| `tests/smoke.py` | Calls each tool once over HTTP |
+| `pyproject.toml, uv.lock, .python-version` | Dependencies, exact pinned versions, Python version (uv, ADR-042) |
+| `Makefile` | dev, run, smoke |
+| `../buywise-docs/buywise-mcp/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
-Built from phase 1.
+`make -C buywise-mcp dev` once (creates `.venv`), then `make -C buywise-mcp run` -> http://localhost:8090/mcp/{catalog,inventory,orders} (needs buywise-services on 8081). `make -C buywise-mcp smoke` calls every tool once. `make start` runs it with everything else.
 
 ## Documents
 - [buywise-docs/buywise-mcp/design.md](../buywise-docs/buywise-mcp/design.md) - detailed design
+- [buywise-docs/buywise-mcp/learning.md](../buywise-docs/buywise-mcp/learning.md) - learning notes per phase
 - System overview: [buywise-docs/00_Architecture_Overview.md](../buywise-docs/00_Architecture_Overview.md); roadmap: [buywise-docs/09_Implementation_Roadmap.md](../buywise-docs/09_Implementation_Roadmap.md)
 
 ## Decisions that apply (central log: buywise-docs/adr/ADR_Log.md)

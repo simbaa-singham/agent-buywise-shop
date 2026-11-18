@@ -14,7 +14,9 @@ Each module holds its code, `README.md` and `Makefile`. All documentation lives 
 | `buywise-mcp/` | buywise-mcp | Python, MCP Python SDK v2 | [buywise-mcp](buywise-mcp/README.md) | [design](buywise-docs/buywise-mcp/design.md) |
 | `buywise-events/` | buywise-event-publisher, buywise-event-consumers | Java, Kafka | [buywise-events](buywise-events/README.md) | [design](buywise-docs/buywise-events/design.md) |
 | `buywise-data/` | - | Knowledge documents, eval sets, generators (seed JSON goes to buywise-db) | [buywise-data](buywise-data/README.md) | [design](buywise-docs/buywise-data/design.md) |
-| `buywise-deploy/` | - | Docker Compose, kind, Helm, GitHub Actions | [buywise-deploy](buywise-deploy/README.md) | [design](buywise-docs/buywise-deploy/design.md) |
+| `buywise-db/` | - | Every database script + seed data: `database/`, `services/{01-ddl,02-dml,03-data}`, `agent/` (ADR-046) | [buywise-db](buywise-db/README.md) | - |
+| `buywise-deploy/` | - | Docker Compose, kind, Helm, GitHub Actions; `local/` run scripts + logs | [buywise-deploy](buywise-deploy/README.md) | [design](buywise-docs/buywise-deploy/design.md) |
+| `buywise-docs/` | - | All documentation: application level at the top, module docs in `buywise-docs/<module>/` (ADR-048) | [index](buywise-docs/README.md) | - |
 
 **One repo, one editor per module.** All IDEs share this Git repo; each opens only its module folder:
 
@@ -28,8 +30,8 @@ Each module holds its code, `README.md` and `Makefile`. All documentation lives 
 Cross-module documents (`buywise-docs/`): [architecture overview](buywise-docs/00_Architecture_Overview.md), [decisions (ADR log)](buywise-docs/adr/ADR_Log.md), [roadmap](buywise-docs/09_Implementation_Roadmap.md), learning index: [Phase 0](buywise-docs/learning/Phase-0.md), [Local end-to-end build](buywise-docs/learning/Phase-1.md).
 
 ## Run it on the Mac
-Prerequisites: Docker Desktop, Java 25, Node 24, uv (`brew install uv`), Ollama running (`ollama serve`) with
-`qwen2.5:7b` and `bge-m3` pulled.
+Prerequisites: Docker Desktop, Java 25, Node 24, uv (`brew install uv`), Ollama running (`ollama serve`) with both
+models pulled once: `ollama pull qwen2.5:7b && ollama pull bge-m3`.
 
 **First time only**
 ```bash
@@ -40,7 +42,7 @@ make demo-user                # local login: username demo, password in buywise-
 make agent-dev                # Python env for the agent
 make -C buywise-mcp dev       # Python env for the MCP servers
 make -C buywise-web install   # npm packages for the web app and Node server
-make -C buywise-agent ingest  # load help articles and policies into pgvector
+make ingest                   # load help articles and policies into pgvector (needs Ollama running)
 ```
 
 **Every day**

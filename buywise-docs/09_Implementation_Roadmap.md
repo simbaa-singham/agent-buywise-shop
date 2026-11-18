@@ -31,7 +31,7 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 | Repo tooling | Makefile (`make up`, `make migrate`, `make ingest`, `make test`), linters/formatters per language, GitHub Actions skeleton | ADR-001 |
 | Contracts package | ADR-024 event JSON Schemas + codegen (TS, Pydantic) + CI drift check | ADR-024, ADR-029 |
 | ~~Seed data~~ - **done 2026-10-28** (`make data`): full catalog, stores, stock, customers, orders, tickets | ADR-033 |
-| Load seed data | One-time manual load by the architect with psql, following buywise-docs/buywise-data/walkthroughs/load-seed-data.md (no seed script) | ADR-010, ADR-033 |
+| Load seed data | One-time manual load by the architect with psql, following buywise-docs/buywise-data/walkthroughs/load-seed-data.md; since 2026-11-18 also `make seed` (ADR-046) | ADR-010, ADR-033 |
 | Benchmark `k` | Script measuring local tokens/s; writes `k` to local config | buywise-docs/00 section 7.1 |
 
 **Done when:** `make up && make migrate && make seed` (scripts in buywise-db, ADR-046) gives a running stack with seeded data; CI green on an empty-but-wired repo.

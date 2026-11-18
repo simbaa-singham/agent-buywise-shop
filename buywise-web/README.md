@@ -1,17 +1,17 @@
 # buywise-web
 
-Customer web app and staff console (Angular 22) plus the Node server (NestJS 11 on Fastify), shipped as one deployable. Owns the chat message contract shared with the agent.
+Customer web app and staff console (Angular 22) plus the Node server (NestJS 12 on Fastify), shipped as one deployable. Owns the chat message contract shared with the agent.
 
-**Open in:** WebStorm -> open the `buywise-web/` folder (npm workspaces: the contract today; `web` and `bff` join in phase 1). Git is detected from the repo root automatically.
+**Open in:** WebStorm -> open the `buywise-web/` folder. Three npm projects: the workspace root (`package.json`, holds the chat contract package), `web/` (Angular) and `server/` (Node server), each with its own `npm install` (`make install` does all). Git is detected from the repo root automatically.
 
 ## Contents
 | Path | Purpose |
 |---|---|
 | `package.json` | npm workspaces root (run `npm install` here) |
-| `web/` | Angular workspace: customer-web, staff-console, shared (built from phase 1) |
+| `web/` | Angular workspace: customer-web (built), staff-console (designed), shared |
 | `web/projects/shared/contracts/` | Chat contract: JSON Schema, examples, generated TypeScript (ADR-024) |
-| `server/` | Node server (NestJS) (built from phase 1) |
-| `Makefile` | contracts, contracts-check |
+| `server/` | Node server (NestJS 12 + Fastify): login, session, chat API, SSE; serves the Angular build (npm package `buywise-server`) |
+| `Makefile` | install, build, run, contracts, contracts-check |
 | `../buywise-docs/buywise-web/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run

@@ -15,7 +15,7 @@ What the buywise-services module taught us, phase by phase. Index of all phases:
 - Alternatives: Liquibase (Java), Alembic (Python/SQLAlchemy), Prisma Migrate and Atlas (Node / schema-as-code).
 
 ### Schemas
-- A **schema** is a folder of tables inside a database. One schema per business module: `catalog`, `inventory` (later `customer`, `order`, `helpdesk`).
+- A **schema** is a folder of tables inside a database. One schema per business module: `catalog`, `inventory`, `customers`, `orders` (later `helpdesk`).
 - **No foreign keys across schemas** (ADR-010): modules stay independent. That is why `inventory.stock.sku` does not reference `catalog.variants`.
 - Postgres has three levels (database > schema > table); MongoDB has two (database > collection).
 

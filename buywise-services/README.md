@@ -1,18 +1,24 @@
 # buywise-services
 
-Business services: one Spring Boot 4.1 modular monolith (Spring Modulith) with modules catalog, inventory, order, customer, payment (mock), helpdesk. Owns business data and rules.
+Business services: one Spring Boot 4.1 modular monolith (Spring Modulith). Built modules: catalog, inventory, customers, orders; designed for later: payment (mock), helpdesk. Owns business data and rules.
 
-**Open in:** IntelliJ IDEA -> open `buywise-services/` (Gradle Kotlin DSL build added in phase 1, ADR-041; IntelliJ imports it and offers Run/Debug). Add `buywise-events/` to the same window in phase 4.
+**Open in:** IntelliJ IDEA -> open `buywise-services/` (Gradle Kotlin DSL build, ADR-041; IntelliJ imports it and offers Run/Debug). Add `buywise-events/` to the same window in phase 4.
 
 ## Contents
 | Path | Purpose |
 |---|---|
-| `../buywise-db/services/01-ddl/` | Flyway migrations V1-V4 - live in buywise-db (ADR-046); Gradle packs them into the app at `db/migration` |
-| `Makefile` | migrate, flyway-info |
+| `src/main/java/com/buywise/services/` | One package per module: `catalog/`, `inventory/`, `customers/`, `orders/` (controller + service + records) |
+| `src/main/resources/application.yaml` | Port 8081, database `services`, Flyway settings |
+| `src/test/java/.../ModularityTest.java` | Spring Modulith check that modules only use each other's public API |
+| `build.gradle.kts`, `settings.gradle.kts`, `gradle/libs.versions.toml` | Gradle build and version catalog (ADR-041); the build packs `../buywise-db/services/01-ddl/` into the app at `db/migration` (ADR-046) |
+| `scripts/try-apis.sh` | One curl per REST API |
+| `Makefile` | build, run, migrate, flyway-info |
 | `../buywise-docs/buywise-services/` | design.md, learning.md (docs live in buywise-docs, ADR-048) |
 
+Tables and seed data for this app are in `buywise-db/services/` (ADR-046), not here.
+
 ## Run
-`make migrate` (create/update tables), `make flyway-info` (applied / pending). Java code arrives in phase 1.
+`make -C buywise-services build` (compile + tests), `make -C buywise-services run` -> http://localhost:8081/api (needs `make up` and `make migrate`; `make seed` for data). `./scripts/try-apis.sh` calls each API once. `make start` runs it with everything else.
 
 ## Documents
 - [buywise-docs/buywise-services/design.md](../buywise-docs/buywise-services/design.md) - detailed design

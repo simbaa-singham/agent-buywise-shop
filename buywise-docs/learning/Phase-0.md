@@ -1,7 +1,7 @@
 # Phase 0 - Learning Index
 
 Phase 0 (foundations) built nothing a customer sees: it prepared the database with products and stock, the login server, the AI gateway and the chat message format that phase 1 needs.
-The detailed notes live **inside each module**; this page is the map. Status: steps 1-6 done; step 7 in progress.
+The detailed notes live in **`buywise-docs/<module>/learning.md`** (ADR-048); this page is the map. Status: steps 1-6 done; step 7 in progress.
 
 ## Steps and where to read them
 | Step | What | Learning notes |

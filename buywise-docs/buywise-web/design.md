@@ -11,7 +11,7 @@ Part of [00_Architecture_Overview.md](../00_Architecture_Overview.md) - agent-bu
 | Part | Choice | Why |
 |---|---|---|
 | Web | Angular 22 (signals, Signal Forms, zoneless, Vitest), TypeScript 6 | Stable signal-first APIs, long support window |
-| Node server | Node.js 24 LTS, NestJS 11 + Fastify adapter | Structure (modules, DI, guards), SSE support, fast HTTP engine |
+| Node server | Node.js 24 LTS, NestJS 12 + Fastify adapter (ADR-004 chose 11) | Structure (modules, DI, guards), SSE support, fast HTTP engine |
 | Component library | Angular Material (Material 3) + Angular CDK, custom theme (ADR-019) | Released with Angular, strongest built-in accessibility, data table for staff console, token-based theming |
 | Styling | SCSS with Material 3 design tokens; no Tailwind | One styling system; tokens shared by both apps |
 | Rendering | Hybrid per route: prerender + client; no per-request SSR (ADR-023) | Fast indexable product pages; Node server stays a file server |
@@ -53,7 +53,7 @@ buywise-web/
 │   │   ├── customer-web/   # served at /       - chat widget, products, cart, orders
 │   │   ├── staff-console/  # served at /staff  - ticket queue, conversation takeover, AI Operations (ops-admin)
 │   │   └── shared/         # library: chat components, message models, API clients, UI primitives
-└── server/                    # NestJS 11 (auth, chat, customer, staff, ops, health, common)
+└── server/                 # Node server, NestJS 12 (built: auth, chat, session; designed: customer, staff, ops, health, common)
 ```
 - Each app has its own Keycloak client: staff can get stricter login rules (MFA, shorter sessions) than customers.
 - Customers never download staff code; Envoy can restrict `/staff/**` (and `/api/staff/**`) separately.

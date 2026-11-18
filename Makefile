@@ -36,7 +36,7 @@ agent-dev: ## [buywise-agent] Create buywise-agent/.venv with dev tools
 	@$(MAKE) --no-print-directory -C buywise-agent dev
 test: ## [buywise-agent] Run tests and lint
 	@$(MAKE) --no-print-directory -C buywise-agent test
-ingest: ## [buywise-agent] RAG ingestion (phase 3)
+ingest: ## [buywise-agent] Load knowledge documents into pgvector (needs Ollama)
 	@$(MAKE) --no-print-directory -C buywise-agent ingest
 contracts: ## [buywise-web] Regenerate contract types (TypeScript + Python)
 	@$(MAKE) --no-print-directory -C buywise-web contracts

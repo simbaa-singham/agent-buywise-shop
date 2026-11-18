@@ -22,7 +22,7 @@ Website chat first. Returns/exchanges out of scope.
 Learning and portfolio project: production-grade design and code, run locally at small scale (not hosted).
 
 ## Deployables (decided)
-1. buywise-web - Angular 22 + NestJS 11 (Fastify) Node server, Node.js 24 LTS
+1. buywise-web - Angular 22 + NestJS 12 (Fastify) Node server, Node.js 24 LTS
 2. buywise-services - Java 25, Spring Boot 4.1 modular monolith (Spring Modulith)
 3. buywise-agent - Python 3.12, LangGraph 1.2, RAG
 4. buywise-mcp - Python, MCP Python SDK v2, spec 2026-07-28

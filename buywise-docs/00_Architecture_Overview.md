@@ -31,7 +31,7 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 | Repository | One monorepo with modules | ADR-001 |
 | Language split | Java for business services; Python for AI and MCP; TypeScript for UI/Node server | ADR-002 |
 | UI | Angular 22 | ADR-003 |
-| Node server | Node.js 24 LTS, NestJS 11 + Fastify; serves the Angular build | ADR-004 |
+| Node server | Node.js 24 LTS, NestJS 12 + Fastify (ADR-004 chose 11; built on 12, the current major); serves the Angular build | ADR-004 |
 | Business services | One Spring Boot 4.1 modular monolith (Spring Modulith) | ADR-014 |
 | MCP | Separate `buywise-mcp` deployable, MCP Python SDK v2, spec 2026-07-28 | ADR-015 |
 | Deployables | 6 deployables (see section 5) | ADR-016 |
@@ -85,7 +85,7 @@ AI shopping assistant for an online electronics store (US). Catalog of real prod
 
 | # | Deployable | Contains | Stack | Detailed design |
 |---|---|---|---|---|
-| 1 | `buywise-web` | Angular app + Node server (NestJS) (Node server serves the Angular build) | Angular 22, Node.js 24, NestJS 11 + Fastify | [01](buywise-web/design.md) |
+| 1 | `buywise-web` | Angular app + Node server (NestJS) (Node server serves the Angular build) | Angular 22, Node.js 24, NestJS 12 + Fastify | [01](buywise-web/design.md) |
 | 2 | `buywise-services` | Modular monolith: catalog, inventory, order, customer, payment (mock), helpdesk | Java 25, Spring Boot 4.1, Spring Modulith | [02](buywise-services/design.md) |
 | 3 | `buywise-agent` | LangGraph agent, RAG pipeline, evals | Python 3.12, LangGraph 1.2 | [03](buywise-agent/design.md), [04](buywise-agent/rag.md) |
 | 4 | `buywise-mcp` | MCP servers wrapping `buywise-services` REST APIs | Python 3.12, MCP Python SDK v2 (spec 2026-07-28) | [05](buywise-mcp/design.md) |
@@ -100,7 +100,7 @@ Data stores are covered in [07](buywise-data/design.md); environments and deploy
 agent-buywise-shop/
 ├── buywise-web/        # buywise-web: Angular 22 app + Node server (NestJS)
 │   ├── web/            # Angular workspace (customer-web, staff-console, shared)
-│   └── server/         # NestJS 11 + Fastify
+│   └── server/         # Node server: NestJS 12 + Fastify
 ├── buywise-services/   # buywise-services: one Spring Boot app (modules as packages)
 ├── buywise-mcp/        # buywise-mcp: Python MCP servers
 ├── buywise-agent/      # buywise-agent: LangGraph agent, RAG, evals

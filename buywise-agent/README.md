@@ -7,15 +7,21 @@ The AI agent (Python, LangGraph): routes each message, calls tools through MCP, 
 ## Contents
 | Path | Purpose |
 |---|---|
+| `buywise_agent/api.py` | FastAPI app: `POST /turns` (202, the turn runs in the background, ADR-029) |
+| `buywise_agent/graph.py` | LangGraph agent loop (LLM -> tools -> LLM), quote-then-yes ordering |
+| `buywise_agent/tools.py` | The tools the LLM can call: MCP tools on buywise-mcp plus knowledge search |
+| `buywise_agent/events.py` | Writes chat contract events to the Redis Stream `conv:{id}` |
+| `buywise_agent/rag/` | Ingest (parse, chunk, embed into `rag.chunks`) and vector search; the table itself is created by `buywise-db/agent/` (ADR-046) |
+| `buywise_agent/config.py` | Settings (env vars or `.env`; defaults match the local stack) |
 | `buywise_agent/contracts/` | Generated chat contract models (Pydantic) |
-| `tests/contract/` | Contract tests |
+| `tests/contract/` | Contract tests; `tests/turn.py` runs one chat turn from the terminal |
 | `pyproject.toml, uv.lock, .python-version` | Dependencies, exact pinned versions, Python version (uv, ADR-042) |
 | `.env.example` | Local settings |
-| `Makefile` | dev, test, lint, ingest |
+| `Makefile` | dev, lock, test, lint, ingest, run, turn |
 | `../buywise-docs/buywise-agent/` | design.md, rag.md, learning.md (docs live in buywise-docs, ADR-048) |
 
 ## Run
-Needs uv (`brew install uv`). `make agent-dev` (create .venv from uv.lock), `make test` (tests + lint). After editing dependencies in pyproject.toml: `make -C buywise-agent lock`.
+Needs uv (`brew install uv`). `make agent-dev` (create .venv from uv.lock), `make test` (tests + lint), `make ingest` (knowledge docs from `../buywise-data/knowledge` into pgvector; needs Ollama), `make -C buywise-agent run` -> http://localhost:8000, `make -C buywise-agent turn Q="..."` (one turn in the terminal). After editing dependencies in pyproject.toml: `make -C buywise-agent lock`.
 
 ## Documents
 - [buywise-docs/buywise-agent/design.md](../buywise-docs/buywise-agent/design.md) - detailed design

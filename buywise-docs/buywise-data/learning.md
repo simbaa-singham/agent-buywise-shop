@@ -1,6 +1,6 @@
 # data - Learning Notes
 
-What the data module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../learning/Phase-0.md).
+What the buywise-data module taught us, phase by phase. Index of all phases: [buywise-docs/learning/Phase-0.md](../learning/Phase-0.md).
 
 ---
 
@@ -18,7 +18,7 @@ What the data module taught us, phase by phase. Index of all phases: [buywise-do
 ## Phase 0
 
 ### Loading data by hand (step 4)
-- No loading script: a one-time manual load, explained in [walkthroughs/load-seed-data.md](walkthroughs/load-seed-data.md) and run as one file, [buywise-db/services/02-dml/01-catalog-inventory.sql](../../buywise-db/services/02-dml/01-catalog-inventory.sql) (moved there 2026-11-18, ADR-046; now also `make seed`), in pgAdmin's Query Tool as `postgres`.
+- Phase 0: a one-time manual load (since 2026-11-18 also one command, `make seed`, ADR-046), explained in [walkthroughs/load-seed-data.md](walkthroughs/load-seed-data.md) and run as one file, [buywise-db/services/02-dml/01-catalog-inventory.sql](../../buywise-db/services/02-dml/01-catalog-inventory.sql) (moved there 2026-11-18, ADR-046; now also `make seed`), in pgAdmin's Query Tool as `postgres`.
 - First copy the files into the container: `docker cp buywise-db/services/03-data buywise-postgres-1:/tmp/seed` (Postgres can only read files inside its container; `/tmp` is wiped when the container is recreated).
 - Reading files needs admin rights, so the load runs as `postgres`; applications use their restricted users.
 

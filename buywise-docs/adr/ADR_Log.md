@@ -5,7 +5,7 @@
 | ADR-001 | One monorepo with modules | Accepted | 2026-10-28 |
 | ADR-002 | Java for business services, Python for AI and MCP, TypeScript for UI/Node server | Accepted | 2026-10-28 |
 | ADR-003 | Angular 22 for the web UI (chosen over 21: stable signal APIs, longer support) | Accepted | 2026-10-28 |
-| ADR-004 | NestJS 11 + Fastify Node server on Node.js 24 LTS; serves the Angular build (one deployable) | Accepted | 2026-10-28 |
+| ADR-004 | NestJS 11 + Fastify Node server on Node.js 24 LTS; serves the Angular build (one deployable). Built on NestJS 12 (current major, 2026-10-30) | Accepted | 2026-10-28 |
 | ADR-005 | Spring Cloud Gateway as internal gateway | Superseded by ADR-017 | 2026-10-28 |
 | ADR-006 | Java 25 + Spring Boot 4.1 as six microservices | Superseded by ADR-014 | 2026-10-28 |
 | ADR-007 | MCP servers inside Java services (Spring AI 2.0) | Superseded by ADR-015 | 2026-10-28 |
