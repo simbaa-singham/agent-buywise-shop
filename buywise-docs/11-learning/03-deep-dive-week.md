@@ -120,11 +120,28 @@ Designed, not built yet: Envoy Gateway, Kafka + Spring Kafka, OpenTelemetry / Pr
 - Redis (`redis:7.4-alpine`, `localhost:6379`, health `redis-cli ping`): sessions `sess:{id}` (TTL 8 h, Node server) and conversation streams `conv:{id}` (Node server writes the customer message, agent writes reply events, each entry one JSON event in the chat contract). Planned: rate limits, budget counters.
 - LiteLLM (`localhost:4000`, OpenAI-style API): needs `LITELLM_MASTER_KEY` (no key -> 401), reaches Ollama via `host.docker.internal`, writes spend to its own `litellm` database (`LiteLLM_SpendLogs`). `config.yaml` maps our names to real models: `buywise-primary` and `buywise-economy` -> qwen2.5:7b, `bge-m3` -> bge-m3; placeholder prices so cost tracking behaves like production.
 - Hands-on: 12 conversation streams (39-529 events each); one stream read (status.updated -> tool_call -> block.product_card ...); LiteLLM without key 401, with key lists 3 models; a chat call to `buywise-primary` took ~5 s, 36 + 7 tokens, spend $0.000213 (= 36 x $3/1M + 7 x $15/1M).
+- Hands-on by the architect (2026-11-22): cleared the 12 old streams, sent one chat message -> two keys: `conv:{id}` (stream, 125 events for one message, mostly reply-text pieces, TTL -1) and `conv:{id}:history` (list, agent memory: last question/answer pairs as plain text, max 40 entries, TTL 24 h - `graph.py` load/save_history; the model has no memory of its own).
+- Session `sess:{id}` = the Node server's memory of a browser; id is the `bw_sid` cookie; holds `conversationId`, after login `customerId`, `customerName`, `idToken`; TTL 8 h.
 - Gaps (to-do list in buywise-docs/09 section 5): Redis keeps data (anonymous volume + snapshots) despite "no volume"; streams never expire; embedding calls record 0 tokens.
+
+### 2.7 Chat contract (event contracts)
+- One JSON Schema, `buywise-web/web/projects/shared/contracts/schemas/chat-events.schema.json`, is the only file we edit; `make contracts` generates TypeScript (`generated/chat-events.ts`, Node server + Angular) and Pydantic (`buywise-agent/buywise_agent/contracts/chat_contract.py`); `make contracts-check` fails when they are out of date (ADR-024).
+- Envelope on every event: `v`, `type`, `ts`, `conversationId`, `messageId`, `payload`. 14 types (reply, messages, product card, metrics, handoff, order status, tickets); handoff/order/ticket/metrics not sent yet.
+- Strict write, tolerant read (ADR-044): `additionalProperties: false`, `required`, `enum`, `const` reject bad events at the writer; readers ignore what they do not know. Example: `block.product_card` requires `productId` + `model`; `stockAtStore` if present needs all 3 fields; `availability` only `available`/`preorder`/`discontinued` (ADR-043).
+- Tests `buywise-agent/tests/contract/test_chat_contract.py` (`uv run pytest tests/contract -v`): schema valid, valid examples pass, invalid examples rejected. Hands-on: remove `model` from `examples/product-card.json` -> test fails with "'model' is a required property"; `git checkout --` restores it.
+
+### Beekeeper connections (set up 2026-11-22)
+| Group | Connection (database / user) | Pinned |
+|---|---|---|
+| App | services | catalog.products, catalog.variants, inventory.stock, customers.customers, orders.orders, orders.order_items |
+| App | agent | rag.chunks (the only table) |
+| System | keycloak | user_entity, credential, user_role_mapping, keycloak_role, client |
+| System | litellm | LiteLLM_SpendLogs, LiteLLM_ErrorLogs |
+App data and system data are in different databases, so one connection per database keeps them apart. Beekeeper cannot hide tables (pin + filter only); DBeaver can (navigator filters).
 
 ## Progress
 - 2026-11-17: Day 1 done. Started the buywise-services technology deep dive (4 parts): part 1 (Java 25 features, Spring container + dependency injection, Spring Boot startup) and part 2 (web layer: request journey, controllers, JSON, validation, errors) done. Resume at part 3 (data layer: HikariCP, JdbcClient, @Transactional, stock reserve, Flyway), then part 4 (Spring Modulith, Gradle, Actuator, tests).
 - Gaps found in part 2, logged in buywise-docs/09 section 4 on 2026-11-18: validation 400 does not name the failing field; negative `limit` gives 500 (clamp to 1-20); X-Customer-Id trusted blindly (already a known simplification).
 - 2026-11-18: Day 2 part 1 (concepts: why each piece) done - notes above. Resume at Day 2 part 2.1 (`compose.yaml` walkthrough), then 2.2-2.7 and the hands-on; Day 3 parts 3-4 after that.
 - 2026-11-18 (later): Day 2 parts 2.1-2.4 done (compose.yaml and 01-databases.sh commented line by line; migrations; seed data). Project structure reworked along the way: buywise-db (ADR-046), buywise-* top level (ADR-047), all docs numbered in buywise-docs (ADR-048). **Resume at Day 2 part 2.5** (Keycloak realm + demo user), then 2.6-2.7 and the hands-on. Pending for the architect: wipe-and-reload of all databases (buywise-db/README.md run order; start Ollama before make ingest).
-- 2026-11-22: Day 2 part 2.5 done (Keycloak realm, demo user, login flow; hands-on: stack started, demo user checked, login redirect inspected). Day 2 part 2.6 done the same day (Redis, LiteLLM, hands-on). **Resume at Day 2 part 2.7** (event contracts).
+- 2026-11-22: Day 2 part 2.5 done (Keycloak realm, demo user, login flow; hands-on: stack started, demo user checked, login redirect inspected). Day 2 part 2.6 done the same day (Redis, LiteLLM, hands-on). Day 2 part 2.7 done (chat contract, tests, break an example) - **Day 2 complete.** Resume at Day 3 parts 3-4 (buywise-services data layer, then Spring Modulith/Gradle/Actuator/tests).
