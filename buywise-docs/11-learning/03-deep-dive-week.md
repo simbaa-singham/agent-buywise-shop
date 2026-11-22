@@ -14,7 +14,7 @@ Notes from each day go into that module's buywise-docs/NN-<module>/0N-learning.m
 | 6 | Sat 11-21 | buywise-agent part 2: RAG | Embeddings (bge-m3), chunking, pgvector + full-text hybrid search, citations, ingest rules | ingest, search | Ingest docs, run a search, ask a policy question |
 | 7 | Sun 11-22 | buywise-web + full trace | Angular (signals, SignalStore), Node server (NestJS), session, Keycloak login, SSE + replay | server/, web/ | Login, chat, kill the SSE mid-reply, trace one message browser -> DB -> browser |
 
-After day 7: pick the next feature (staff console + handoff, Kafka order events, more document formats, budgets/guardrails, or polish).
+After day 7: pick the next feature (customer sign-up with Google or form - ADR-049, staff console + handoff, Kafka order events, more document formats, budgets/guardrails, or polish).
 
 ---
 
@@ -108,8 +108,17 @@ Designed, not built yet: Envoy Gateway, Kafka + Spring Kafka, OpenTelemetry / Pr
 - RAG search is vector-only today (no full-text, rerank, filters) and the table is `rag.chunks`, not schema `knowledge` - logged in buywise-docs/09 section 4.
 - "BFF" renamed to "Node server" in all docs.
 
+### 2.5 Keycloak: realm and demo user
+- Realm `buywise` is code: `buywise-deploy/compose/keycloak/buywise-realm.json`, loaded by `start-dev --import-realm`; Keycloak keeps its data in its own `keycloak` database.
+- Realm settings: no self sign-up, email login, 5-min access tokens, session 30 min idle / 10 h max, brute-force lock, HTTP only from localhost.
+- 4 roles (`customer`, `staff`, `staff_lead`, `ops-admin`) and 6 clients, one per caller; only `buywise-customer-web` is used today.
+- No users or secrets in git: `make demo-user` (`add-demo-user.sh`, kcadm in the container) sets the client secret and creates `demo` / `customer.demo@example.com` (= seed customer `cu-demo`) from `compose/.env`. Safe to rerun.
+- Login (`buywise-web/server/src/auth.controller.ts`): `/api/auth/login` -> 302 to Keycloak with `state` + PKCE `code_challenge` -> password typed on Keycloak -> `/api/auth/callback` swaps code + secret + verifier for tokens server to server -> email from id token -> `GET /api/customers?email=` -> `customerId` in the Redis session. Browser only gets the `bw_sid` cookie (HttpOnly, 8 h).
+- Gaps: demo user has only `default-roles-buywise`, not `customer` (matters once phase 2 checks roles); fallback client secret in `config.ts` must match `.env` or login fails with 401.
+
 ## Progress
 - 2026-11-17: Day 1 done. Started the buywise-services technology deep dive (4 parts): part 1 (Java 25 features, Spring container + dependency injection, Spring Boot startup) and part 2 (web layer: request journey, controllers, JSON, validation, errors) done. Resume at part 3 (data layer: HikariCP, JdbcClient, @Transactional, stock reserve, Flyway), then part 4 (Spring Modulith, Gradle, Actuator, tests).
 - Gaps found in part 2, logged in buywise-docs/09 section 4 on 2026-11-18: validation 400 does not name the failing field; negative `limit` gives 500 (clamp to 1-20); X-Customer-Id trusted blindly (already a known simplification).
 - 2026-11-18: Day 2 part 1 (concepts: why each piece) done - notes above. Resume at Day 2 part 2.1 (`compose.yaml` walkthrough), then 2.2-2.7 and the hands-on; Day 3 parts 3-4 after that.
 - 2026-11-18 (later): Day 2 parts 2.1-2.4 done (compose.yaml and 01-databases.sh commented line by line; migrations; seed data). Project structure reworked along the way: buywise-db (ADR-046), buywise-* top level (ADR-047), all docs numbered in buywise-docs (ADR-048). **Resume at Day 2 part 2.5** (Keycloak realm + demo user), then 2.6-2.7 and the hands-on. Pending for the architect: wipe-and-reload of all databases (buywise-db/README.md run order; start Ollama before make ingest).
+- 2026-11-22: Day 2 part 2.5 done (Keycloak realm, demo user, login flow; hands-on: stack started, demo user checked, login redirect inspected). **Resume at Day 2 part 2.6.**

@@ -50,6 +50,7 @@
 | ADR-046 | All database scripts in one module, `buywise-db` (cluster init, migrations and seed per database); apps read their migrations from there | Accepted | 2026-11-18 |
 | ADR-047 | Top-level layout: every top-level folder is `buywise-*` (data, deploy, docs -> `buywise-data`, `buywise-deploy`, `buywise-docs`); local run scripts + logs in `buywise-deploy/local/`; Node server folder `buywise-web/server/` | Accepted | 2026-11-18 |
 | ADR-048 | All documentation in `buywise-docs/`: application-level at its top, module docs in `buywise-docs/NN-<module>/`; modules keep only README.md (+ code, Makefile); numbered in reading order (00 overview, 01-08 modules, 09 roadmap, 10 ADRs, 11 learning, 12 archive; files 01, 02, ... inside each folder) | Accepted | 2026-11-18 |
+| ADR-049 | Customer sign-up: Google login (Keycloak identity provider) or Keycloak-hosted register form; email verification for form sign-ups (Mailpit locally); `customers` row created on first login; same-email accounts linked only after the user proves ownership | Accepted (build after deep dive) | 2026-11-22 |
 
 ## Deferred decisions
 | Topic | Options | Decide at |
@@ -324,3 +325,13 @@
 - **Decision:** C. `buywise-docs/` top: 00 overview, 09 roadmap, `adr/`, `learning/` (phase index, deep dive), `archive/`. Module docs: `buywise-docs/NN-<module>/` (same file names as before: design.md, learning.md, rag.md, walkthroughs/). Each module keeps its README.md - the page GitHub and the IDE open for the folder (what it is, how to run it, ADRs, links to its docs).
 - **Numbering (amendment, 2026-11-18, architect):** folders and files carry a two-digit prefix in reading order, lowercase-with-hyphens: `00-architecture-overview.md`, `01-buywise-web/` ... `08-buywise-deploy/` (layer order web, services, agent, mcp, events, db, data, deploy), `09-implementation-roadmap.md`, `10-adr/`, `11-learning/`, `12-archive/`; inside a module folder `01-design.md` first and the learning notes last. The old references "docs/00" and "docs/09" keep their meaning.
 - **Consequences:** One place to read and search all design and learning notes; the docs tree mirrors the module names. Module folders hold code, README, Makefile and scripts only. Supersedes the "docs inside the module" rule of 2026-10-30.
+
+## ADR-049 - Customer sign-up (Google or form)
+- **Context:** `registrationAllowed: false` and no sign-up flow, so only the demo user can log in; login fails with "No customer account" when no `customers` row exists. The architect wants new customers to sign up with their Google account or a sign-up form.
+- **Options considered:**
+  - Form: A. Keycloak-hosted register page - no password handling in our code (ADR-028), least work; look themed later. B. Own Angular form + Keycloak admin API - full control of look, but our code handles passwords and an admin credential.
+  - Customer row: A. Created by the Node server callback on first login when missing - one path for Google and form. B. Keycloak event listener notifies services - needs a Keycloak extension, more moving parts.
+  - Email check: A. Verify form sign-ups by email link (Mailpit container catches mail locally). B. No verification for now.
+- **Decision:** Keycloak-hosted form (A); Google added as an identity provider in the `buywise` realm (Keycloak shows "Sign in with Google" and talks to Google); row on first login (A); email verification on (A). Same email from a second way in (form account, then Google) is linked only after the user proves they own the existing account (Keycloak first-broker-login flow), never silently. Build after the deep-dive week.
+- **Consequences:** Node server login flow stays one OIDC login to Keycloak. Changes to make: realm `registrationAllowed: true`, `verifyEmail: true`, SMTP settings, Google identity provider (client id/secret in `compose/.env`, redirect `http://localhost:8080/realms/buywise/broker/google/endpoint`, created in the architect's Google Cloud console); Mailpit service in `compose.yaml`; services `POST /api/customers` (does not exist today); callback creates the row instead of failing, ideally keyed by the Keycloak user id (`sub`) as well as email; new users get the `customer` role by default. Local Google login needs internet access.
+
