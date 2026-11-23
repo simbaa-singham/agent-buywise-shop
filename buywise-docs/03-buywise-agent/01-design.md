@@ -50,6 +50,8 @@ Understand customer messages, route to the right handler, call tools and knowled
 
 ## 6. Key flows
 - Place order and order status - TBD in detail.
+- Confirmation (ADR-052, decided 2026-11-22): quote-then-yes moves from the agent into MCP. When a tool answers `input_required`, the graph interrupts with a persisted checkpoint (checkpointer store decided at build: Redis or Postgres), publishes `confirmation.requested`, and resumes on `confirmation.answered` by resending the tool call with the answer. The current code that swaps `place_order` for a quote is removed.
+- Tool policy from annotations (ADR-053): non-read-only tools always confirm; read-only/idempotent tools retried once on timeout; read-only results cached per turn. Typed tool errors (ADR-055) decide retry vs tell the customer. Tool/prompt/resource lists cached per ADR-057; store list loaded as an MCP resource (ADR-058); domain prompts from MCP per routed intent (ADR-059).
 
 ## 7. Guardrails and safety
 - Identity (ADR-028): agent accepts only tokens with `aud: buywise-agent`; exchanges them for `aud: buywise-mcp` with scopes for the current intent; exchanged tokens held in memory only, never written to LangGraph checkpoints, logs or traces.

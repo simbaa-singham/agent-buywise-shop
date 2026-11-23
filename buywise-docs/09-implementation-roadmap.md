@@ -36,6 +36,25 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 
 **Done when:** `make up && make migrate && make seed` (scripts in buywise-db, ADR-046) gives a running stack with seeded data; CI green on an empty-but-wired repo.
 
+### Phase M - MCP production (next build after the deep-dive week; decided 2026-11-22)
+All production MCP features, built and learned hands-on (architect request). Build order:
+| Step | Item | ADRs |
+|---|---|---|
+| 1 | Tool snapshots + integration tests (SDK Client + Testcontainers) first, so every later change is tested | ADR-064 |
+| 2 | Structured output (Pydantic results) and typed errors; AI hints moved out of services | ADR-054, ADR-055 |
+| 3 | Annotations + agent policy from them | ADR-053 |
+| 4 | OAuth resource server, token exchange per hop (Keycloak setup, client scopes), Spring Security in services; `Resolve` identity | ADR-050, ADR-051, ADR-028 |
+| 5 | Confirmation through `input_required` + `Elicit`; agent checkpointer; contract events; `quoteId` idempotency in services | ADR-052 |
+| 6 | Per-tool middleware: rate limits (Redis), metrics, kill switch | ADR-056, ADR-032 |
+| 7 | Caching of lists; resources (stores, categories, policies on new knowledge server); domain prompts | ADR-057, ADR-058, ADR-059 |
+| 8 | Progress, cancel ("stop"), cursor paging | ADR-062 |
+| 9 | OpenTelemetry: collector + trace viewer containers, traceparent through all hops | ADR-063 |
+| 10 | MCP App comparison widget + `block.app` | ADR-061 |
+| 11 | Tool-choice evals on description/prompt changes; MCP Inspector walkthrough | ADR-064, ADR-030 |
+| later | Tasks for staff handoff (`/mcp/helpdesk`) with the staff console | ADR-060 (phase 5) |
+
+**Done when:** no `X-Customer-Id` anywhere; a call without a valid token or scope is rejected; place/cancel cannot complete without the customer's button click; a double place returns one order; one chat turn shows as one trace across agent, MCP and services; snapshot + integration + eval tests green.
+
 ### Phase 1 - Thin slice: "Is the iPhone 18 Pro in stock at my store?" (guest)
 | Layer | Build | ADRs |
 |---|---|---|
@@ -145,9 +164,9 @@ Built in one pass to get the whole core assistant running on the Mac (architect 
 
 | Area | Decided | Built locally now | Revisit when |
 |---|---|---|---|
-| Identity between hops | Token exchange per hop (ADR-028) | Node server puts the logged-in customer id in the agent request; agent sends it to MCP as `X-Customer-Id`; MCP to services the same. Never a tool argument. No JWT checks on agent/MCP/services. | Production hardening |
+| Identity between hops | Token exchange per hop (ADR-028) | Node server puts the logged-in customer id in the agent request; agent sends it to MCP as `X-Customer-Id`; MCP to services the same. Never a tool argument. No JWT checks on agent/MCP/services. | MCP production phase (ADR-050/051 replace it) |
 | Intent routing | Rules -> classifier -> LLM cascade (ADR-030) | The model picks tools itself (one LLM loop) | Router eval work |
-| Order confirmation | Explicit confirmation | `place_order` becomes a quote; the order is placed only on the customer's "yes" (deterministic, not by the model) | - (keep) |
+| Order confirmation | Explicit confirmation | `place_order` becomes a quote; the order is placed only on the customer's "yes" (deterministic, not by the model) | MCP production phase (ADR-052 moves confirmation into MCP elicitation) |
 | Document parsing | Plugin pipeline, 11 formats (ADR-039) | md, txt, html, digital pdf, docx; staff-only / superseded / not-yet-effective docs skipped | Phase 3 |
 | Customer lookup at login | Customer id claim in token | Customer found by the verified email from Keycloak | Phase 2 |
 | Session cookie | `__Host-` cookie, idle timeout (ADR-021) | `bw_sid` HttpOnly SameSite=Lax, 8 h | Production hardening |
@@ -169,7 +188,7 @@ Small fixes found during the deep dive. Tick when done.
 - [ ] **Conversation streams never expire** (found 2026-11-22). `conv:{id}` streams have no TTL (`ttl = -1`); only the length is capped. Set an expiry (e.g. refreshed on each write) so old conversations leave Redis. When: phase 2.
 - [ ] **Embedding calls show 0 tokens / $0 in LiteLLM spend** (found 2026-11-22). `bge-m3` rows in `LiteLLM_SpendLogs` have 0 prompt tokens, so RAG cost is not counted (ADR-026). Check whether Ollama returns token counts for embeddings or count them in the agent. When: phase 6.
 - [ ] **Learning: Redis design walkthrough** (added 2026-11-22, architect). At the end of the deep-dive week, go through the whole Redis design: what is stored (sessions, conversation streams; planned rate limits and budget counters), key names and expiry, stream length cap, persistence choice (ADR-035), Streams vs Pub/Sub vs Kafka (ADR-029), how replay with `Last-Event-ID` works, and the production setup (high availability, memory limits). Docs: buywise-docs/00, buywise-docs/08-buywise-deploy/01-design.md, ADR-021/026/029/032/035. When: after day 7.
-- [ ] **Place order is not idempotent** (found 2026-11-22). `OrderService.place` creates a new order on every call; a double "yes" or a retry after a timeout gives two orders and reserves stock twice. Add an idempotency key (e.g. the quote id / client message id) stored with a unique constraint; a repeat call returns the first order. Needs a design decision (which key, how long kept). When: phase 4 (ordering).
+- [ ] **Place order is not idempotent** (found 2026-11-22; solved by design in ADR-052 - `quoteId` as idempotency key, built in Phase M step 5). `OrderService.place` creates a new order on every call; a double "yes" or a retry after a timeout gives two orders and reserves stock twice. Add an idempotency key (e.g. the quote id / client message id) stored with a unique constraint; a repeat call returns the first order. Needs a design decision (which key, how long kept). When: phase 4 (ordering).
 - [ ] **Cancel order is not race-safe** (found 2026-11-22). `OrderService.cancel` checks the status, then updates in a separate statement; two cancels at the same time can both pass the check and return the stock twice. Make the status change one statement (`UPDATE orders.orders SET status = 'cancelled' ... WHERE order_id = ? AND status IN (...)`, release stock only if 1 row changed) or lock the row (`SELECT ... FOR UPDATE`). When: phase 4.
 - [ ] **buywise-services has almost no tests** (found 2026-11-22). Only `ModularityTest`. Add: order maths (subtotal, tax, rounding), quote = place, stock reserve/release and the last-unit race, cancel rules, "not found" for other customers' orders, error codes; integration tests on a real Postgres (Testcontainers). When: phase 1 onwards, before changing the order code.
 - [ ] **Learning: stock reserve and @Transactional walkthrough** (added 2026-11-22, architect). Go through in detail, with the code open: how `@Transactional` works (proxy, one connection per transaction, commit/rollback on exceptions, readOnly, self-call trap, propagation), how `InventoryService.reserve` stays safe with one conditional `UPDATE` (row locks, two buyers for the last unit), and the order gaps it explains (place idempotency, cancel race, delivery without reserve). Files: `buywise-services/.../orders/OrderService.java`, `inventory/InventoryService.java`, `buywise-db/services/01-ddl/V2__inventory.sql`. When: after day 7, before fixing the order gaps (phase 4).

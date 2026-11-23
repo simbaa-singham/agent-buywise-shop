@@ -11,22 +11,29 @@ Expose business capabilities to agents as versioned, scoped, secure tools. A sep
 | Servers | Python 3.12, MCP Python SDK v2 (stable since 2026-07-28) |
 | Spec | MCP 2026-07-28 (stateless core) |
 | Transport | Streamable HTTP behind Envoy Gateway / Kubernetes Service |
-| Server layout | One MCP server per domain, mounted in one process: `/mcp/catalog`, `/mcp/inventory`, `/mcp/order`, `/mcp/customer`, `/mcp/helpdesk` (ADR-031) |
+| Server layout | One MCP server per domain, mounted in one process: `/mcp/catalog`, `/mcp/inventory`, `/mcp/order`, `/mcp/customer`, `/mcp/knowledge`, `/mcp/helpdesk` (ADR-031, ADR-058, ADR-060). Built today: catalog, inventory, orders |
 | Backend | Wraps `buywise-services` REST APIs |
 | Auth | OAuth 2.0 resource server, Keycloak as authorization server; accepts only tokens with `aud: buywise-mcp`; calls services with an exchanged token (RFC 8693), never passes tokens through (ADR-028) |
-| Tracing | OpenTelemetry (on by default in SDK v2), W3C trace context in `_meta` |
+| Tracing | OpenTelemetry (on by default in SDK v2), W3C trace context in `_meta`; local collector + trace viewer built with the MCP production phase (ADR-063) |
 
 ## 3. How the 2026-07-28 spec is used
 | Spec feature | Use in buywise-mcp |
 |---|---|
 | Stateless requests, no session IDs | Any replica serves any request; plain load balancing |
 | `server/discover` | Agent discovers tools and capabilities on demand |
-| `Mcp-Method` / `Mcp-Name` headers | Gateway routing, rate limits and logs per tool |
-| Multi-round-trip requests (`input_required`) | Checkout confirmation and OTP prompts; signed, expiring `requestState` |
-| Cache hints (`ttlMs`, `cacheScope`) | Agent caches `tools/list` |
+| `Mcp-Method` / `Mcp-Name` headers | MCP middleware (no internal gateway): per-tool rate limits, metrics, logs, kill switch (ADR-056) |
+| Multi-round-trip requests (`input_required`) + `Elicit` | Confirmation of every non-read-only tool (place, cancel), price lock on resume, 15-min expiry, `quoteId` = idempotency key (ADR-052); OTP prompts; signed, expiring `requestState` |
+| Cache hints (`ttlMs`, `cacheScope`) | Tool/resource/prompt lists cacheable 10 min, shared scope, refreshed on new server version; read-only results cached per turn (ADR-057) |
 | Explicit handles | `cart_id`, `order_id` passed as arguments |
-| JSON Schema 2020-12 | Versioned tool input/output schemas |
-| Extensions (Tasks, MCP Apps) | Optional, later |
+| JSON Schema 2020-12 | Versioned tool input/output schemas; Pydantic results -> `outputSchema` + `structuredContent` (ADR-054) |
+| Tool annotations | readOnly / destructive / idempotent / openWorld on every tool; agent policy driven by them (ADR-053) |
+| Tool errors | Typed `{code, message, retryable, hint}`; protocol errors only for protocol faults (ADR-055) |
+| Resources | `buywise://stores`, `/stores/{id}`, `/catalog/categories`, `/policies/{doc}` (ADR-058) |
+| Prompts | Domain prompts on their servers (`compare_products`, `order_help`, `handoff_summary`) for the intent router and staff console (ADR-059) |
+| Progress, cancellation, paging | Progress -> `status.updated`; cancel on stop; cursor paging for orders and search (ADR-062) |
+| `Resolve(fn)` (SDK v2) | Customer built from the validated token, invisible to the model (ADR-051) |
+| Extensions: Tasks | `request_staff_handoff` on `/mcp/helpdesk` (ADR-060, phase 5) |
+| Extensions: MCP Apps | One widget: product comparison with variant picker, sandboxed iframe via `block.app` (ADR-061) |
 
 ## 4. Servers and tools (v1)
 | Server | Tool | Input | Output |
@@ -54,7 +61,7 @@ Expose business capabilities to agents as versioned, scoped, secure tools. A sep
 | Layer | Limit | Protects against |
 |---|---|---|
 | Agent | Max 8 tool calls per turn; max 3 identical consecutive calls | Agent loops |
-| Envoy | Global per-tool limit via `Mcp-Name` header | Overload |
+| MCP middleware | Global per-tool limit via `Mcp-Name` header (ADR-056; Envoy is edge-only and never sees agent -> MCP traffic) | Overload |
 | MCP server | Per user (`sub`) or guest session, per tool; Redis token buckets | Abuse, brute force |
 | `buywise-services` | Bucket4j per caller | Last line of defence |
 
@@ -66,7 +73,7 @@ Per-user MCP limits (production):
 | `create_ticket` | 3 / hour per conversation |
 | search and read tools | 60 / min per user |
 
-- Local: per-user limits unchanged; global Envoy limits / S (buywise-docs/00 section 7.1).
+- Local: per-user limits unchanged; global per-tool limits / S (buywise-docs/00 section 7.1).
 - On limit: structured tool error with `retryAfter`; the agent explains it in plain words and never retries in a loop.
 
 ## 5. Design rules
@@ -79,8 +86,28 @@ Per-user MCP limits (production):
 - Identity is never a tool argument: user comes from the token `sub`; tools never accept `customer_id`.
 - Inbound: JWT with `aud: buywise-mcp`, scopes narrowed by the agent per intent; MCP checks the tool's required scope before running it.
 - Outbound: MCP exchanges the inbound token at Keycloak for `aud: buywise-services` with the scopes the tool needs; `act` chain records agent -> mcp. Exchanged tokens cached in memory until expiry (~5 min).
-- Tool -> scope map (initial): catalog/inventory/knowledge tools `catalog:read`; cart tools `cart:write`; `checkout` `orders:write` (+ confirmation); `list_orders`, `get_order_status` `orders:read`; `create_ticket` `tickets:write`; `verify_customer` public.
-- Guests: public scopes only, plus their own cart via `cart_id`. `verify_customer` (OTP) returns a short-lived grant limited to that contact's orders; MCP sends it with order tools. Details at implementation.
+- Tool -> scope map (ADR-050, merged with the planned tools 2026-11-22): `catalog:read` (search_products, get_product, check_compatibility, knowledge resources); `inventory:read` (list_stores, check_stock); `orders:read` (list_my_orders, get_order, quote_order); `orders:write` (place_order, cancel_order, checkout - always with confirmation, ADR-052); `cart:write` (cart tools, when built); `tickets:write` (create_ticket, request_staff_handoff); `verify_customer` public.
+- Guests: the agent's own client-credentials token with `catalog:read` + `inventory:read` (ADR-050), plus their own cart via `cart_id`. `verify_customer` (OTP) returns a short-lived grant limited to that contact's orders; MCP sends it with order tools. Details at implementation.
+
+## 5b. Production MCP features (decided 2026-11-22, ADR-050 to ADR-064)
+Built in the MCP production phase (buywise-docs/09) after the deep-dive week; Tasks with the staff console (phase 5).
+| # | Area | ADR |
+|---|---|---|
+| M1 | OAuth resource server, token exchange per hop, per-tool scopes, issuer check (RFC 9207); CIMD deferred | ADR-050 |
+| M2 | `Resolve(fn)` identity | ADR-051 |
+| M3 | Confirmation through `input_required` + `Elicit` | ADR-052 |
+| M4 | Tool annotations drive agent policy | ADR-053 |
+| M5 | Structured output (Pydantic, `outputSchema`) | ADR-054 |
+| M6 | Typed tool errors, circuit breaker | ADR-055 |
+| M7 | Per-tool control in MCP middleware (no internal gateway) | ADR-056 |
+| M8 | List caching | ADR-057 |
+| M9 | Resources | ADR-058 |
+| M10 | Prompts | ADR-059 |
+| M11 | Tasks for staff handoff | ADR-060 |
+| M12 | MCP Apps (hybrid, one widget) | ADR-061 |
+| M13 | Progress, cancellation, paging, logging | ADR-062 |
+| M14 | OpenTelemetry tracing | ADR-063 |
+| M15 | Tool versioning, snapshots, integration tests, Inspector, tool-choice evals | ADR-064 |
 
 ## 6. Open decisions
 1. ~~Server grouping~~ - decided: one server per domain in one process (ADR-031).

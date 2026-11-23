@@ -116,6 +116,7 @@ Rules:
 3. Replay: the SSE `id` is the Redis Stream entry id of the conversation stream (ADR-029); reconnect replays after `Last-Event-ID`; gap too old (trimmed) -> client reloads the conversation via REST.
 4. Idempotent sends: `POST /api/chat/messages` carries a client-generated `clientMessageId`; duplicates are ignored.
 5. Source of truth: JSON Schema in `shared/contracts/`; TypeScript (web, Node server) and Pydantic (agent) types generated from it; CI fails if generated types drift.
+6. Planned additions from the MCP decisions (2026-11-22, built in the MCP production phase): `confirmation.requested` event + `confirmation.answered` request with confirm/cancel buttons (ADR-052); `block.app` event for the MCP App comparison widget in a sandboxed iframe (ADR-061); `uri` on citations pointing to `buywise://policies/{doc}` (ADR-058); a "stop" request that cancels the reply and in-flight tool calls (ADR-062). Each with examples and contract tests (ADR-044).
 - Node server -> `buywise-agent`: chat requests, streamed responses.
 - Node server -> `buywise-services`: order history, staff console data (JWT from the session; no internal gateway).
 
