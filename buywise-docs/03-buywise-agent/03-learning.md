@@ -38,3 +38,11 @@ What the buywise-agent module taught us, phase by phase. Index of all phases: [b
 - **Ordering safety:** `place_order` from the model only produces a quote (stored as pending for 15 min); the order is placed by code when the customer replies "yes".
 - **RAG:** `make -C buywise-agent ingest` parses md/txt/html/pdf/docx into sections -> ~1,000-char chunks -> bge-m3 vectors via LiteLLM -> `rag.chunks` (pgvector, HNSW cosine). Search returns the 4 nearest chunks under a distance cut-off; they become the answer's citations.
 - **Try:** `make -C buywise-agent turn Q="How long will the store hold my pickup order?"`; tool calls are logged in `buywise-deploy/local/logs/agent.log`.
+
+## Phase M step 3 - tools from MCP, policy from annotations (2026-11-22, ADR-053, ADR-057)
+- **Before:** the agent had its own copy of every MCP tool (name, description, argument schema in `tools.py`), so the model never saw MCP's descriptions; "confirm before placing" was hard-coded for `place_order` only; `cancel_order` ran at once.
+- **`mcp_tools.py`:** `ToolCatalog` asks each MCP server (`settings.mcp_domains`) for its tools and keeps them for the server's `ttlMs` (10 min); `ToolInfo` holds name, domain, title, description, input schema and the annotations; `model_spec()` hands MCP's definition to the model unchanged. A tool without annotations counts as a risky write. `call_mcp(info, args, customer)` calls the tool's own domain server.
+- **`tool_policy.py`:** `needs_confirmation` = not read-only. `ToolRunner` (one per turn): retries once after 0.5 s on a `retryable` error for read-only/idempotent tools, never for non-idempotent writes; caches successful read-only calls within the turn. `prepare()` runs the write's preview (`quote_order` for place, `get_order` for cancel) and returns the pending action; the write runs only after "yes" (`run_confirmed`).
+- **`tools.py`** keeps only the agent's own tool, `search_knowledge` (RAG lives in the agent).
+- **Graph:** the model is bound per turn to the discovered tools; status labels are the tool titles; the pending action is generic (`conv:{id}:pending_action` = tool + args).
+- **Tests:** `tests/test_tool_policy.py` with a fake MCP - confirmation from annotations, preview instead of the write, retry rules, per-turn cache, specs passed through unchanged.

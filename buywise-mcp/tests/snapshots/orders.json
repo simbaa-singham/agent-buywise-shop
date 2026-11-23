@@ -4,6 +4,7 @@
   "tools": [
     {
       "name": "cancel_order",
+      "title": "Cancel an order",
       "description": "Cancel one of the customer's orders that has not shipped or been picked up yet. Pickup units go back on the\n    shelf.",
       "inputSchema": {
         "type": "object",
@@ -238,10 +239,17 @@
         ],
         "title": "OrderSummary",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
       }
     },
     {
       "name": "get_order",
+      "title": "Order details",
       "description": "One of the logged-in customer's orders: status, items, totals, pickup or delivery, tracking.",
       "inputSchema": {
         "type": "object",
@@ -476,10 +484,17 @@
         ],
         "title": "OrderSummary",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
       }
     },
     {
       "name": "list_my_orders",
+      "title": "My orders",
       "description": "The logged-in customer's most recent orders, newest first. Use for 'my order', 'my latest order' or when\n    the customer gives no order id.",
       "inputSchema": {
         "type": "object",
@@ -732,10 +747,17 @@
         ],
         "title": "OrderList",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
       }
     },
     {
       "name": "place_order",
+      "title": "Place an order",
       "description": "Place an order for the logged-in customer. Only after the customer has seen the quote and confirmed it.\n    Pickup orders take the units off the store's shelf.",
       "inputSchema": {
         "type": "object",
@@ -1019,10 +1041,17 @@
         ],
         "title": "OrderSummary",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
       }
     },
     {
       "name": "quote_order",
+      "title": "Price an order",
       "description": "Price an order without placing it: items, tax, total, pickup store or delivery. Nothing is saved and no\n    stock is taken.",
       "inputSchema": {
         "type": "object",
@@ -1268,6 +1297,12 @@
         ],
         "title": "Quote",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
       }
     }
   ],

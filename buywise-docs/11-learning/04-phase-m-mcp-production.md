@@ -8,7 +8,7 @@ Plan and build order: [buywise-docs/09 Phase M](../09-implementation-roadmap.md)
 |---|---|---|---|
 | 1 | Test setup: snapshot mechanism, container stack, services image, CI | Done 2026-11-22 | buywise-mcp learning, "Phase M step 1" |
 | 2 | Typed results + typed errors | Done 2026-11-22 | buywise-mcp learning, "Phase M step 2" |
-| 3 | Annotations + agent policy | - | |
+| 3 | Annotations + agent policy | Done 2026-11-22 | buywise-mcp learning, "Phase M step 3"; buywise-agent learning |
 | 4 | OAuth + token exchange + `Resolve` | - | |
 | 5 | Confirmation via `Elicit` | - | |
 | 6 | Per-tool middleware | - | |

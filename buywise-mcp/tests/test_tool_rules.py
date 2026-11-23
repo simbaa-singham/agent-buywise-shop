@@ -56,3 +56,22 @@ async def test_fields_are_snake_case_and_money_is_a_number():
             assert name == name.lower(), f"{domain}.{tool.name}: {name} is not snake_case"
             if name in {"price", "list_price", "from_price", "unit_price", "subtotal", "tax", "total", "shipping_fee"}:
                 assert prop.get("type") == "number", f"{domain}.{tool.name}: {name} must be a number"
+
+
+async def test_every_tool_declares_all_four_annotations_and_a_title():
+    """The agent's policy (confirm, retry, cache) trusts these hints, so none may be left to a default (ADR-053)."""
+    for domain, tool in await all_tools():
+        a = tool.annotations
+        assert a and tool.title, f"{domain}.{tool.name}: needs title + annotations"
+        hints = (a.read_only_hint, a.destructive_hint, a.idempotent_hint, a.open_world_hint)
+        assert None not in hints, f"{domain}.{tool.name}: set all four hints"
+        if a.read_only_hint:
+            assert not a.destructive_hint and a.idempotent_hint, f"{domain}.{tool.name}: read-only must be safe"
+
+
+async def test_tool_lists_are_cacheable_and_versioned():
+    for domain, server in sorted(SERVERS.items()):
+        async with Client(server) as client:
+            listing = await client.list_tools()
+            assert client.server_info.version == "1.0.0", domain
+        assert listing.ttl_ms == 600_000 and listing.cache_scope == "public", domain

@@ -27,7 +27,6 @@ public class OrderService {
             SELECT order_id, customer_id, placed_at, status, fulfilment::text AS fulfilment, subtotal, shipping_fee,
                    tax, total, payment::text AS payment, tracking_number, pickup_hold_until, NULL AS items
             FROM orders.orders""";
-    private static final List<String> CANCELLABLE = List.of("placed", "processing", "ready_for_pickup");
 
     private final JdbcClient jdbc;
     private final CatalogService catalog;
@@ -126,16 +125,28 @@ public class OrderService {
         return order(orderId, customerId).orElseThrow();
     }
 
+    /**
+     * Cancels an order; safe to repeat and safe when two cancels arrive at the same time (ADR-053).
+     * The status check and the change are ONE statement: of two concurrent cancels only one changes the row
+     * (the other waits for the row lock, then finds it already cancelled), so stock is released exactly once.
+     * Cancelling an already-cancelled order returns it unchanged.
+     */
     @Transactional
     public Order cancel(String orderId, String customerId) {
         Order order = order(orderId, customerId).orElseThrow(() -> error(HttpStatus.NOT_FOUND, "Unknown order " + orderId));
-        if (!CANCELLABLE.contains(order.status()))
-            throw error(HttpStatus.CONFLICT, "Order " + orderId + " is " + order.status() + " and can no longer be cancelled");
-        String storeId = jdbc.sql("SELECT fulfilment->>'store_id' FROM orders.orders WHERE order_id = ?")
-                .param(orderId).query(String.class).optional().orElse(null);
-        if (storeId != null) order.items().forEach(i -> inventory.release(storeId, i.sku(), i.quantity()));
-        jdbc.sql("UPDATE orders.orders SET status = 'cancelled', payment = jsonb_set(payment, '{state}', '\"released\"') WHERE order_id = ?")
-                .param(orderId).update();
+        Optional<String> changed = jdbc.sql("""
+                        UPDATE orders.orders
+                        SET status = 'cancelled', payment = jsonb_set(payment, '{state}', '"released"')
+                        WHERE order_id = ? AND customer_id = ? AND status IN ('placed', 'processing', 'ready_for_pickup')
+                        RETURNING coalesce(fulfilment->>'store_id', '')""")
+                .params(orderId, customerId).query(String.class).optional();
+        if (changed.isEmpty()) {
+            Order now = order(orderId, customerId).orElseThrow();  // re-read: a concurrent cancel may have just won
+            if ("cancelled".equals(now.status())) return now;       // repeat or lost race: already done
+            throw error(HttpStatus.CONFLICT, "Order " + orderId + " is " + now.status() + " and can no longer be cancelled");
+        }
+        String storeId = changed.get();
+        if (!storeId.isEmpty()) order.items().forEach(i -> inventory.release(storeId, i.sku(), i.quantity()));
         return order(orderId, customerId).orElseThrow();
     }
 

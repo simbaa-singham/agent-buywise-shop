@@ -57,10 +57,10 @@ class Services:
 
     async def call(self, method: str, path: str, *, customer_id: str | None = None, **kwargs):
         if not self.breaker.allow():
-            raise ToolFailure(
+            raise ToolFailure(  # open circuit: an immediate retry would fail the same way
                 ErrorCode.UNAVAILABLE,
                 UNAVAILABLE,
-                retryable=True,
+                retryable=False,
                 hint="Tell the customer to try again in a minute; do not call this tool again now.",
             )
         headers = {"X-Customer-Id": customer_id} if customer_id else {}

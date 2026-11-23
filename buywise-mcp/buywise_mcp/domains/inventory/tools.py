@@ -2,17 +2,17 @@
 
 from typing import Annotated
 
-from mcp.server.mcpserver import MCPServer
 from pydantic import Field
 
 from ...core.errors import ErrorCode, typed_errors
 from ...core.services import services
+from ...core.tooling import READ, domain_server
 from .models import StockReport, StockRow, Store, StoreList
 
-server = MCPServer("buywise-inventory", instructions="The store locations and the stock on their shelves.")
+server = domain_server("buywise-inventory", "The store locations and the stock on their shelves.")
 
 
-@server.tool()
+@server.tool(title="List stores", annotations=READ)
 @typed_errors()
 async def list_stores() -> StoreList:
     """All stores with store_id, name, address, city, state and opening hours. Use the store_id for check_stock
@@ -20,7 +20,7 @@ async def list_stores() -> StoreList:
     return StoreList(stores=[Store.of(s) for s in await services.call("GET", "/api/stores")])
 
 
-@server.tool()
+@server.tool(title="Check stock", annotations=READ)
 @typed_errors(
     {ErrorCode.NOT_FOUND: "Call search_products to find the right product_id, or list_stores for the store_id."}
 )

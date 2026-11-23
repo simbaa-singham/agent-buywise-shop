@@ -76,6 +76,7 @@ async def test_breaker_opens_after_repeated_failures_and_then_fails_fast():
     assert services.breaker.state == "open"
     f = await failure(services)  # no call is sent while open
     assert len(calls) == 3 and f.info.code == ErrorCode.UNAVAILABLE and f.info.hint
+    assert not f.info.retryable  # retrying at once is pointless while the circuit is open
 
     now[0] = 10.0  # cool-down over: half-open lets one trial call through
     assert services.breaker.state == "half_open"

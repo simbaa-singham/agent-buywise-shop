@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://agent:agent-local@localhost:5432/agent"
     redis_url: str = "redis://localhost:6379/0"
     mcp_url: str = "http://localhost:8090/mcp"
+    mcp_domains: list[str] = ["catalog", "inventory", "orders"]  # MCP servers whose tools the model may use (ADR-031)
     services_url: str = "http://localhost:8081"
     knowledge_dir: str = "../buywise-data/knowledge"
 

@@ -2,19 +2,19 @@
 
 from typing import Annotated, Literal
 
-from mcp.server.mcpserver import MCPServer
 from pydantic import Field
 
 from ...core.errors import ErrorCode, typed_errors
 from ...core.services import services
+from ...core.tooling import READ, domain_server
 from .models import ProductDetail, ProductSearch, ProductSummary
 
 Category = Literal["phone", "tablet", "laptop", "watch", "audio", "accessory"]
 
-server = MCPServer("buywise-catalog", instructions="The store's product catalog: products, variants, list prices.")
+server = domain_server("buywise-catalog", "The store's product catalog: products, variants, list prices.")
 
 
-@server.tool()
+@server.tool(title="Search products", annotations=READ)
 @typed_errors({ErrorCode.INVALID_INPUT: "Use a few words of the product name, e.g. 'iPhone 18 Pro'."})
 async def search_products(
     query: Annotated[
@@ -28,7 +28,7 @@ async def search_products(
     return ProductSearch(query=query, products=[ProductSummary.of(p) for p in found])
 
 
-@server.tool()
+@server.tool(title="Product details", annotations=READ)
 @typed_errors({ErrorCode.NOT_FOUND: "Call search_products to find the right product_id."})
 async def get_product(
     product_id: Annotated[str, Field(description="product_id from search_products, e.g. 'ph-18pro'")],

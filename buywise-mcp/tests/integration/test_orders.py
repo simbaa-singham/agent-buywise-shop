@@ -1,6 +1,8 @@
 """Orders tools against real services + Postgres (ADR-051, ADR-054, ADR-055).
 Confirmation before place/cancel arrives in step 5 (ADR-052); its tests are written then."""
 
+import asyncio
+
 import pytest
 
 pytestmark = [pytest.mark.integration, pytest.mark.anyio]
@@ -114,8 +116,27 @@ async def test_more_than_the_shelf_holds_is_a_conflict(call, stack, sku):
         stack.sql(f"UPDATE inventory.stock SET quantity = 10 WHERE store_id = '{STORE}' AND sku = '{sku}'")
 
 
-# --- place and cancel ------------------------------------------------------------------------------------------
-async def test_place_takes_stock_and_cancel_gives_it_back(call, stack, sku):
+# --- place and cancel: behaviour matches the annotations (ADR-053) ----------------------------------------------
+async def test_read_tools_change_nothing(call, stack, sku):
+    """READ: quote, list and get may be repeated (retry, cache) - no order, no stock change."""
+    before = (stack.sql("SELECT count(*) FROM orders.orders"), stock(stack, sku))
+    for _ in range(2):
+        await call("orders", "quote_order", pickup(sku), customer="cu-demo")
+        await call("orders", "list_my_orders", {}, customer="cu-demo")
+    assert (stack.sql("SELECT count(*) FROM orders.orders"), stock(stack, sku)) == before
+
+
+async def test_place_is_not_idempotent_yet(call, stack, sku):
+    """WRITE, idempotent_hint=false: two calls = two orders. That is why the agent confirms and never retries it.
+    Step 5 (quoteId, ADR-052) makes it idempotent and flips the hint."""
+    first = (await call("orders", "place_order", pickup(sku), customer="cu-demo")).structured_content
+    second = (await call("orders", "place_order", pickup(sku), customer="cu-demo")).structured_content
+    assert first["order_id"] != second["order_id"]
+    for o in (first, second):
+        await call("orders", "cancel_order", {"order_id": o["order_id"]}, customer="cu-demo")
+
+
+async def test_place_takes_stock_and_cancel_gives_it_back_once(call, stack, sku):
     before = stock(stack, sku)
     o = (await call("orders", "place_order", pickup(sku), customer="cu-demo")).structured_content
     assert o["status"] == "placed" and o["order_id"].startswith("BW-") and o["held_at_store_until"]
@@ -124,5 +145,25 @@ async def test_place_takes_stock_and_cancel_gives_it_back(call, stack, sku):
     c = (await call("orders", "cancel_order", {"order_id": o["order_id"]}, customer="cu-demo")).structured_content
     assert c["status"] == "cancelled" and stock(stack, sku) == before
 
-    e = err(await call("orders", "cancel_order", {"order_id": o["order_id"]}, customer="cu-demo"))
-    assert e["code"] == "conflict" and stock(stack, sku) == before
+    again = await call("orders", "cancel_order", {"order_id": o["order_id"]}, customer="cu-demo")
+    assert not again.is_error and again.structured_content["status"] == "cancelled"  # idempotent
+    assert stock(stack, sku) == before  # released exactly once
+
+
+async def test_two_cancels_at_the_same_time_release_stock_once(call, stack, sku):
+    """The cancel race (to-do gap 3): status check and change are one statement in services."""
+    before = stock(stack, sku)
+    o = (await call("orders", "place_order", pickup(sku, 2), customer="cu-demo")).structured_content
+    results = await asyncio.gather(
+        *(call("orders", "cancel_order", {"order_id": o["order_id"]}, customer="cu-demo") for _ in range(4))
+    )
+    assert all(not r.is_error and r.structured_content["status"] == "cancelled" for r in results)
+    assert stock(stack, sku) == before
+
+
+async def test_shipped_orders_cannot_be_cancelled(call, stack):
+    order_id, customer = stack.sql(
+        "SELECT order_id || '|' || customer_id FROM orders.orders WHERE status = 'delivered' LIMIT 1"
+    ).split("|")
+    e = err(await call("orders", "cancel_order", {"order_id": order_id}, customer=customer))
+    assert e["code"] == "conflict" and "delivered" in e["message"]

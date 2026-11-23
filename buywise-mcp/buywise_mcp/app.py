@@ -1,5 +1,6 @@
 """One process serving every domain server under /mcp/{domain} (ADR-031). Run: uv run uvicorn buywise_mcp.app:app
 Each domain package (buywise_mcp/domains/<domain>/) holds its server, tools and result models."""
+
 import contextlib
 
 from mcp.server.mcpserver import MCPServer

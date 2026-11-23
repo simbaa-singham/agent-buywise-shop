@@ -4,15 +4,15 @@ session via `Customer` (ADR-051) - never a tool argument. Place and cancel get c
 import time
 from typing import Annotated, Literal
 
-from mcp.server.mcpserver import MCPServer
 from pydantic import Field
 
 from ...core.errors import ErrorCode, typed_errors
 from ...core.identity import Customer
 from ...core.services import services
+from ...core.tooling import READ, WRITE, WRITE_IDEMPOTENT_DESTRUCTIVE, domain_server
 from .models import OrderLineInput, OrderList, OrderSummary, Quote, order_summary, priced
 
-server = MCPServer("buywise-orders", instructions="The logged-in customer's orders: look up, price, place, cancel.")
+server = domain_server("buywise-orders", "The logged-in customer's orders: look up, price, place, cancel.")
 
 ORDER_HINTS = {
     ErrorCode.INVALID_INPUT: "Check each sku with get_product (exact sku, upper case) and that pickup has a store_id "
@@ -42,7 +42,7 @@ def _order_body(items: Items, fulfilment: str, store_id: str | None) -> dict:
     }
 
 
-@server.tool()
+@server.tool(title="My orders", annotations=READ)
 @typed_errors()
 async def list_my_orders(
     customer: Customer,
@@ -55,7 +55,7 @@ async def list_my_orders(
     return OrderList(orders=[order_summary(o, names) for o in orders])
 
 
-@server.tool()
+@server.tool(title="Order details", annotations=READ)
 @typed_errors(LOOKUP_HINTS)
 async def get_order(
     customer: Customer,
@@ -69,7 +69,7 @@ async def get_order(
     )
 
 
-@server.tool()
+@server.tool(title="Price an order", annotations=READ)
 @typed_errors(ORDER_HINTS)
 async def quote_order(
     customer: Customer,
@@ -85,7 +85,7 @@ async def quote_order(
     return Quote(**priced(q, await _store_names()))
 
 
-@server.tool()
+@server.tool(title="Place an order", annotations=WRITE)
 @typed_errors(ORDER_HINTS)
 async def place_order(
     customer: Customer,
@@ -99,7 +99,7 @@ async def place_order(
     return order_summary(o, await _store_names())
 
 
-@server.tool()
+@server.tool(title="Cancel an order", annotations=WRITE_IDEMPOTENT_DESTRUCTIVE)
 @typed_errors({**LOOKUP_HINTS, ErrorCode.CONFLICT: "Tell the customer why it can no longer be cancelled."})
 async def cancel_order(
     customer: Customer,

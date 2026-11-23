@@ -4,6 +4,7 @@
   "tools": [
     {
       "name": "get_product",
+      "title": "Product details",
       "description": "Full details of one product: specs and every variant with its exact sku, storage, size, color and list\n    price. Call this before ordering to get the exact sku.",
       "inputSchema": {
         "type": "object",
@@ -170,10 +171,17 @@
         ],
         "title": "ProductDetail",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
       }
     },
     {
       "name": "search_products",
+      "title": "Search products",
       "description": "Find products by name or words. Returns up to 5 matches, best first, each with its product_id and lowest\n    price. Use the product_id with get_product (specs, variants) or check_stock (stock).",
       "inputSchema": {
         "type": "object",
@@ -292,6 +300,12 @@
         ],
         "title": "ProductSearch",
         "type": "object"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
       }
     }
   ],
