@@ -13,6 +13,7 @@
 - Code, Makefile and scripts live in the module they belong to; every document lives in buywise-docs/ - numbered in reading order (00 overview, 01-08 modules, 09 roadmap, 10 ADRs, 11 learning, 12 archive; files inside each folder 01, 02, ...); module docs in buywise-docs/NN-<module>/ (ADR-048).
 - After every phase (and as its steps finish), update buywise-docs/NN-<module>/0N-learning.md for each module touched (concepts, what was built and why, questions asked with answers, commands, problems and fixes) and the phase index buywise-docs/11-learning/Phase-<N>.md. It is part of the phase's definition of done.
 - After every change, explain each changed file in plain words: what it is, what it does, why it is needed, and how to see it working. ADR numbers are references only, never the explanation.
+- Git (architect, 2026-11-22): all changes are committed and pushed on branch `dev`; `main` gets only the final, green copy by merging `dev` (on request).
 - During implementation, before writing code in an area, remind Sachin of the decisions (ADR numbers + what they mean in code) that apply to it; flag any new decision that comes up instead of making it silently.
 
 ## What we are building
