@@ -58,7 +58,8 @@ Edge: Envoy Gateway. No internal gateway. Data: PostgreSQL, Redis, Kafka, Keyclo
 - Done 2026-11-18: project structure - all database scripts + seed data in `buywise-db/` (database/, services/{01-ddl,02-dml,03-data}, agent/; ADR-046); top-level layout ADR-047: `data/` -> `buywise-data/`, local run scripts + logs in `buywise-deploy/local/`, Node server folder `buywise-web/server/`. Wipe-and-reload of all databases planned (steps in buywise-db/README.md).
 - In progress (from 2026-11-16): 1-week deep dive, 2 h/day - plan and progress in buywise-docs/11-learning/03-deep-dive-week.md (resume point at the bottom).
 - Decided 2026-11-22: production MCP features M1-M15 (ADR-050 to ADR-064), built in roadmap Phase M right after the deep dive. Also ADR-049 sign-up.
-- Next: deep dive into each built component with Sachin (services -> MCP -> agent -> web), then Phase M (MCP production), then choose: customer sign-up with Google or form (ADR-049), staff console + handoff, Kafka order events, remaining document formats, budgets/guardrails, or polish.
+- In progress (from 2026-11-22): Phase M - rebuild buywise-mcp to the M design (version 1), on branch `dev`. Step 1 (test setup) done and on main. **Resume at Phase M step 2** (domain packages, typed results + typed errors, ADR-054/055), test-first. Deep dive paused by the architect after Day 3 (Days 4-7 + walkthroughs on the to-do list).
+- Next after Phase M: choose: customer sign-up with Google or form (ADR-049), staff console + handoff, Kafka order events, remaining document formats, budgets/guardrails, or polish.
 - Open item: 13 generated knowledge documents are not byte-deterministic (random MIME boundaries, embedded timestamps) - fix in the generators later.
 - Then: phase 1 thin slice (buywise-docs/09).
 
