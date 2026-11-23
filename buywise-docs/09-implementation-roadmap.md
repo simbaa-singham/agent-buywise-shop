@@ -37,10 +37,10 @@ Verified: stack healthy; 4 isolated databases + pgvector 0.8.7; Flyway V1-V2; se
 **Done when:** `make up && make migrate && make seed` (scripts in buywise-db, ADR-046) gives a running stack with seeded data; CI green on an empty-but-wired repo.
 
 ### Phase M - MCP production (next build after the deep-dive week; decided 2026-11-22)
-All production MCP features, built and learned hands-on (architect request). Build order:
+All production MCP features, built and learned hands-on (architect request). **Approach (architect, 2026-11-22): the current buywise-mcp is a prototype; Phase M rebuilds it to the M design, which becomes version 1 - the base for all later changes. Tests are written from the design, test-first, per step; the prototype is not used as a baseline.** Build order:
 | Step | Item | ADRs |
 |---|---|---|
-| 1 | Tool snapshots + integration tests (SDK Client + Testcontainers) first, so every later change is tested | ADR-064 |
+| 1 | Test setup first: snapshot mechanism (first approved snapshot = M design contract), integration stack (Postgres + services in containers, MCP over HTTP), services Dockerfile, CI job - **done 2026-11-22** | ADR-064 |
 | 2 | Structured output (Pydantic results) and typed errors; AI hints moved out of services | ADR-054, ADR-055 |
 | 3 | Annotations + agent policy from them | ADR-053 |
 | 4 | OAuth resource server, token exchange per hop (Keycloak setup, client scopes), Spring Security in services; `Resolve` identity | ADR-050, ADR-051, ADR-028 |

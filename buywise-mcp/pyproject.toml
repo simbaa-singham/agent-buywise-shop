@@ -6,7 +6,18 @@ requires-python = ">=3.12"
 dependencies = ["mcp", "httpx", "uvicorn", "starlette"]
 
 [dependency-groups]
-dev = ["pytest", "ruff"]
+dev = [
+    "pytest",
+    "ruff",
+    "testcontainers>=4.15.0",
+]
 
 [tool.ruff]
 line-length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]                     # import buywise_mcp from the project folder
+# Integration tests start containers (Postgres + buywise-services); run them with make test-integration
+addopts = "-m 'not integration'"
+markers = ["integration: needs Docker; starts Postgres and buywise-services in containers"]
