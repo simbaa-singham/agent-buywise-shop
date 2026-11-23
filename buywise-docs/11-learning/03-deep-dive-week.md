@@ -14,7 +14,7 @@ Notes from each day go into that module's buywise-docs/NN-<module>/0N-learning.m
 | 6 | Sat 11-21 | buywise-agent part 2: RAG | Embeddings (bge-m3), chunking, pgvector + full-text hybrid search, citations, ingest rules | ingest, search | Ingest docs, run a search, ask a policy question |
 | 7 | Sun 11-22 | buywise-web + full trace | Angular (signals, SignalStore), Node server (NestJS), session, Keycloak login, SSE + replay | server/, web/ | Login, chat, kill the SSE mid-reply, trace one message browser -> DB -> browser |
 
-After day 7: Redis design walkthrough (to-do list, buywise-docs/09 section 5), then pick the next feature (customer sign-up with Google or form - ADR-049, staff console + handoff, Kafka order events, more document formats, budgets/guardrails, or polish).
+After day 7: Redis design walkthrough , stock reserve + @Transactional walkthrough, modular monolith + Spring Modulith walkthrough (to-do list, buywise-docs/09 section 5), then pick the next feature (customer sign-up with Google or form - ADR-049, staff console + handoff, Kafka order events, more document formats, budgets/guardrails, or polish).
 
 ---
 
@@ -139,9 +139,27 @@ Designed, not built yet: Envoy Gateway, Kafka + Spring Kafka, OpenTelemetry / Pr
 | System | litellm | LiteLLM_SpendLogs, LiteLLM_ErrorLogs |
 App data and system data are in different databases, so one connection per database keeps them apart. Beekeeper cannot hide tables (pin + filter only); DBeaver can (navigator filters).
 
+## Day 3 notes - buywise-services, parts 3-4 (2026-11-22; parts 1-2 on 2026-11-17)
+
+### Part 3 - Data layer
+- HikariCP connection pool comes with `spring-boot-starter-jdbc`; configured only by `spring.datasource` in `application.yaml` (defaults: 10 connections, 30 s wait). Pool size x app copies must stay under Postgres `max_connections` (production sizing later).
+- `JdbcClient`: plain SQL (text blocks) -> `.param` (placeholders, no SQL injection) -> `.query(Record.class)` (columns mapped by name, snake_case -> camelCase) -> `list` / `optional` / `single`. Chosen over an ORM: visible SQL, immutable records, no lazy loading.
+- `@Transactional`: Spring proxy borrows one connection, `BEGIN`, every statement in the call (also in other modules) uses it, `COMMIT` on return, `ROLLBACK` on a runtime exception. `readOnly` on `quote()`. Self-call trap: calling the method from the same class skips the proxy.
+- Stock reserve: one statement `UPDATE ... SET quantity = quantity - ? WHERE ... AND quantity >= ?`; 1 row = reserved, 0 = not enough; the row lock makes the second buyer wait and fail cleanly; `CHECK (quantity >= 0)` as safety net. Gaps seen in code: place not idempotent, cancel race, delivery takes no stock.
+- Flyway in the app: `build.gradle.kts` copies `buywise-db/services/01-ddl` into `db/migration`; migrations run on start before port 8081 opens; checksum check on applied files.
+- Hands-on: place a pickup order with curl, watch `inventory.stock` drop in Beekeeper, cancel, watch it come back; second cancel -> 409; other customer -> 404.
+- Scale note: `CatalogService.search` loads all products and ranks in Java (fine for 50, not for 50,000).
+
+### Part 4 - Spring Modulith, Gradle, Actuator, tests
+- Modular monolith (ADR-014) = one deployable, strict modules inside; Spring Modulith = the tool that checks it (`ModularityTest`: `ApplicationModules.of(...).verify()`). Modules = sub-packages of `com.buywise.services`. Finding: every class is in its module's top package, so the check only catches cycles today.
+- Gradle: wrapper `gradlew`, Kotlin DSL, version catalog `gradle/libs.versions.toml` (Spring Boot 4.1.2, Modulith 2.1.1), Java 25 toolchain, starters pick library versions; `make build` / `make run`.
+- Actuator: only `/actuator/health` (checks the database too); production adds liveness/readiness and Prometheus.
+- Tests: only `ModularityTest` (to-do list).
+
 ## Progress
 - 2026-11-17: Day 1 done. Started the buywise-services technology deep dive (4 parts): part 1 (Java 25 features, Spring container + dependency injection, Spring Boot startup) and part 2 (web layer: request journey, controllers, JSON, validation, errors) done. Resume at part 3 (data layer: HikariCP, JdbcClient, @Transactional, stock reserve, Flyway), then part 4 (Spring Modulith, Gradle, Actuator, tests).
 - Gaps found in part 2, logged in buywise-docs/09 section 4 on 2026-11-18: validation 400 does not name the failing field; negative `limit` gives 500 (clamp to 1-20); X-Customer-Id trusted blindly (already a known simplification).
 - 2026-11-18: Day 2 part 1 (concepts: why each piece) done - notes above. Resume at Day 2 part 2.1 (`compose.yaml` walkthrough), then 2.2-2.7 and the hands-on; Day 3 parts 3-4 after that.
 - 2026-11-18 (later): Day 2 parts 2.1-2.4 done (compose.yaml and 01-databases.sh commented line by line; migrations; seed data). Project structure reworked along the way: buywise-db (ADR-046), buywise-* top level (ADR-047), all docs numbered in buywise-docs (ADR-048). **Resume at Day 2 part 2.5** (Keycloak realm + demo user), then 2.6-2.7 and the hands-on. Pending for the architect: wipe-and-reload of all databases (buywise-db/README.md run order; start Ollama before make ingest).
 - 2026-11-22: Day 2 part 2.5 done (Keycloak realm, demo user, login flow; hands-on: stack started, demo user checked, login redirect inspected). Day 2 part 2.6 done the same day (Redis, LiteLLM, hands-on). Day 2 part 2.7 done (chat contract, tests, break an example) - **Day 2 complete.** Resume at Day 3 parts 3-4 (buywise-services data layer, then Spring Modulith/Gradle/Actuator/tests).
+- 2026-11-22 (later): Day 3 parts 3-4 done - **Day 3 complete.** Services review: design production-scale, build is a working core; gaps added to the to-do list. **Resume at Day 4** (buywise-mcp).
