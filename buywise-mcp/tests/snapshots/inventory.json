@@ -1,0 +1,244 @@
+{
+  "server": "buywise-inventory",
+  "instructions": "The store locations and the stock on their shelves.",
+  "tools": [
+    {
+      "name": "check_stock",
+      "description": "Units on the shelf for every variant of a product, at one store or at every store, with each variant's sku\n    and list price. Stock numbers come only from here - never guess them.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "description": "product_id from search_products, e.g. 'ph-18pro'",
+            "title": "Product Id",
+            "type": "string"
+          },
+          "store_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "store_id from list_stores, e.g. 'st-aus'; omit for every store",
+            "title": "Store Id"
+          }
+        },
+        "required": [
+          "product_id"
+        ],
+        "title": "check_stockArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "StockRow": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "title": "Sku",
+                "type": "string"
+              },
+              "storage_gb": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Storage Gb"
+              },
+              "size": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Size"
+              },
+              "color": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Color"
+              },
+              "list_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "List Price",
+                "type": "number"
+              },
+              "store_id": {
+                "title": "Store Id",
+                "type": "string"
+              },
+              "store_name": {
+                "title": "Store Name",
+                "type": "string"
+              },
+              "quantity": {
+                "description": "Units on the shelf now",
+                "minimum": 0,
+                "title": "Quantity",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "sku",
+              "list_price",
+              "store_id",
+              "store_name",
+              "quantity"
+            ],
+            "title": "StockRow",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "product_id": {
+            "title": "Product Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "preorder",
+              "discontinued"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "store_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "The store asked about; null = every store",
+            "title": "Store Id"
+          },
+          "stock": {
+            "description": "One row per variant per store",
+            "items": {
+              "$ref": "#/$defs/StockRow"
+            },
+            "title": "Stock",
+            "type": "array"
+          },
+          "total_units": {
+            "description": "Sum of quantity over all rows",
+            "minimum": 0,
+            "title": "Total Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "product_id",
+          "model",
+          "availability",
+          "stock",
+          "total_units"
+        ],
+        "title": "StockReport",
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_stores",
+      "description": "All stores with store_id, name, address, city, state and opening hours. Use the store_id for check_stock\n    and for pickup orders.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "title": "list_storesArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Store": {
+            "additionalProperties": false,
+            "properties": {
+              "store_id": {
+                "title": "Store Id",
+                "type": "string"
+              },
+              "name": {
+                "title": "Name",
+                "type": "string"
+              },
+              "address": {
+                "title": "Address",
+                "type": "string"
+              },
+              "city": {
+                "title": "City",
+                "type": "string"
+              },
+              "state": {
+                "title": "State",
+                "type": "string"
+              },
+              "hours": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Opening hours, e.g. {'mon_sat': '10:00-21:00', 'sun': '11:00-18:00'}",
+                "title": "Hours",
+                "type": "object"
+              }
+            },
+            "required": [
+              "store_id",
+              "name",
+              "address",
+              "city",
+              "state",
+              "hours"
+            ],
+            "title": "Store",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "stores": {
+            "items": {
+              "$ref": "#/$defs/Store"
+            },
+            "title": "Stores",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stores"
+        ],
+        "title": "StoreList",
+        "type": "object"
+      }
+    }
+  ],
+  "prompts": [],
+  "resources": [],
+  "resource_templates": []
+}

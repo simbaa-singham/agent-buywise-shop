@@ -1,4 +1,5 @@
 """Calls each MCP domain server over HTTP. Needs services (8081) and MCP (8090) running: uv run python tests/smoke.py"""
+
 import asyncio
 
 import httpx2
@@ -24,8 +25,12 @@ async def main():
     await tool("inventory", "check_stock", {"product_id": "ph-18pro", "store_id": "st-aus"})
     await tool("orders", "list_my_orders", {"limit": 1})  # no customer -> error
     await tool("orders", "list_my_orders", {"limit": 1}, customer="cu-demo")
-    await tool("orders", "quote_order", {"items": [{"sku": "PH-18PRO-256GB-BLACK", "quantity": 1}],
-                                         "fulfilment": "pickup", "store_id": "st-aus"}, customer="cu-demo")
+    await tool(
+        "orders",
+        "quote_order",
+        {"items": [{"sku": "PH-18PRO-256GB-BLACK", "quantity": 1}], "fulfilment": "pickup", "store_id": "st-aus"},
+        customer="cu-demo",
+    )
 
 
 asyncio.run(main())

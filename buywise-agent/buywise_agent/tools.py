@@ -1,7 +1,6 @@
 """Tools the model may call: MCP tools on buywise-mcp (one server per domain, ADR-031) plus knowledge search.
 The customer id travels as a header set from the logged-in session - never as a tool argument (ADR-028)."""
 import asyncio
-import json
 
 import httpx2
 from langchain_core.tools import StructuredTool
@@ -26,16 +25,18 @@ STATUS_LABEL = {
 }
 
 
-async def call_mcp(name: str, args: dict, customer_id: str | None) -> tuple[bool, str]:
-    """Returns (ok, text). Errors come back as text the model can explain to the customer."""
+async def call_mcp(name: str, args: dict, customer_id: str | None) -> tuple[bool, str, dict | None]:
+    """Returns (ok, text, data). `text` goes to the model (results as JSON, errors as "code: message Hint: ...").
+    `data` is the tool's typed structured result (ADR-054) - or the typed error {code, message, retryable, hint}
+    (ADR-055) - used by code, e.g. to build product cards; never parsed from text."""
     http = httpx2.AsyncClient(headers={"X-Customer-Id": customer_id} if customer_id else {}, timeout=20)
     try:
         async with Client(streamable_http_client(f"{settings.mcp_url}/{TOOL_DOMAIN[name]}", http_client=http)) as c:
             result = await c.call_tool(name, args)
         text = "\n".join(getattr(part, "text", "") for part in result.content)
-        return (not result.is_error), text
+        return (not result.is_error), text, result.structured_content
     except Exception as e:  # noqa: BLE001 - any transport failure; tool server down -> the model says it cannot check right now
-        return False, f"Tool unavailable: {e}"
+        return False, f"unavailable: Tool unavailable ({type(e).__name__}).", None
 
 
 # --- schemas the model sees (no customer id anywhere) -------------------------------------------------------------
@@ -110,9 +111,3 @@ async def knowledge(query: str) -> tuple[list[dict], str]:
                        for i, h in enumerate(hits, 1)) or "No matching help article."
     return hits, text
 
-
-def parse(text: str):
-    try:
-        return json.loads(text)
-    except ValueError:
-        return None

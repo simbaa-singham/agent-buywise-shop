@@ -1,5 +1,6 @@
 """Checks the integration test stack itself (not any tool): services healthy, seed data loaded, MCP answering.
 Tool tests are written from the Phase M design (ADR-050 to ADR-064), test-first, as each part is built."""
+
 import httpx
 import pytest
 

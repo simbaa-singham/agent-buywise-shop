@@ -41,7 +41,7 @@ All production MCP features, built and learned hands-on (architect request). **A
 | Step | Item | ADRs |
 |---|---|---|
 | 1 | Test setup first: snapshot mechanism (first approved snapshot = M design contract), integration stack (Postgres + services in containers, MCP over HTTP), services Dockerfile, CI job - **done 2026-11-22** | ADR-064 |
-| 2 | Structured output (Pydantic results) and typed errors; AI hints moved out of services | ADR-054, ADR-055 |
+| 2 | Structured output (Pydantic results) and typed errors; AI hints moved out of services - **done 2026-11-22** | ADR-054, ADR-055 |
 | 3 | Annotations + agent policy from them | ADR-053 |
 | 4 | OAuth resource server, token exchange per hop (Keycloak setup, client scopes), Spring Security in services; `Resolve` identity | ADR-050, ADR-051, ADR-028 |
 | 5 | Confirmation through `input_required` + `Elicit`; agent checkpointer; contract events; `quoteId` idempotency in services | ADR-052 |

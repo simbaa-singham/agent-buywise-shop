@@ -1,0 +1,301 @@
+{
+  "server": "buywise-catalog",
+  "instructions": "The store's product catalog: products, variants, list prices.",
+  "tools": [
+    {
+      "name": "get_product",
+      "description": "Full details of one product: specs and every variant with its exact sku, storage, size, color and list\n    price. Call this before ordering to get the exact sku.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "description": "product_id from search_products, e.g. 'ph-18pro'",
+            "title": "Product Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "product_id"
+        ],
+        "title": "get_productArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Variant": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "description": "Exact sku to use in orders",
+                "title": "Sku",
+                "type": "string"
+              },
+              "storage_gb": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Storage Gb"
+              },
+              "size": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Size"
+              },
+              "color": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Color"
+              },
+              "list_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "List Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "sku",
+              "list_price"
+            ],
+            "title": "Variant",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "product_id": {
+            "title": "Product Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "family": {
+            "title": "Family",
+            "type": "string"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "preorder",
+              "discontinued"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "release_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Release Date"
+          },
+          "ships_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "For preorder products: the date it ships",
+            "title": "Ships On"
+          },
+          "specs": {
+            "additionalProperties": true,
+            "description": "Technical specifications as the catalog lists them",
+            "title": "Specs",
+            "type": "object"
+          },
+          "compatibility_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Compatibility Note"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/$defs/Variant"
+            },
+            "title": "Variants",
+            "type": "array"
+          }
+        },
+        "required": [
+          "product_id",
+          "model",
+          "category",
+          "family",
+          "availability",
+          "specs",
+          "variants"
+        ],
+        "title": "ProductDetail",
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_products",
+      "description": "Find products by name or words. Returns up to 5 matches, best first, each with its product_id and lowest\n    price. Use the product_id with get_product (specs, variants) or check_stock (stock).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Product name or words from it, e.g. 'iPhone 18 Pro', 'noise cancelling earbuds'",
+            "title": "Query",
+            "type": "string"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "enum": [
+                  "phone",
+                  "tablet",
+                  "laptop",
+                  "watch",
+                  "audio",
+                  "accessory"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Only this kind of product",
+            "title": "Category"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "search_productsArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "ProductSummary": {
+            "additionalProperties": false,
+            "properties": {
+              "product_id": {
+                "title": "Product Id",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "category": {
+                "title": "Category",
+                "type": "string"
+              },
+              "family": {
+                "title": "Family",
+                "type": "string"
+              },
+              "availability": {
+                "enum": [
+                  "available",
+                  "preorder",
+                  "discontinued"
+                ],
+                "title": "Availability",
+                "type": "string"
+              },
+              "release_date": {
+                "anyOf": [
+                  {
+                    "format": "date",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Release Date"
+              },
+              "from_price": {
+                "description": "Lowest list price of any variant",
+                "title": "From Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "product_id",
+              "model",
+              "category",
+              "family",
+              "availability",
+              "from_price"
+            ],
+            "title": "ProductSummary",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "title": "Query",
+            "type": "string"
+          },
+          "products": {
+            "description": "Best match first; empty when nothing matches",
+            "items": {
+              "$ref": "#/$defs/ProductSummary"
+            },
+            "title": "Products",
+            "type": "array"
+          }
+        },
+        "required": [
+          "query",
+          "products"
+        ],
+        "title": "ProductSearch",
+        "type": "object"
+      }
+    }
+  ],
+  "prompts": [],
+  "resources": [],
+  "resource_templates": []
+}

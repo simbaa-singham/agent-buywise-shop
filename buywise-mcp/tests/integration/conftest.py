@@ -7,6 +7,7 @@ Once per test run:
 4. buywise-mcp runs in this process on a free port, pointed at that services container.
 Nothing touches the local app's data. Needs Docker running.
 """
+
 import contextlib
 import socket
 import threading
@@ -17,12 +18,15 @@ from pathlib import Path
 import docker.errors
 import httpx
 import httpx2
+import jsonschema
 import pytest
 import uvicorn
 from mcp import Client
 from mcp.client.streamable_http import streamable_http_client
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.network import Network
+
+from buywise_mcp.core.errors import ToolErrorInfo
 
 DB = Path(__file__).resolve().parents[3] / "buywise-db"
 PASSWORD = "test-only"  # throw-away containers; never a real secret
@@ -56,22 +60,32 @@ def stack():
     postgres = (
         DockerContainer("pgvector/pgvector:pg17")
         .with_network_aliases("postgres")
-        .with_envs(POSTGRES_PASSWORD=PASSWORD, SERVICES_DB_PASSWORD=PASSWORD, AGENT_DB_PASSWORD=PASSWORD,
-                   KEYCLOAK_DB_PASSWORD=PASSWORD, LITELLM_DB_PASSWORD=PASSWORD)
-        .with_volume_mapping(DB / "database", "/docker-entrypoint-initdb.d")   # creates the 4 databases + users
-        .with_volume_mapping(DB / "services" / "03-data", "/tmp/seed")        # seed JSON, read by the seed SQL
-        .with_volume_mapping(DB / "services" / "02-dml", "/seed-sql")         # the seed SQL files
+        .with_envs(
+            POSTGRES_PASSWORD=PASSWORD,
+            SERVICES_DB_PASSWORD=PASSWORD,
+            AGENT_DB_PASSWORD=PASSWORD,
+            KEYCLOAK_DB_PASSWORD=PASSWORD,
+            LITELLM_DB_PASSWORD=PASSWORD,
+        )
+        .with_volume_mapping(DB / "database", "/docker-entrypoint-initdb.d")  # creates the 4 databases + users
+        .with_volume_mapping(DB / "services" / "03-data", "/tmp/seed")  # seed JSON, read by the seed SQL
+        .with_volume_mapping(DB / "services" / "02-dml", "/seed-sql")  # the seed SQL files
     )
     services = (
         DockerContainer(SERVICES_IMAGE)
-        .with_envs(SPRING_DATASOURCE_URL="jdbc:postgresql://postgres:5432/services",
-                   SPRING_DATASOURCE_USERNAME="services", SERVICES_DB_PASSWORD=PASSWORD)
+        .with_envs(
+            SPRING_DATASOURCE_URL="jdbc:postgresql://postgres:5432/services",
+            SPRING_DATASOURCE_USERNAME="services",
+            SERVICES_DB_PASSWORD=PASSWORD,
+        )
         .with_exposed_ports(8081)
     )
     with Network() as network, postgres.with_network(network):
         # TCP check: during first-start init Postgres listens only on its socket, so this waits for the real start
-        _wait(lambda: postgres.exec(["pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "services"])
-              .exit_code == 0, "postgres")
+        _wait(
+            lambda: postgres.exec(["pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "services"]).exit_code == 0,
+            "postgres",
+        )
         try:
             services.with_network(network).start()
         except docker.errors.ImageNotFound:
@@ -80,8 +94,9 @@ def stack():
             url = f"http://{services.get_container_host_ip()}:{services.get_exposed_port(8081)}"
             _wait(lambda: httpx.get(f"{url}/actuator/health").json()["status"] == "UP", "buywise-services")
             for f in ("01-catalog-inventory.sql", "02-customers-orders.sql"):  # after Flyway made the tables
-                r = postgres.exec(["psql", "-v", "ON_ERROR_STOP=1", "-q", "-U", "postgres", "-d", "services",
-                                   "-f", f"/seed-sql/{f}"])
+                r = postgres.exec(
+                    ["psql", "-v", "ON_ERROR_STOP=1", "-q", "-U", "postgres", "-d", "services", "-f", f"/seed-sql/{f}"]
+                )
                 assert r.exit_code == 0, r.output.decode()
             yield Stack(url, postgres)
         finally:
@@ -91,10 +106,10 @@ def stack():
 @pytest.fixture(scope="session")
 def mcp_url(stack):
     """Starts the real MCP app (all domain servers) on a free port, calling the services container."""
-    from buywise_mcp import services
     from buywise_mcp.app import app
+    from buywise_mcp.core.services import services
 
-    services._client = httpx.AsyncClient(base_url=stack.services_url, timeout=10)
+    services.client = httpx.AsyncClient(base_url=stack.services_url, timeout=10)
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]
@@ -109,9 +124,22 @@ def mcp_url(stack):
 
 @pytest.fixture
 def call(mcp_url):
-    """call(domain, tool, args, customer=None) -> MCP CallToolResult, over Streamable HTTP like the agent."""
+    """call(domain, tool, args, customer=None) -> MCP CallToolResult, over Streamable HTTP like the agent.
+    Every result is checked against the tool's declared schema: outputSchema for results, the typed error shape
+    for errors (ADR-054, ADR-055)."""
+
     async def _call(domain: str, tool: str, args: dict, customer: str | None = None):
         http = httpx2.AsyncClient(headers={"X-Customer-Id": customer} if customer else {})
         async with Client(streamable_http_client(f"{mcp_url}/{domain}", http_client=http)) as client:
-            return await client.call_tool(tool, args)
+            schema = next(t for t in (await client.list_tools()).tools if t.name == tool).output_schema
+            result = await client.call_tool(tool, args)
+        if result.is_error and result.structured_content is None:
+            # bad arguments are rejected by the SDK before the tool runs, as plain text (ADR-055)
+            assert "validation error" in result.content[0].text, result.content[0].text
+        elif result.is_error:
+            jsonschema.validate(result.structured_content, ToolErrorInfo.model_json_schema())
+        else:
+            jsonschema.validate(result.structured_content, schema)
+        return result
+
     return _call

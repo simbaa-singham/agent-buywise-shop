@@ -1,0 +1,1277 @@
+{
+  "server": "buywise-orders",
+  "instructions": "The logged-in customer's orders: look up, price, place, cancel.",
+  "tools": [
+    {
+      "name": "cancel_order",
+      "description": "Cancel one of the customer's orders that has not shipped or been picked up yet. Pickup units go back on the\n    shelf.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "description": "Order id the customer gave or list_my_orders returned",
+            "title": "Order Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "title": "cancel_orderArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Fulfilment": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "pickup",
+                  "delivery"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "store_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Id"
+              },
+              "store_name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Name"
+              },
+              "method": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Delivery method, e.g. standard",
+                "title": "Method"
+              },
+              "ship_to_city": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To City"
+              },
+              "ship_to_state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To State"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Fulfilment",
+            "type": "object"
+          },
+          "OrderLine": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "title": "Sku",
+                "type": "string"
+              },
+              "product_id": {
+                "title": "Product Id",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "quantity": {
+                "title": "Quantity",
+                "type": "integer"
+              },
+              "unit_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "Unit Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "sku",
+              "product_id",
+              "model",
+              "quantity",
+              "unit_price"
+            ],
+            "title": "OrderLine",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "fulfilment": {
+            "$ref": "#/$defs/Fulfilment"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/$defs/OrderLine"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "subtotal": {
+            "description": "US dollars, 2 decimals",
+            "title": "Subtotal",
+            "type": "number"
+          },
+          "shipping_fee": {
+            "description": "US dollars, 2 decimals",
+            "title": "Shipping Fee",
+            "type": "number"
+          },
+          "tax": {
+            "description": "US dollars, 2 decimals",
+            "title": "Tax",
+            "type": "number"
+          },
+          "total": {
+            "description": "US dollars, 2 decimals",
+            "title": "Total",
+            "type": "number"
+          },
+          "currency": {
+            "const": "USD",
+            "default": "USD",
+            "title": "Currency",
+            "type": "string"
+          },
+          "held_at_store_until": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Pickup orders: last day the store keeps it",
+            "title": "Held At Store Until"
+          },
+          "order_id": {
+            "title": "Order Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "placed",
+              "processing",
+              "ready_for_pickup",
+              "picked_up",
+              "shipped",
+              "out_for_delivery",
+              "delayed",
+              "delivered",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "placed_at": {
+            "format": "date-time",
+            "title": "Placed At",
+            "type": "string"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tracking Number"
+          }
+        },
+        "required": [
+          "fulfilment",
+          "items",
+          "subtotal",
+          "shipping_fee",
+          "tax",
+          "total",
+          "order_id",
+          "status",
+          "placed_at"
+        ],
+        "title": "OrderSummary",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_order",
+      "description": "One of the logged-in customer's orders: status, items, totals, pickup or delivery, tracking.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "description": "Order id the customer gave or list_my_orders returned, e.g. BW-200004",
+            "title": "Order Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "title": "get_orderArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Fulfilment": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "pickup",
+                  "delivery"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "store_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Id"
+              },
+              "store_name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Name"
+              },
+              "method": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Delivery method, e.g. standard",
+                "title": "Method"
+              },
+              "ship_to_city": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To City"
+              },
+              "ship_to_state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To State"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Fulfilment",
+            "type": "object"
+          },
+          "OrderLine": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "title": "Sku",
+                "type": "string"
+              },
+              "product_id": {
+                "title": "Product Id",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "quantity": {
+                "title": "Quantity",
+                "type": "integer"
+              },
+              "unit_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "Unit Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "sku",
+              "product_id",
+              "model",
+              "quantity",
+              "unit_price"
+            ],
+            "title": "OrderLine",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "fulfilment": {
+            "$ref": "#/$defs/Fulfilment"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/$defs/OrderLine"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "subtotal": {
+            "description": "US dollars, 2 decimals",
+            "title": "Subtotal",
+            "type": "number"
+          },
+          "shipping_fee": {
+            "description": "US dollars, 2 decimals",
+            "title": "Shipping Fee",
+            "type": "number"
+          },
+          "tax": {
+            "description": "US dollars, 2 decimals",
+            "title": "Tax",
+            "type": "number"
+          },
+          "total": {
+            "description": "US dollars, 2 decimals",
+            "title": "Total",
+            "type": "number"
+          },
+          "currency": {
+            "const": "USD",
+            "default": "USD",
+            "title": "Currency",
+            "type": "string"
+          },
+          "held_at_store_until": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Pickup orders: last day the store keeps it",
+            "title": "Held At Store Until"
+          },
+          "order_id": {
+            "title": "Order Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "placed",
+              "processing",
+              "ready_for_pickup",
+              "picked_up",
+              "shipped",
+              "out_for_delivery",
+              "delayed",
+              "delivered",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "placed_at": {
+            "format": "date-time",
+            "title": "Placed At",
+            "type": "string"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tracking Number"
+          }
+        },
+        "required": [
+          "fulfilment",
+          "items",
+          "subtotal",
+          "shipping_fee",
+          "tax",
+          "total",
+          "order_id",
+          "status",
+          "placed_at"
+        ],
+        "title": "OrderSummary",
+        "type": "object"
+      }
+    },
+    {
+      "name": "list_my_orders",
+      "description": "The logged-in customer's most recent orders, newest first. Use for 'my order', 'my latest order' or when\n    the customer gives no order id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "default": 5,
+            "description": "How many recent orders",
+            "maximum": 20,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "list_my_ordersArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Fulfilment": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "pickup",
+                  "delivery"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "store_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Id"
+              },
+              "store_name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Name"
+              },
+              "method": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Delivery method, e.g. standard",
+                "title": "Method"
+              },
+              "ship_to_city": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To City"
+              },
+              "ship_to_state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To State"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Fulfilment",
+            "type": "object"
+          },
+          "OrderLine": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "title": "Sku",
+                "type": "string"
+              },
+              "product_id": {
+                "title": "Product Id",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "quantity": {
+                "title": "Quantity",
+                "type": "integer"
+              },
+              "unit_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "Unit Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "sku",
+              "product_id",
+              "model",
+              "quantity",
+              "unit_price"
+            ],
+            "title": "OrderLine",
+            "type": "object"
+          },
+          "OrderSummary": {
+            "additionalProperties": false,
+            "properties": {
+              "fulfilment": {
+                "$ref": "#/$defs/Fulfilment"
+              },
+              "items": {
+                "items": {
+                  "$ref": "#/$defs/OrderLine"
+                },
+                "title": "Items",
+                "type": "array"
+              },
+              "subtotal": {
+                "description": "US dollars, 2 decimals",
+                "title": "Subtotal",
+                "type": "number"
+              },
+              "shipping_fee": {
+                "description": "US dollars, 2 decimals",
+                "title": "Shipping Fee",
+                "type": "number"
+              },
+              "tax": {
+                "description": "US dollars, 2 decimals",
+                "title": "Tax",
+                "type": "number"
+              },
+              "total": {
+                "description": "US dollars, 2 decimals",
+                "title": "Total",
+                "type": "number"
+              },
+              "currency": {
+                "const": "USD",
+                "default": "USD",
+                "title": "Currency",
+                "type": "string"
+              },
+              "held_at_store_until": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Pickup orders: last day the store keeps it",
+                "title": "Held At Store Until"
+              },
+              "order_id": {
+                "title": "Order Id",
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "placed",
+                  "processing",
+                  "ready_for_pickup",
+                  "picked_up",
+                  "shipped",
+                  "out_for_delivery",
+                  "delayed",
+                  "delivered",
+                  "cancelled"
+                ],
+                "title": "Status",
+                "type": "string"
+              },
+              "placed_at": {
+                "format": "date-time",
+                "title": "Placed At",
+                "type": "string"
+              },
+              "tracking_number": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Tracking Number"
+              }
+            },
+            "required": [
+              "fulfilment",
+              "items",
+              "subtotal",
+              "shipping_fee",
+              "tax",
+              "total",
+              "order_id",
+              "status",
+              "placed_at"
+            ],
+            "title": "OrderSummary",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "orders": {
+            "description": "Newest first",
+            "items": {
+              "$ref": "#/$defs/OrderSummary"
+            },
+            "title": "Orders",
+            "type": "array"
+          }
+        },
+        "required": [
+          "orders"
+        ],
+        "title": "OrderList",
+        "type": "object"
+      }
+    },
+    {
+      "name": "place_order",
+      "description": "Place an order for the logged-in customer. Only after the customer has seen the quote and confirmed it.\n    Pickup orders take the units off the store's shelf.",
+      "inputSchema": {
+        "type": "object",
+        "$defs": {
+          "OrderLineInput": {
+            "properties": {
+              "sku": {
+                "description": "Exact variant sku from get_product or check_stock, e.g. PH-18PRO-256GB-SILVER",
+                "title": "Sku",
+                "type": "string"
+              },
+              "quantity": {
+                "default": 1,
+                "maximum": 5,
+                "minimum": 1,
+                "title": "Quantity",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "sku"
+            ],
+            "title": "OrderLineInput",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "description": "What to order: exact sku and quantity (1-5) per line",
+            "items": {
+              "$ref": "#/$defs/OrderLineInput"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "fulfilment": {
+            "description": "pickup at a store, or delivery to the address on file",
+            "enum": [
+              "pickup",
+              "delivery"
+            ],
+            "title": "Fulfilment",
+            "type": "string"
+          },
+          "store_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required for pickup: store_id from list_stores",
+            "title": "Store Id"
+          }
+        },
+        "required": [
+          "items",
+          "fulfilment"
+        ],
+        "title": "place_orderArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Fulfilment": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "pickup",
+                  "delivery"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "store_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Id"
+              },
+              "store_name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Name"
+              },
+              "method": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Delivery method, e.g. standard",
+                "title": "Method"
+              },
+              "ship_to_city": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To City"
+              },
+              "ship_to_state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To State"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Fulfilment",
+            "type": "object"
+          },
+          "OrderLine": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "title": "Sku",
+                "type": "string"
+              },
+              "product_id": {
+                "title": "Product Id",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "quantity": {
+                "title": "Quantity",
+                "type": "integer"
+              },
+              "unit_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "Unit Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "sku",
+              "product_id",
+              "model",
+              "quantity",
+              "unit_price"
+            ],
+            "title": "OrderLine",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "fulfilment": {
+            "$ref": "#/$defs/Fulfilment"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/$defs/OrderLine"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "subtotal": {
+            "description": "US dollars, 2 decimals",
+            "title": "Subtotal",
+            "type": "number"
+          },
+          "shipping_fee": {
+            "description": "US dollars, 2 decimals",
+            "title": "Shipping Fee",
+            "type": "number"
+          },
+          "tax": {
+            "description": "US dollars, 2 decimals",
+            "title": "Tax",
+            "type": "number"
+          },
+          "total": {
+            "description": "US dollars, 2 decimals",
+            "title": "Total",
+            "type": "number"
+          },
+          "currency": {
+            "const": "USD",
+            "default": "USD",
+            "title": "Currency",
+            "type": "string"
+          },
+          "held_at_store_until": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Pickup orders: last day the store keeps it",
+            "title": "Held At Store Until"
+          },
+          "order_id": {
+            "title": "Order Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "placed",
+              "processing",
+              "ready_for_pickup",
+              "picked_up",
+              "shipped",
+              "out_for_delivery",
+              "delayed",
+              "delivered",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "placed_at": {
+            "format": "date-time",
+            "title": "Placed At",
+            "type": "string"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tracking Number"
+          }
+        },
+        "required": [
+          "fulfilment",
+          "items",
+          "subtotal",
+          "shipping_fee",
+          "tax",
+          "total",
+          "order_id",
+          "status",
+          "placed_at"
+        ],
+        "title": "OrderSummary",
+        "type": "object"
+      }
+    },
+    {
+      "name": "quote_order",
+      "description": "Price an order without placing it: items, tax, total, pickup store or delivery. Nothing is saved and no\n    stock is taken.",
+      "inputSchema": {
+        "type": "object",
+        "$defs": {
+          "OrderLineInput": {
+            "properties": {
+              "sku": {
+                "description": "Exact variant sku from get_product or check_stock, e.g. PH-18PRO-256GB-SILVER",
+                "title": "Sku",
+                "type": "string"
+              },
+              "quantity": {
+                "default": 1,
+                "maximum": 5,
+                "minimum": 1,
+                "title": "Quantity",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "sku"
+            ],
+            "title": "OrderLineInput",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "description": "What to order: exact sku and quantity (1-5) per line",
+            "items": {
+              "$ref": "#/$defs/OrderLineInput"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "fulfilment": {
+            "description": "pickup at a store, or delivery to the address on file",
+            "enum": [
+              "pickup",
+              "delivery"
+            ],
+            "title": "Fulfilment",
+            "type": "string"
+          },
+          "store_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Required for pickup: store_id from list_stores",
+            "title": "Store Id"
+          }
+        },
+        "required": [
+          "items",
+          "fulfilment"
+        ],
+        "title": "quote_orderArguments"
+      },
+      "outputSchema": {
+        "$defs": {
+          "Fulfilment": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": [
+                  "pickup",
+                  "delivery"
+                ],
+                "title": "Type",
+                "type": "string"
+              },
+              "store_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Id"
+              },
+              "store_name": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Store Name"
+              },
+              "method": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "description": "Delivery method, e.g. standard",
+                "title": "Method"
+              },
+              "ship_to_city": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To City"
+              },
+              "ship_to_state": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Ship To State"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "Fulfilment",
+            "type": "object"
+          },
+          "OrderLine": {
+            "additionalProperties": false,
+            "properties": {
+              "sku": {
+                "title": "Sku",
+                "type": "string"
+              },
+              "product_id": {
+                "title": "Product Id",
+                "type": "string"
+              },
+              "model": {
+                "title": "Model",
+                "type": "string"
+              },
+              "quantity": {
+                "title": "Quantity",
+                "type": "integer"
+              },
+              "unit_price": {
+                "description": "US dollars, 2 decimals",
+                "title": "Unit Price",
+                "type": "number"
+              }
+            },
+            "required": [
+              "sku",
+              "product_id",
+              "model",
+              "quantity",
+              "unit_price"
+            ],
+            "title": "OrderLine",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "description": "What the order would cost; nothing is saved and no stock is taken.",
+        "properties": {
+          "fulfilment": {
+            "$ref": "#/$defs/Fulfilment"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/$defs/OrderLine"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "subtotal": {
+            "description": "US dollars, 2 decimals",
+            "title": "Subtotal",
+            "type": "number"
+          },
+          "shipping_fee": {
+            "description": "US dollars, 2 decimals",
+            "title": "Shipping Fee",
+            "type": "number"
+          },
+          "tax": {
+            "description": "US dollars, 2 decimals",
+            "title": "Tax",
+            "type": "number"
+          },
+          "total": {
+            "description": "US dollars, 2 decimals",
+            "title": "Total",
+            "type": "number"
+          },
+          "currency": {
+            "const": "USD",
+            "default": "USD",
+            "title": "Currency",
+            "type": "string"
+          },
+          "held_at_store_until": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Pickup orders: last day the store keeps it",
+            "title": "Held At Store Until"
+          }
+        },
+        "required": [
+          "fulfilment",
+          "items",
+          "subtotal",
+          "shipping_fee",
+          "tax",
+          "total"
+        ],
+        "title": "Quote",
+        "type": "object"
+      }
+    }
+  ],
+  "prompts": [],
+  "resources": [],
+  "resource_templates": []
+}

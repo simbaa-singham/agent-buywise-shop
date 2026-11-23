@@ -10,7 +10,6 @@ import logging
 import re
 from typing import Annotated, TypedDict
 
-import httpx
 import redis.asyncio as redis
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
@@ -20,7 +19,7 @@ from langgraph.graph.message import add_messages
 
 from .config import settings
 from .events import Emitter
-from .tools import STATUS_LABEL, call_mcp, knowledge, parse, tool_specs
+from .tools import STATUS_LABEL, call_mcp, knowledge, tool_specs
 
 MAX_TOOL_ROUNDS = 5
 log = logging.getLogger("buywise.agent")
@@ -88,40 +87,38 @@ async def tools(state: State, config: RunnableConfig) -> dict:
             if not turn.customer_id:
                 text = "Not placed: the customer is not logged in. Ask them to log in with the Log in button first."
             else:
-                ok, text = await call_mcp("quote_order", args, turn.customer_id)
+                ok, text, _ = await call_mcp("quote_order", args, turn.customer_id)
                 if ok:
                     pending = args
                     text = ("NOT PLACED YET. Quote from the store system: " + text + "\nShow the customer the items, "
                             "pickup store or delivery, tax and total from this quote, and ask them to reply 'yes' "
                             "to place the order.")
         else:
-            ok, text = await call_mcp(name, args, turn.customer_id)
+            ok, text, data = await call_mcp(name, args, turn.customer_id)
             if ok and name in ("check_stock", "get_product"):
-                await product_card(turn.emitter, name, args, parse(text))
+                await product_card(turn.emitter, name, data)
         log.info("tool %s %s -> %s", name, json.dumps(args), text[:200].replace("\n", " "))
         out.append(ToolMessage(content=text, tool_call_id=call["id"], name=name))
     return {"messages": out, "citations": citations, "pending": pending}
 
 
-async def product_card(emitter: Emitter, name: str, args: dict, data) -> None:
-    if not isinstance(data, dict):
+async def product_card(emitter: Emitter, name: str, data: dict | None) -> None:
+    """Builds the chat contract's camelCase product card (ADR-024) from the tool's typed snake_case result
+    (ADR-054): get_product -> ProductDetail, check_stock -> StockReport."""
+    if not data:
         return
-    card = {"productId": data.get("product_id") or data.get("productId") or args.get("product_id"),
-            "model": data.get("model", "")}
-    if data.get("availability") in ("available", "preorder", "discontinued"):
-        card["availability"] = data["availability"]
-    if name == "get_product" and data.get("variants"):
-        card["listPrice"] = min(v["listPrice"] for v in data["variants"])
-        if data.get("availability") == "preorder" and data.get("releaseDate"):
-            card["shipsOn"] = data["releaseDate"]
-    if name == "check_stock" and data.get("stock"):
-        card["listPrice"] = min(s["price"] for s in data["stock"])
-        if args.get("store_id"):
+    card = {"productId": data["product_id"], "model": data["model"], "availability": data["availability"]}
+    if name == "get_product" and data["variants"]:
+        card["listPrice"] = min(v["list_price"] for v in data["variants"])
+        if data.get("ships_on"):
+            card["shipsOn"] = data["ships_on"]
+    if name == "check_stock" and data["stock"]:
+        card["listPrice"] = min(s["list_price"] for s in data["stock"])
+        if data.get("store_id"):
             first = data["stock"][0]
-            card["stockAtStore"] = {"storeId": first["store_id"], "storeName": first["store"],
-                                    "quantity": sum(s["quantity"] for s in data["stock"])}
-    if card["productId"] and card["model"]:
-        await emitter.emit("block.product_card", card)
+            card["stockAtStore"] = {"storeId": first["store_id"], "storeName": first["store_name"],
+                                    "quantity": data["total_units"]}
+    await emitter.emit("block.product_card", card)
 
 
 graph = StateGraph(State)
@@ -137,13 +134,12 @@ _stores: str | None = None
 
 async def stores_line() -> str:
     global _stores
-    if _stores is None:
-        try:
-            async with httpx.AsyncClient() as c:
-                data = (await c.get(f"{settings.services_url}/api/stores", timeout=5)).json()
-            _stores = "; ".join(f"{s['name']} - {s['city']}, {s['state']} (store_id {s['storeId']})" for s in data)
-        except (httpx.HTTPError, ValueError, KeyError):
+    if _stores is None:  # through MCP, never services directly; becomes an MCP resource in Phase M step 7 (ADR-058)
+        ok, _, data = await call_mcp("list_stores", {}, None)
+        if not ok or not data:
             return "(store list unavailable - use list_stores)"
+        _stores = "; ".join(f"{s['name']} - {s['city']}, {s['state']} (store_id {s['store_id']})"
+                            for s in data["stores"])
     return _stores
 
 
@@ -230,23 +226,17 @@ async def run_turn(conversation_id: str, message_id: str, text: str,
 
 async def place_confirmed(turn: Turn, order: dict) -> None:
     await turn.emitter.status("tool_call", "Placing your order")
-    ok, text = await call_mcp("place_order", order, turn.customer_id)
-    data = parse(text) if ok else None
-    if not data:
-        await turn.say(f"Sorry, I couldn't place the order: {text}")
+    ok, _, data = await call_mcp("place_order", order, turn.customer_id)
+    if not ok or not data:
+        reason = data["message"] if data else "the store system is not responding"
+        await turn.say(f"Sorry, I couldn't place the order: {reason}")
         return
-    f = data.get("fulfilment", {})
+    f = data["fulfilment"]
     where = "delivery to your address on file"
-    if f.get("type") == "pickup":
-        store_name = f.get("store_id")
-        try:
-            async with httpx.AsyncClient() as c:
-                store_name = (await c.get(f"{settings.services_url}/api/stores/{store_name}", timeout=5)).json()["name"]
-        except (httpx.HTTPError, ValueError, KeyError):
-            log.warning("store name lookup failed for %s", store_name)
-        hold = (data.get("heldAtStoreUntil") or "")[:10]
-        where = f"pickup at **{store_name}**" + (f" (held until {hold})" if hold else "")
-    lines = "\n".join(f"- {i['quantity']} x {i['model']} ({i['sku']}) - ${i['unitPrice']:,.2f}" for i in data["items"])
-    await turn.say(f"Your order **{data['orderId']}** is placed for {where}.\n\n{lines}\n\n"
+    if f["type"] == "pickup":
+        hold = (data.get("held_at_store_until") or "")[:10]
+        where = f"pickup at **{f.get('store_name') or f['store_id']}**" + (f" (held until {hold})" if hold else "")
+    lines = "\n".join(f"- {i['quantity']} x {i['model']} ({i['sku']}) - ${i['unit_price']:,.2f}" for i in data["items"])
+    await turn.say(f"Your order **{data['order_id']}** is placed for {where}.\n\n{lines}\n\n"
                    f"Subtotal ${data['subtotal']:,.2f}, tax ${data['tax']:,.2f}, **total ${data['total']:,.2f}**. "
                    "You'll get updates as it moves along.")

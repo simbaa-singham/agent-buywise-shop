@@ -6,6 +6,7 @@ The first snapshot of a server is its approved contract (the Phase M design is t
 after an intended change: make snapshots (rewrites the files), then review the git diff.
 A server without an approved snapshot yet is skipped. Runs in-process (no HTTP, no services needed).
 """
+
 import json
 import os
 from pathlib import Path

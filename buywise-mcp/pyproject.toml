@@ -3,10 +3,17 @@ name = "buywise-mcp"
 version = "0.1.0"
 description = "MCP tool servers wrapping the buywise-services REST APIs (ADR-015, ADR-031)."
 requires-python = ">=3.12"
-dependencies = ["mcp", "httpx", "uvicorn", "starlette"]
+dependencies = [
+    "mcp",
+    "httpx",
+    "uvicorn",
+    "starlette",
+    "pydantic-settings>=2.16.3",
+]
 
 [dependency-groups]
 dev = [
+    "jsonschema>=4.26.0",
     "pytest",
     "ruff",
     "testcontainers>=4.15.0",
