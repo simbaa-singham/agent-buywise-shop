@@ -28,6 +28,8 @@ from testcontainers.core.network import Network
 
 from buywise_mcp.core.errors import ToolErrorInfo
 
+from . import keycloak as kc
+
 DB = Path(__file__).resolve().parents[3] / "buywise-db"
 PASSWORD = "test-only"  # throw-away containers; never a real secret
 SERVICES_IMAGE = "buywise-services:dev"
@@ -143,3 +145,12 @@ def call(mcp_url):
         return result
 
     return _call
+
+
+@pytest.fixture(scope="session")
+def keycloak():
+    """Real Keycloak with buywise-realm.json imported, test secrets and users added (ADR-050)."""
+    server = kc.start()
+    with server.container:
+        kc.wait_and_prepare(server)
+        yield server

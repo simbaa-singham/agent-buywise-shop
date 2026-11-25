@@ -1,7 +1,7 @@
 # agent-buywise-shop - root entry points. Each command is defined in its module's Makefile;
 # these short names just delegate (run `make -C <module> help` for a module's own commands).
 
-.PHONY: help start stop demo-user up down ps logs migrate flyway-info seed k data-tools data agent-dev test ingest contracts contracts-check
+.PHONY: help start stop demo-user realm-reset up down ps logs migrate flyway-info seed k data-tools data agent-dev test ingest contracts contracts-check
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -12,6 +12,8 @@ stop: ## Stop the app processes (the Docker stack keeps running)
 	@./buywise-deploy/local/stop-local.sh
 demo-user: ## [buywise-deploy] Local demo customer login (username demo, password in buywise-deploy/compose/.env)
 	@$(MAKE) --no-print-directory -C buywise-deploy demo-user
+realm-reset: ## [buywise-deploy] Re-import the Keycloak realm from buywise-realm.json, then demo-user (local logins lost)
+	@$(MAKE) --no-print-directory -C buywise-deploy realm-reset
 up: ## [buywise-deploy] Start Postgres, Redis, Keycloak, LiteLLM
 	@$(MAKE) --no-print-directory -C buywise-deploy up
 down: ## [buywise-deploy] Stop the stack (data is kept)

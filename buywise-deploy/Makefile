@@ -1,7 +1,7 @@
 # buywise-deploy module: local stack (Docker Compose) and runtime tooling. Run from repo root via `make <target>` or here.
 COMPOSE := docker compose -f compose/compose.yaml --env-file compose/.env
 
-.PHONY: help env up down ps logs k demo-user
+.PHONY: help env up down ps logs k demo-user realm-reset
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | sed 's/:.*## /\t/'
@@ -26,3 +26,6 @@ k: ## Measure the LLM hardware factor k and write local/scale.yaml
 
 demo-user: env ## Local only: Keycloak client secret + demo customer login (username demo)
 	./compose/keycloak/add-demo-user.sh
+
+realm-reset: env ## Local only: re-import the buywise realm from buywise-realm.json, then demo-user (logins are lost)
+	./compose/keycloak/realm-reset.sh
