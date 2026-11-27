@@ -58,7 +58,23 @@ def _wait(check, what: str, timeout: float = 180) -> None:
 
 
 @pytest.fixture(scope="session")
-def stack():
+def network():
+    """One private Docker network: services reaches Postgres and Keycloak by name."""
+    with Network() as n:
+        yield n
+
+
+@pytest.fixture(scope="session")
+def keycloak(network):
+    """Real Keycloak with buywise-realm.json imported, test secrets and users added (ADR-050)."""
+    server = kc.start()
+    with server.container.with_network(network):
+        kc.wait_and_prepare(server)
+        yield server
+
+
+@pytest.fixture(scope="session")
+def stack(network, keycloak):
     postgres = (
         DockerContainer("pgvector/pgvector:pg17")
         .with_network_aliases("postgres")
@@ -79,10 +95,13 @@ def stack():
             SPRING_DATASOURCE_URL="jdbc:postgresql://postgres:5432/services",
             SPRING_DATASOURCE_USERNAME="services",
             SERVICES_DB_PASSWORD=PASSWORD,
+            # tokens name the public issuer; keys are fetched inside the network (ADR-050)
+            BUYWISE_SECURITY_ISSUER=keycloak.issuer,
+            BUYWISE_SECURITY_JWKS_URI="http://keycloak:8080/realms/buywise/protocol/openid-connect/certs",
         )
         .with_exposed_ports(8081)
     )
-    with Network() as network, postgres.with_network(network):
+    with postgres.with_network(network):
         # TCP check: during first-start init Postgres listens only on its socket, so this waits for the real start
         _wait(
             lambda: postgres.exec(["pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "services"]).exit_code == 0,
@@ -106,12 +125,16 @@ def stack():
 
 
 @pytest.fixture(scope="session")
-def mcp_url(stack):
-    """Starts the real MCP app (all domain servers) on a free port, calling the services container."""
+def mcp_url(stack, keycloak):
+    """Starts the real MCP app (all domain servers) on a free port, calling the services container and checking
+    tokens against the Keycloak container."""
     from buywise_mcp.app import app
+    from buywise_mcp.config import settings
     from buywise_mcp.core.services import services
 
     services.client = httpx.AsyncClient(base_url=stack.services_url, timeout=10)
+    settings.issuer, settings.jwks_url = keycloak.issuer, ""
+    settings.client_secret = kc.SECRETS["buywise-mcp"]
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         port = s.getsockname()[1]
@@ -124,14 +147,38 @@ def mcp_url(stack):
     thread.join(timeout=10)
 
 
+GUEST_SCOPES = "catalog:read inventory:read"
+TOOL_SCOPES = {"catalog:read", "inventory:read", "orders:read", "orders:write", "cart:write", "tickets:write"}
+
+
 @pytest.fixture
-def call(mcp_url):
-    """call(domain, tool, args, customer=None) -> MCP CallToolResult, over Streamable HTTP like the agent.
+def mcp_token(keycloak):
+    """mcp_token(customer_id=None) -> what the agent sends MCP: the user's token swapped for aud buywise-mcp with
+    the user's scopes; a guest gets the agent's own read-only token (ADR-050)."""
+
+    def _token(customer_id: str | None = None, scope: str | None = None) -> str:
+        if customer_id is None:
+            return keycloak.client_token("buywise-agent", scope or GUEST_SCOPES)
+        user = keycloak.user_token(keycloak.user_for(customer_id))
+        # like the agent: only the tool scopes the user's token already has (Keycloak would add others)
+        has = set(kc.claims(user)["scope"].split()) & TOOL_SCOPES
+        r = keycloak.exchange("buywise-agent", user, "buywise-mcp", scope or " ".join(sorted(has)))
+        r.raise_for_status()
+        return r.json()["access_token"]
+
+    return _token
+
+
+@pytest.fixture
+def call(mcp_url, mcp_token):
+    """call(domain, tool, args, customer=None, token=None) -> MCP CallToolResult, over Streamable HTTP like the agent,
+    with a real Keycloak token: the customer's (swapped for MCP), a guest's, or `token` as given.
     Every result is checked against the tool's declared schema: outputSchema for results, the typed error shape
     for errors (ADR-054, ADR-055)."""
 
-    async def _call(domain: str, tool: str, args: dict, customer: str | None = None):
-        http = httpx2.AsyncClient(headers={"X-Customer-Id": customer} if customer else {})
+    async def _call(domain: str, tool: str, args: dict, customer: str | None = None, token: str | None = None):
+        bearer = token or mcp_token(customer)
+        http = httpx2.AsyncClient(headers={"Authorization": f"Bearer {bearer}"})
         async with Client(streamable_http_client(f"{mcp_url}/{domain}", http_client=http)) as client:
             schema = next(t for t in (await client.list_tools()).tools if t.name == tool).output_schema
             result = await client.call_tool(tool, args)
@@ -145,12 +192,3 @@ def call(mcp_url):
         return result
 
     return _call
-
-
-@pytest.fixture(scope="session")
-def keycloak():
-    """Real Keycloak with buywise-realm.json imported, test secrets and users added (ADR-050)."""
-    server = kc.start()
-    with server.container:
-        kc.wait_and_prepare(server)
-        yield server

@@ -45,31 +45,79 @@ class Keycloak:
 
     def user_token(self, username: str) -> str:
         """What the Node server holds after login (authorization code flow; password grant here for tests)."""
-        r = httpx.post(self.token_url, data={"grant_type": "password", "client_id": "buywise-customer-web",
-                       "client_secret": SECRETS["buywise-customer-web"], "username": username, "password": PASSWORD,
-                       "scope": "openid"})
+        r = httpx.post(
+            self.token_url,
+            data={
+                "grant_type": "password",
+                "client_id": "buywise-customer-web",
+                "client_secret": SECRETS["buywise-customer-web"],
+                "username": username,
+                "password": PASSWORD,
+                "scope": "openid",
+            },
+        )
         r.raise_for_status()
         return r.json()["access_token"]
 
+    def user_for(self, customer_id: str) -> str:
+        """The test login for a seed customer: the fixed users, or one created on first use."""
+        known = {c: u for u, c in USERS.items()}
+        if customer_id in known:
+            return known[customer_id]
+        username = f"c-{customer_id}"
+        with self.admin() as a:
+            if not a.get("/users", params={"username": username, "exact": "true"}).json():
+                a.post("/users", json=_user(username, customer_id)).raise_for_status()
+        return username
+
     def exchange(self, client: str, subject: str, audience: str, scope: str | None = None) -> httpx.Response:
-        data = {"grant_type": EXCHANGE, "client_id": client, "client_secret": SECRETS[client],
-                "subject_token": subject, "subject_token_type": ACCESS_TOKEN,
-                "requested_token_type": ACCESS_TOKEN, "audience": audience}
+        data = {
+            "grant_type": EXCHANGE,
+            "client_id": client,
+            "client_secret": SECRETS[client],
+            "subject_token": subject,
+            "subject_token_type": ACCESS_TOKEN,
+            "requested_token_type": ACCESS_TOKEN,
+            "audience": audience,
+        }
         return httpx.post(self.token_url, data=data | ({"scope": scope} if scope else {}))
 
     def client_token(self, client: str, scope: str) -> str:
-        r = httpx.post(self.token_url, data={"grant_type": "client_credentials", "client_id": client,
-                                             "client_secret": SECRETS[client], "scope": scope})
+        r = httpx.post(
+            self.token_url,
+            data={
+                "grant_type": "client_credentials",
+                "client_id": client,
+                "client_secret": SECRETS[client],
+                "scope": scope,
+            },
+        )
         r.raise_for_status()
         return r.json()["access_token"]
 
     def admin(self) -> httpx.Client:
-        r = httpx.post(f"{self.url}/realms/master/protocol/openid-connect/token",
-                       data={"grant_type": "password", "client_id": "admin-cli", "username": "admin",
-                             "password": ADMIN_PASSWORD})
+        r = httpx.post(
+            f"{self.url}/realms/master/protocol/openid-connect/token",
+            data={"grant_type": "password", "client_id": "admin-cli", "username": "admin", "password": ADMIN_PASSWORD},
+        )
         r.raise_for_status()
-        return httpx.Client(base_url=f"{self.url}/admin/realms/buywise",
-                            headers={"Authorization": f"Bearer {r.json()['access_token']}"})
+        return httpx.Client(
+            base_url=f"{self.url}/admin/realms/buywise", headers={"Authorization": f"Bearer {r.json()['access_token']}"}
+        )
+
+
+def _user(username: str, customer_id: str) -> dict:
+    return {
+        "username": username,
+        "email": f"{username}@example.com",
+        "emailVerified": True,
+        "firstName": username.title(),
+        "lastName": "Test",
+        "enabled": True,
+        "attributes": {"customer_id": [customer_id]},
+        "credentials": [{"type": "password", "value": PASSWORD, "temporary": False}],
+    }
+
 
 def _free_port() -> int:
     with socket.socket() as s:
@@ -82,8 +130,11 @@ def start() -> Keycloak:
     container = (
         DockerContainer(IMAGE)
         .with_command("start-dev --import-realm")
-        .with_envs(KC_BOOTSTRAP_ADMIN_USERNAME="admin", KC_BOOTSTRAP_ADMIN_PASSWORD=ADMIN_PASSWORD,
-                   KC_HOSTNAME=f"http://localhost:{port}")
+        .with_envs(
+            KC_BOOTSTRAP_ADMIN_USERNAME="admin",
+            KC_BOOTSTRAP_ADMIN_PASSWORD=ADMIN_PASSWORD,
+            KC_HOSTNAME=f"http://localhost:{port}",
+        )
         .with_volume_mapping(REALM_FILE, "/opt/keycloak/data/import/buywise-realm.json")
         .with_bind_ports(8080, port)
         .with_network_aliases("keycloak")
@@ -105,15 +156,12 @@ def wait_and_prepare(kc: Keycloak, timeout: float = 180) -> None:
     with kc.admin() as a:
         for client_id, secret in SECRETS.items():
             c = a.get("/clients", params={"clientId": client_id}).json()[0]
-            update = {"secret": secret} | ({"directAccessGrantsEnabled": True} if client_id == "buywise-customer-web"
-                                           else {})
+            update = {"secret": secret} | (
+                {"directAccessGrantsEnabled": True} if client_id == "buywise-customer-web" else {}
+            )
             a.put(f"/clients/{c['id']}", json=c | update).raise_for_status()
         for username, customer_id in USERS.items():
-            a.post("/users", json={"username": username, "email": f"{username}@example.com", "emailVerified": True,
-                                   "firstName": username.title(), "lastName": "Test", "enabled": True,
-                                   "attributes": {"customer_id": [customer_id]},
-                                   "credentials": [{"type": "password", "value": PASSWORD, "temporary": False}]},
-                   ).raise_for_status()
+            a.post("/users", json=_user(username, customer_id)).raise_for_status()
         uid = a.get("/users", params={"username": NO_CUSTOMER_ROLE, "exact": "true"}).json()[0]["id"]
         default_role = a.get("/roles/default-roles-buywise").json()  # carries customer for every new user
         a.request("DELETE", f"/users/{uid}/role-mappings/realm", json=[default_role]).raise_for_status()

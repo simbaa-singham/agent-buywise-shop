@@ -45,6 +45,7 @@ dependencies = [
     { name = "httpx" },
     { name = "mcp" },
     { name = "pydantic-settings" },
+    { name = "pyjwt", extra = ["crypto"] },
     { name = "starlette" },
     { name = "uvicorn" },
 ]
@@ -62,6 +63,7 @@ requires-dist = [
     { name = "httpx" },
     { name = "mcp" },
     { name = "pydantic-settings", specifier = ">=2.16.3" },
+    { name = "pyjwt", extras = ["crypto"], specifier = ">=2.15.1" },
     { name = "starlette" },
     { name = "uvicorn" },
 ]

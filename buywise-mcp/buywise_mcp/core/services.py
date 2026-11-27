@@ -1,4 +1,6 @@
 """HTTP client for buywise-services (ADR-055): timeout, HTTP status -> typed error, circuit breaker.
+Every call carries a swapped token for buywise-services (ADR-050): the caller's, narrowed to one scope, or MCP's own
+for public lookups. The X-Customer-Id header is gone - services takes the customer from the token.
 
 MCP never retries: a retried write could place an order twice. It tells the agent `retryable` and the agent decides.
 """
@@ -10,6 +12,8 @@ import httpx
 
 from ..config import settings
 from .errors import ErrorCode, ToolFailure
+from .identity import Principal
+from .tokens import tokens
 
 UNAVAILABLE = "The store system is not responding right now."
 
@@ -55,7 +59,8 @@ class Services:
         self.client = httpx.AsyncClient(base_url=base_url, timeout=timeout_s)
         self.breaker = breaker
 
-    async def call(self, method: str, path: str, *, customer_id: str | None = None, **kwargs):
+    async def call(self, method: str, path: str, *, scope: str, caller: Principal | None = None, **kwargs):
+        """`caller` = the tool's checked caller (its token is swapped for `scope`); None = MCP's own token."""
         if not self.breaker.allow():
             raise ToolFailure(  # open circuit: an immediate retry would fail the same way
                 ErrorCode.UNAVAILABLE,
@@ -63,7 +68,8 @@ class Services:
                 retryable=False,
                 hint="Tell the customer to try again in a minute; do not call this tool again now.",
             )
-        headers = {"X-Customer-Id": customer_id} if customer_id else {}
+        token = await (tokens.for_services(caller, scope) if caller else tokens.own(scope))
+        headers = {"Authorization": f"Bearer {token}"}
         try:
             resp = await self.client.request(method, path, headers=headers, **kwargs)
         except httpx.HTTPError:  # timeout, connection refused, ...

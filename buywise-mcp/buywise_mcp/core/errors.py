@@ -7,6 +7,7 @@ Nothing internal - stack traces, SQL, URLs - ever goes into an error; it is logg
 """
 
 import functools
+import json
 import logging
 from collections.abc import Awaitable, Callable
 from enum import StrEnum
@@ -15,6 +16,7 @@ from mcp import types
 from pydantic import BaseModel
 
 log = logging.getLogger("buywise_mcp")
+audit = logging.getLogger("buywise_mcp.audit")
 
 
 class ErrorCode(StrEnum):
@@ -70,24 +72,48 @@ def typed_errors(hints: Hints | None = None):
     def wrap(fn: Callable[..., Awaitable]):
         @functools.wraps(fn)  # keeps the signature and return type: the SDK builds the schemas from them
         async def tool(*args, **kwargs):
+            caller = next((v for v in kwargs.values() if hasattr(v, "azp") and hasattr(v, "customer_id")), None)
             unresolved = next((v for v in kwargs.values() if isinstance(v, Unresolved)), None)
             if unresolved:
+                _audit(fn.__name__, None, unresolved.info.code)
                 return error_result(unresolved.info)
             try:
-                return await fn(*args, **kwargs)
+                result = await fn(*args, **kwargs)
             except ToolFailure as failure:
                 info = failure.info
                 if info.hint is None and info.code in hints:
                     info = info.model_copy(update={"hint": hints[info.code]})
+                _audit(fn.__name__, caller, info.code)
                 return error_result(info)
             except Exception:
                 log.exception("tool %s failed", fn.__name__)
+                _audit(fn.__name__, caller, "error")
                 return error_result(
                     ToolErrorInfo(
                         code=ErrorCode.UNAVAILABLE, message="Something went wrong on our side.", retryable=False
                     )
                 )
+            _audit(fn.__name__, caller, "ok")
+            return result
 
         return tool
 
     return wrap
+
+
+def _audit(tool: str, caller, result: str) -> None:
+    """One line per tool call - who (sub, customer_id), through which client (azp), what, result (ADR-050).
+    The trace id (ADR-063) will join it with the agent's and services' lines into one chain."""
+    audit.info(
+        json.dumps(
+            {
+                "event": "tool_call",
+                "tool": tool,
+                "result": str(result),
+                "client": "buywise-mcp",
+                "sub": getattr(caller, "sub", None),
+                "customer_id": getattr(caller, "customer_id", None),
+                "azp": getattr(caller, "azp", None),
+            }
+        )
+    )

@@ -8,10 +8,22 @@ from mcp import Client
 from mcp.server.mcpserver import MCPServer
 
 from buywise_mcp.core.errors import ErrorCode, ToolFailure, typed_errors
-from buywise_mcp.core.identity import Customer
+from buywise_mcp.core.identity import OrdersReader
 from buywise_mcp.core.services import CircuitBreaker, Services
+from buywise_mcp.core.tokens import tokens
 
 pytestmark = pytest.mark.anyio
+
+
+@pytest.fixture(autouse=True)
+def no_keycloak(monkeypatch):
+    """These tests are about services answers: hand out a fixed token instead of asking Keycloak."""
+
+    async def token(*_args, **_kwargs):
+        return "test-token"
+
+    monkeypatch.setattr(tokens, "own", token)
+    monkeypatch.setattr(tokens, "for_services", token)
 
 
 def fake_services(handler, failures: int = 5, clock=lambda: 0.0) -> Services:
@@ -26,7 +38,7 @@ def answer(status: int, body: dict | None = None):
 
 async def failure(services: Services) -> ToolFailure:
     with pytest.raises(ToolFailure) as caught:
-        await services.call("GET", "/api/x")
+        await services.call("GET", "/api/x", scope="catalog:read")
     return caught.value
 
 
@@ -90,7 +102,7 @@ async def test_breaker_closes_after_a_successful_trial():
     for _ in range(2):
         await failure(services)
     now[0], healthy[0] = 10.0, True
-    assert await services.call("GET", "/api/x") == {}
+    assert await services.call("GET", "/api/x", scope="catalog:read") == {}
     assert services.breaker.state == "closed" and services.breaker.failures == 0
 
 
@@ -121,7 +133,7 @@ async def crashing() -> dict:
 
 @server.tool()
 @typed_errors()
-async def needs_customer(customer: Customer) -> dict:
+async def needs_customer(customer: OrdersReader) -> dict:
     """x"""
     return {"customer": customer}
 
@@ -152,3 +164,14 @@ async def test_unexpected_exception_is_generic_and_hides_internals():
 async def test_missing_customer_is_a_typed_not_logged_in_error():
     r = await call("needs_customer")
     assert r.is_error and r.structured_content["code"] == "not_logged_in" and r.structured_content["hint"]
+
+
+async def test_services_get_a_bearer_token_never_a_customer_header():
+    seen = []
+
+    def capture(request):
+        seen.append(request.headers)
+        return httpx.Response(200, json={})
+
+    await fake_services(capture).call("GET", "/api/x", scope="catalog:read")
+    assert seen[0]["authorization"] == "Bearer test-token" and "x-customer-id" not in seen[0]

@@ -1,8 +1,11 @@
 """Rules every tool must follow (ADR-051, ADR-054) - checked on the real servers, in-process, no services needed.
 A new tool that breaks one of these fails here before anyone reviews its snapshot."""
 
+import typing
+
 import pytest
 from mcp import Client
+from mcp.server.mcpserver import Resolve
 
 from buywise_mcp.app import SERVERS
 
@@ -75,3 +78,16 @@ async def test_tool_lists_are_cacheable_and_versioned():
             listing = await client.list_tools()
             assert client.server_info.version == "1.0.0", domain
         assert listing.ttl_ms == 600_000 and listing.cache_scope == "public", domain
+
+
+def test_every_tool_checks_its_caller():
+    """ADR-050/051: no tool without a resolved, checked caller (scope; plus role + customer for order tools)."""
+    for domain, server in sorted(SERVERS.items()):
+        for tool in server._tool_manager.list_tools():
+            hints = typing.get_type_hints(tool.fn, include_extras=True)
+            checks = [
+                m.fn.__name__ for h in hints.values() for m in getattr(h, "__metadata__", ()) if isinstance(m, Resolve)
+            ]
+            assert any(c.startswith("requires_") for c in checks), f"{domain}.{tool.name} does not check its caller"
+            if domain == "orders":
+                assert any(c.startswith("requires_orders_") for c in checks), f"{domain}.{tool.name}"

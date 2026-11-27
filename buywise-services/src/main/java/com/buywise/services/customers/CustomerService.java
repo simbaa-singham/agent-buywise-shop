@@ -22,7 +22,4 @@ public class CustomerService {
         return jdbc.sql(SQL + " WHERE customer_id = ?").param(customerId).query(Customer.class).optional();
     }
 
-    public Optional<Customer> byEmail(String email) {
-        return jdbc.sql(SQL + " WHERE lower(email) = lower(?)").param(email).query(Customer.class).optional();
-    }
 }

@@ -13,7 +13,7 @@ One Spring Boot application (modular monolith) that owns all business data and r
 | customer | Profiles, OTP verification |
 | payment (mock) | Payment links, payment status |
 | helpdesk | Tickets, staff handoff, ticket assignment and **conversation ownership** (bot/staff) - source of truth, audited (ADR-037) |
-| shared | Common types, errors, security config |
+| shared | Common types, errors, security config - built 2026-11-25: `SecurityConfig` (JWT checks, scope + role per endpoint), `CurrentCustomer` (customer from the token's `customer_id`), `AuditFilter` (ADR-050) |
 
 ## 2. Technology and versions
 | Concern | Choice |

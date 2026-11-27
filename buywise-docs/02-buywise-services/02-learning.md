@@ -46,3 +46,11 @@ Table rules seen in SQL: `PRIMARY KEY`, `REFERENCES` (foreign key within a schem
 - **Who is asking:** `X-Customer-Id` header; an order of another customer answers 404 (no hint it exists).
 - **Build:** Gradle Kotlin DSL + version catalog (ADR-041); `make -C buywise-services build` / `run`.
 - **Try:** `curl "localhost:8081/api/products?q=iphone+18+pro"`, `curl -H 'X-Customer-Id: cu-demo' localhost:8081/api/orders`.
+
+## Phase M step 4b - Spring Security resource server (2026-11-25, ADR-050)
+- **Starter:** `spring-boot-starter-security-oauth2-resource-server` (Spring Boot 4 name; the old `spring-boot-starter-oauth2-resource-server` still exists).
+- **`shared/SecurityConfig`:** `NimbusJwtDecoder` with Keycloak's key URL (`buywise.security.jwks-uri`, or issuer + `/protocol/openid-connect/certs`) and validators for issuer (`buywise.security.issuer`) + audience `buywise-services`. Authorities: scopes -> `SCOPE_x`, Keycloak `realm_access.roles` -> `ROLE_x`. Rules: health open; products `SCOPE_catalog:read`; stores/stock `SCOPE_inventory:read`; order reads and quote `SCOPE_orders:read` + `ROLE_customer`; place/cancel `SCOPE_orders:write` + `ROLE_customer`; `/api/customers/me` `ROLE_customer`; everything else denied. Stateless, no CSRF (no cookies).
+- **`shared/CurrentCustomer`:** the customer is the token's `customer_id` claim (403 if missing) - controllers take `@AuthenticationPrincipal Jwt`, the `X-Customer-Id` header is gone.
+- **Customers API:** `/api/customers/{id}` and `?email=` (any caller could read any customer) replaced by `/api/customers/me`.
+- **`shared/AuditFilter`:** one JSON line per `/api/` request to logger `buywise.audit`: method, path, status, sub, customer_id, azp.
+- **Two URLs for Keycloak:** the issuer is what tokens name (public URL); keys can be fetched from another address (inside Docker, `http://keycloak:8080/...`). Same split in production (internal key fetch, public issuer).

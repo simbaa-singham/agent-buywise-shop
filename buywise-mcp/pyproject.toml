@@ -9,6 +9,7 @@ dependencies = [
     "uvicorn",
     "starlette",
     "pydantic-settings>=2.16.3",
+    "pyjwt[crypto]>=2.15.1",
 ]
 
 [dependency-groups]

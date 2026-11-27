@@ -12,6 +12,11 @@ spring:
     create-schemas: true
   jackson:
     default-property-inclusion: non_null
+buywise:
+  security:                                  # ADR-050: tokens from this issuer, for this audience
+    issuer: ${BUYWISE_SECURITY_ISSUER:http://localhost:8080/realms/buywise}
+    jwks-uri: ${BUYWISE_SECURITY_JWKS_URI:}  # empty = issuer + /protocol/openid-connect/certs
+    audience: buywise-services
 management:
   endpoints:
     web:

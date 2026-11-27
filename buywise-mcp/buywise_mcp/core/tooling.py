@@ -7,9 +7,13 @@ Annotations describe what a tool does TODAY - the agent's policy trusts them (co
 All tools are closed-world: they only touch BuyWise systems.
 """
 
+from mcp.server.auth.settings import AuthSettings
 from mcp.server.caching import CacheHint
 from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
+
+from ..config import settings
+from .auth import verifier
 
 VERSION = "1.0.0"  # tool contract version; bump on a breaking change (ADR-064)
 
@@ -20,12 +24,20 @@ WRITE_IDEMPOTENT_DESTRUCTIVE = ToolAnnotations(
 )
 
 
-def domain_server(name: str, instructions: str) -> MCPServer:
-    """One MCP server per domain (ADR-031). Its lists may be cached by every client for 10 minutes (ADR-057)."""
+def domain_server(domain: str, instructions: str) -> MCPServer:
+    """One MCP server per domain at /mcp/{domain} (ADR-031): an OAuth resource server for Keycloak tokens (ADR-050),
+    with its protected-resource metadata at /.well-known/oauth-protected-resource/mcp/{domain} (RFC 9728).
+    Its lists may be cached by every client for 10 minutes (ADR-057)."""
     hint = CacheHint(ttl_ms=600_000, scope="public")
     return MCPServer(
-        name,
+        f"buywise-{domain}",
         instructions=instructions,
         version=VERSION,
         cache_hints={"tools/list": hint, "prompts/list": hint, "resources/list": hint},
+        token_verifier=verifier,
+        auth=AuthSettings(
+            issuer_url=settings.issuer,
+            resource_server_url=f"{settings.public_url}/mcp/{domain}",
+            validate_token_resource=False,  # the verifier checks the audience itself (aud: buywise-mcp)
+        ),
     )

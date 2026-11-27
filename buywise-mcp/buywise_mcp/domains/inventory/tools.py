@@ -5,19 +5,22 @@ from typing import Annotated
 from pydantic import Field
 
 from ...core.errors import ErrorCode, typed_errors
+from ...core.identity import InventoryReader
 from ...core.services import services
 from ...core.tooling import READ, domain_server
 from .models import StockReport, StockRow, Store, StoreList
 
-server = domain_server("buywise-inventory", "The store locations and the stock on their shelves.")
+server = domain_server("inventory", "The store locations and the stock on their shelves.")
 
 
 @server.tool(title="List stores", annotations=READ)
 @typed_errors()
-async def list_stores() -> StoreList:
+async def list_stores(caller: InventoryReader) -> StoreList:
     """All stores with store_id, name, address, city, state and opening hours. Use the store_id for check_stock
     and for pickup orders."""
-    return StoreList(stores=[Store.of(s) for s in await services.call("GET", "/api/stores")])
+    return StoreList(
+        stores=[Store.of(s) for s in await services.call("GET", "/api/stores", caller=caller, scope="inventory:read")]
+    )
 
 
 @server.tool(title="Check stock", annotations=READ)
@@ -25,6 +28,7 @@ async def list_stores() -> StoreList:
     {ErrorCode.NOT_FOUND: "Call search_products to find the right product_id, or list_stores for the store_id."}
 )
 async def check_stock(
+    caller: InventoryReader,
     product_id: Annotated[str, Field(description="product_id from search_products, e.g. 'ph-18pro'")],
     store_id: Annotated[
         str | None, Field(description="store_id from list_stores, e.g. 'st-aus'; omit for every store")
@@ -32,14 +36,18 @@ async def check_stock(
 ) -> StockReport:
     """Units on the shelf for every variant of a product, at one store or at every store, with each variant's sku
     and list price. Stock numbers come only from here - never guess them."""
-    product = await services.call("GET", f"/api/products/{product_id}")
+    product = await services.call("GET", f"/api/products/{product_id}", caller=caller, scope="catalog:read")
     variants = {v["sku"]: v for v in product["variants"]}
     # only send storeId when asked: an empty storeId= would match no store at all
     levels = await services.call(
-        "GET", "/api/stock", params={"skus": list(variants)} | ({"storeId": store_id} if store_id else {})
+        "GET",
+        "/api/stock",
+        caller=caller,
+        scope="inventory:read",
+        params={"skus": list(variants)} | ({"storeId": store_id} if store_id else {}),
     )
     if store_id and not levels:  # services answers an unknown store with an empty list: say so, not "0 in stock"
-        await services.call("GET", f"/api/stores/{store_id}")  # 404 -> not_found
+        await services.call("GET", f"/api/stores/{store_id}", caller=caller, scope="inventory:read")  # 404 -> not_found
     rows = [
         StockRow(
             sku=s["sku"],
